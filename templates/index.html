@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frame Structural Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+
+<body>
+
+<div class="header">
+
+    <div class="header-left">
+
+        <img
+            src="{{ url_for('static', filename='images/header_logo.png') }}"
+            class="header-logo"
+            alt="Logo">
+
+        <span class="header-title">
+            FRAME STRUCTURAL ANALYZER
+        </span>
+
+    </div>
+
+    <div class="header-right">
+        <button
+            id="infoBtn"
+            class="info-btn"
+            onclick="openInfoPopup()"
+            title="About">
+
+            ⓘ
+
+        </button>
+    </div>
+
+</div>
+
+<div id="infoPopupOverlay" class="info-popup-overlay">
+
+    <div class="infoPopup">
+
+        <div class="infoPopupHeader">
+
+            <h3>Information</h3>
+
+            <button
+                class="info-popup-close-btn"
+                onclick="closeInfoPopup()">
+                &times;
+            </button>
+        </div>
+
+        <h2>Frame Structural Analyzer</h2>
+
+        <p><b>Version:</b> 1.0.0</p>
+
+        <h3>About</h3>
+
+        <p>
+            Frame Structural Analyzer is a web-based application
+            for analysing 3D frame structures and visualising
+            structural behaviour through diagrams and reports.
+        </p>
+
+        <h3>Developer</h3>
+
+        <p>
+            <b>Kuldeep Sahu</b><br>
+            Civil Engineering Student
+        </p>
+
+        <h3>Technologies</h3>
+
+        <ul>
+            <li>Python</li>
+            <li>Flask</li>
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+        </ul>
+
+    </div>
+
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav-bar">
+    <button onclick="showPage(1)">Model</button>
+    <button onclick="showPage(2)">Properties</button>
+    <button onclick="showPage(3)">Supports & Loads</button>
+    <button onclick="showPage(4)">Results</button>
+    <button onclick="showPage(5)">Report</button>
+</div>
+
+<div class="main-container">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+
+        <!-- ================= PAGE 1 ================= -->
+        <div class="page" id="page1">
+
+            <div class="page1-layout">
+
+                <!-- INSTRUCTION -->
+                <div class="card instruction-card">
+
+                    <h4>Instructions</h4>
+
+                    <div class="instruction-scroll">
+
+                        {% include 'instructions.html' %}
+
+                    </div>
+
+                </div>
+
+                <div class="page1-input-column">
+
+                    <!-- NODES -->
+                    <div class="card nodes-card">
+
+                        <h4>Nodes</h4>
+
+                        <div class="table-wrapper">
+
+                            <table class="input-table" id="nodesTable">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>X</th>
+                                    <th>Y</th>
+                                    <th>Z</th>
+                                    <th></th>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <button onclick="addNode()">+ Add</button>
+
+                    </div>
+
+                    <!-- MEMBERS -->
+                    <div class="card members-card">
+
+                        <h4>Members</h4>
+
+                        <div class="table-wrapper">
+
+                            <table class="input-table" id="membersTable">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th></th>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <button onclick="addMember()">+ Add</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PAGE 2 ================= -->
+        <div class="page" id="page2" style="display:none;">
+
+            <div class="properties-page">
+
+                <!-- ===================================-->
+                <!-- MATERIAL PROPERTIES -->
+                <!-- =================================== -->
+
+                <div class="card properties-card">
+
+                    <h4>Material Properties</h4>
+
+                    <div
+                        class="property-card-container"
+                        id="materialCardContainer">
+                    </div>
+
+                    <!-- MATERIAL CARD TEMPLATE -->
+                    <div
+                        id="materialCardTemplate"
+                        style="display:none;">
+
+                        <div class="load-item">
+
+                            <div class="load-card-layout">
+
+                                <!-- LEFT -->
+                                <div class="load-left">
+
+                                    <div class="material-title"></div>
+
+                                    <div class="material-description"></div>
+
+                                </div>
+
+
+                                <!-- RIGHT -->
+                                <div class="load-right">
+
+                                    <!-- ASSIGN -->
+                                    <div class="load-assignment-section">
+
+                                        <input
+                                            class="material-assignment-input"
+                                            placeholder="Assign members">
+
+                                        <button class="assign-material-btn">
+                                            Assign
+                                        </button>
+
+                                        <button
+                                            class="assign-all-btn"
+                                            type="button">
+                                            Assign All
+                                        </button>
+
+                                    </div>
+
+
+                                    <!-- CURRENT ASSIGNMENT -->
+                                    <div class="material-assignment"></div>
+
+
+                                    <!-- ACTION BUTTONS -->
+                                    <div class="load-buttons">
+
+                                        <button class="edit-material-btn">
+                                            Edit
+                                        </button>
+
+                                        <button class="delete-btn">
+                                            Delete
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <button onclick="openMaterialPopup()">
+                        + Add Material
+                    </button>
+
+                </div>
+
+
+
+                <!-- ================================= -->
+                <!-- SECTION / BETA PROPERTIES -->
+                <!-- ================================= -->
+
+                <div class="card properties-card">
+
+                    <div class="property-tabs">
+
+                        <button
+                            type="button"
+                            id="sectionPropertyTab"
+                            class="property-tab active"
+                            onclick="switchPropertyCardType('section')">
+                            Section
+                        </button>
+
+                        <button
+                            type="button"
+                            id="betaPropertyTab"
+                            class="property-tab"
+                            onclick="switchPropertyCardType('beta')">
+                            Beta Angle
+                        </button>
+                    </div>
+
+                    <div id="sectionPropertyContent">
+
+
+                        <div
+                            class="property-card-container"
+                            id="sectionCardContainer">
+                        </div>
+
+
+                        <!-- SECTION CARD TEMPLATE -->
+                        <div
+                            id="sectionCardTemplate"
+                            style="display:none;">
+
+                            <div class="load-item">
+
+                                <div class="load-card-layout">
+
+                                    <!-- LEFT -->
+                                    <div class="load-left">
+
+                                        <div class="section-title"></div>
+
+                                        <div class="section-description"></div>
+
+                                    </div>
+
+
+                                    <!-- RIGHT -->
+                                    <div class="load-right">
+
+                                        <!-- ASSIGN -->
+                                        <div class="load-assignment-section">
+
+                                            <input
+                                                class="section-assignment-input"
+                                                placeholder="Assign members">
+
+                                            <button class="assign-section-btn">
+                                                Assign
+                                            </button>
+
+                                            <button
+                                                class="assign-all-btn"
+                                                type="button">
+                                                Assign All
+                                            </button>
+
+                                        </div>
+
+
+                                        <!-- CURRENT ASSIGNMENT -->
+                                        <div class="section-assignment"></div>
+
+
+                                        <!-- ACTION BUTTONS -->
+                                        <div class="load-buttons">
+
+                                            <button class="edit-section-btn">
+                                                Edit
+                                            </button>
+
+                                            <button class="delete-btn">
+                                                Delete
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <button onclick="openSectionPopup()">
+                            + Add Section
+                        </button>
+
+                    </div>
+
+                    <!-- ================================= -->
+                    <!-- BETA ANGLE PROPERTIES -->
+                    <!-- ================================= -->
+
+                    <div id="betaPropertyContent"
+                        style="display:none;">
+
+                        <div
+                            class="property-card-container"
+                            id="betaCardContainer">
+                        </div>
+
+
+                        <!-- BETA CARD TEMPLATE -->
+
+                        <div
+                            id="betaCardTemplate"
+                            style="display:none;">
+
+                            <div class="load-item">
+
+                                <div class="load-card-layout">
+
+                                    <!-- LEFT -->
+
+                                    <div class="load-left">
+
+                                        <div class="beta-title"></div>
+
+                                        <div class="beta-description"></div>
+
+                                    </div>
+
+
+                                    <!-- RIGHT -->
+
+                                    <div class="load-right">
+
+                                        <!-- ASSIGN -->
+
+                                        <div class="load-assignment-section">
+
+                                            <input
+                                                class="beta-assignment-input"
+                                                placeholder="Assign members">
+
+                                            <button
+                                                class="assign-beta-btn">
+                                                Assign
+                                            </button>
+
+                                            <button
+                                                class="assign-all-btn"
+                                                type="button">
+                                                Assign All
+                                            </button>
+
+                                        </div>
+
+
+                                        <!-- CURRENT ASSIGNMENT -->
+
+                                        <div class="beta-assignment"></div>
+
+
+                                        <!-- EDIT / DELETE -->
+
+                                        <div class="load-buttons">
+
+                                            <button
+                                                class="edit-beta-btn">
+
+                                                Edit
+
+                                            </button>
+
+                                            <button
+                                                class="delete-btn">
+
+                                                Delete
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <button onclick="openBetaPopup()">
+                            + Add Beta Angle
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ====================================== -->
+            <!-- MATERIAL POPUP -->
+            <!-- ======================================= -->
+
+            <div
+                class="popup-overlay"
+                id="materialPopup">
+
+                <div class="popup-card popup-grid">
+
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeMaterialPopup()">
+                        &times;
+                    </button>
+
+
+                    <!-- LEFT -->
+                    <div class="load-instruction-panel">
+
+                        <h4>Instructions</h4>
+
+                        <div>
+
+                            <b>Material Properties</b>
+
+                            <p>
+                                Define the material properties used by
+                                structural members.
+                            </p>
+
+                            <p>
+                                <b>E</b> = Young's Modulus
+                            </p>
+
+                            <p>
+                                <b>G</b> = Shear Modulus
+                            </p>
+
+                            <p>
+                                Units:
+                                E, G → kN/m²
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RIGHT -->
+                    <div class="popup-input-panel">
+
+                        <h3 id="materialPopupTitle">
+                            Add Material
+                        </h3>
+
+
+                        <!-- NAME -->
+                        <label>
+                            Material Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="materialName"
+                            placeholder="e.g. M25 Concrete">
+
+
+                        <!-- E -->
+                        <label>
+                            E
+                        </label>
+
+                        <input
+                            type="text"
+                            id="materialE"
+                            step="any"
+                            placeholder="Young's Modulus">
+
+
+                        <!-- G -->
+                        <label>
+                            G
+                        </label>
+
+                        <input
+                            type="text"
+                            id="materialG"
+                            step="any"
+                            placeholder="Shear Modulus">
+
+
+                        <!-- BUTTONS -->
+                        <div class="popup-buttons">
+
+                            <button onclick="saveMaterial()">
+                                Add
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="closeMaterialPopup()">
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================= -->
+            <!-- SECTION POPUP -->
+            <!-- ======================================= -->
+
+            <div
+                class="popup-overlay"
+                id="sectionPopup">
+
+                <div class="popup-card popup-grid">
+
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeSectionPopup()">
+                        &times;
+                    </button>
+
+
+                    <!-- LEFT -->
+                    <div class="section-shape-instruction">
+
+                        <h4>Section Geometry</h4>
+
+                        <div
+                            id="sectionShapeFigure"
+                            class="section-shape-figure">
+                        </div>
+
+                        <div
+                            id="sectionShapeInstructions"
+                            class="section-shape-instructions">
+                        </div>
+
+                    </div>
+
+
+                    <!-- RIGHT -->
+                    <div class="popup-input-panel">
+
+                        <div id="sectionPropertyPanel">
+
+                            <h3 id="sectionPopupTitle">
+                                Add Section
+                            </h3>
+
+
+                            <!-- NAME -->
+                            <label>
+                                Section Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="sectionName"
+                                placeholder="e.g. Beam 300x500">
+
+
+                            <!-- SECTION TYPE -->
+
+                            <label>
+                                Cross Section Type
+                            </label>
+
+                            <select
+                                id="sectionType"
+                                onchange="updateSectionShape()">
+
+                                <option value="rectangular">
+                                    Rectangular
+                                </option>
+
+                                <option value="circular">
+                                    Solid Circular
+                                </option>
+
+                                <option value="hollow_circular">
+                                    Hollow Circular
+                                </option>
+
+                                <option value="i_section">
+                                    I-Section
+                                </option>
+
+                                <option value="box">
+                                    Rectangular Hollow
+                                </option>
+
+                                <option value="custom">
+                                    Custom
+                                </option>
+
+                            </select>
+
+
+                            <!-- SECTION GEOMETRY -->
+
+                            <div id="sectionGeometryFields">
+                            </div>
+
+
+                            <!-- CALCULATED PROPERTIES -->
+
+                            <div class="section-calculated-properties">
+
+                                <label>
+                                    A
+                                    <input
+                                        type="text"
+                                        id="sectionA"
+                                        readonly>
+                                </label>
+
+                                <label>
+                                    Iyy
+                                    <input
+                                        type="text"
+                                        id="sectionIyy"
+                                        readonly>
+                                </label>
+
+                                <label>
+                                    Izz
+                                    <input
+                                        type="text"
+                                        id="sectionIzz"
+                                        readonly>
+                                </label>
+
+                                <label>
+                                    J
+                                    <input
+                                        type="text"
+                                        id="sectionJ"
+                                        readonly>
+                                </label>
+
+                            </div>
+
+
+                            <!-- BUTTONS -->
+                            <div class="popup-buttons">
+
+                                <button onclick="saveSection()">
+                                    Add
+                                </button>
+
+                                <button
+                                    class="delete-btn"
+                                    onclick="closeSectionPopup()">
+                                    Cancel
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ================================================= -->
+            <!-- BETA ANGLE POPUP -->
+            <!-- ================================================= -->
+
+            <div
+                class="popup-overlay"
+                id="betaPopup">
+
+                <div class="popup-card popup-grid">
+
+                    <!-- CLOSE -->
+
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeBetaPopup()">
+
+                        &times;
+
+                    </button>
+
+
+                    <!-- LEFT -->
+
+                    <div class="load-instruction-panel">
+
+                        <h4>Instructions</h4>
+
+                        <div>
+
+                            <b>Beta Angle</b>
+
+                            <p>
+                                Beta angle defines the rotation of the
+                                member's local Y-Z axes about the
+                                local X-axis.
+                            </p>
+
+                            <p>
+                                <b>β = 0°</b> means no rotation.
+                            </p>
+
+                            <p>
+                                Positive beta follows the
+                                right-hand rule about the local X-axis.
+                            </p>
+
+                            <p>
+                                Negative angles are allowed.
+                            </p>
+
+                            <p>
+                                The beta angle is assigned independently
+                                of the section property.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RIGHT -->
+
+                    <div class="popup-input-panel">
+
+                        <h3 id="betaPopupTitle">
+                            Add Beta Angle
+                        </h3>
+
+
+                        <!-- NAME -->
+
+                        <label>
+                            Beta Angle Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="betaName"
+                            placeholder="e.g. B30">
+
+
+                        <!-- ANGLE -->
+
+                        <label>
+                            Beta Angle (degrees)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="betaAngle"
+                            step="any"
+                            placeholder="e.g. 30">
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="popup-buttons">
+
+                            <button
+                                type="button"
+                                onclick="saveBeta()">
+
+                                Add
+
+                            </button>
+
+                            <button
+                                type="button"
+                                class="delete-btn"
+                                onclick="closeBetaPopup()">
+
+                                Cancel
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PAGE 3 ================= -->
+        <div class="page" id="page3" style="display:none;">
+
+            <!-- SUPPORTS -->
+            <div class="card page3-half">
+
+                <h4>Supports</h4>
+
+                <!-- SUPPORT CARD AREA -->
+                <div
+                    class="support-card-container"
+                    id="supportCardContainer">
+                </div>
+
+                <!-- SUPPORT CARD TEMPLATE -->
+                <div
+                    id="supportCardTemplate"
+                    style="display:none;">
+
+                    <div class="support-item">
+
+                        <div class="support-card-layout">
+
+                            <!-- LEFT -->
+                            <div class="support-left">
+
+                                <div class="support-title"></div>
+
+                                <div class="support-description"></div>
+
+                            </div>
+
+                            <!-- RIGHT -->
+                            <div class="support-right">
+
+                                <!-- ASSIGN -->
+                                <div class="support-assignment-section">
+
+                                    <input
+                                        class="support-assignment-input"
+                                        placeholder="Assign nodes">
+
+                                    <button class="assign-support-btn">
+                                        Assign
+                                    </button>
+
+                                    <button
+                                        class="assign-all-btn"
+                                        type="button">
+                                        Assign All
+                                    </button>
+
+                                </div>
+
+                                <!-- CURRENT ASSIGNMENT -->
+                                <div class="support-assignment"></div>
+
+                                <!-- ACTION BUTTONS -->
+                                <div class="support-buttons">
+
+                                    <button class="edit-support-btn">
+                                        Edit
+                                    </button>
+
+                                    <button class="delete-btn">
+                                        Delete
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ADD SUPPORT -->
+                <button onclick="openSupportPopup()">
+                    + Add Support
+                </button>
+
+            </div>
+
+            <!-- LOADS -->
+            <div class="card page3-half">
+
+                <h4>Loads</h4>
+
+                <!-- LOAD CARD AREA -->
+                <div
+                    class="load-card-container"
+                    id="loadCardContainer">
+
+                </div>
+
+                <!-- LOAD CARD TEMPLATE -->
+                <div
+                    id="loadCardTemplate"
+                    style="display:none;">
+
+                    <div class="load-item">
+                        <div class="load-card-layout">
+
+                            <!-- LEFT -->
+                            <div class="load-left">
+                                <div class="load-title"></div>
+                                <div class="load-description"></div>
+                            </div>
+
+                            <!-- RIGHT -->
+                            <div class="load-right">
+
+                                <!-- ASSIGN -->
+                                <div class="load-assignment-section">
+                                    <input
+                                        class="load-assignment-input"
+                                        placeholder="Assign nodes/members">
+                                    <button class="assign-load-btn">
+                                        Assign
+                                    </button>
+
+                                    <button
+                                        class="assign-all-btn"
+                                        type="button">
+                                        Assign All
+                                    </button>
+
+                                </div>
+
+                                <!-- CURRENT ASSIGNMENT -->
+                                <div class="load-assignment"></div>
+
+                                <!-- ACTION BUTTONS -->
+                                <div class="load-buttons">
+                                    <button class="edit-load-btn">
+                                        Edit
+                                    </button>
+                                    <button class="delete-btn">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD LOAD -->
+                <button onclick="openLoadPopup()">
+                    + Add Load
+                </button>
+
+            </div>
+
+            <!-- ================================================= -->
+            <!-- SUPPORT POPUP -->
+            <!-- ================================================= -->
+
+            <div
+                class="popup-overlay"
+                id="supportPopup">
+
+                <div class="popup-card support-popup">
+
+                    <!-- CLOSE -->
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeSupportPopup()">
+                        &times;
+                    </button>
+
+                    <!-- TOP NAVIGATION -->
+
+                    <div class="support-popup-tabs">
+
+                        <button
+                            id="supportTab"
+                            class="support-tab active"
+                            onclick="switchSupportType('support')">
+
+                            Support
+
+                        </button>
+
+                        <button
+                            id="supportDeflectionTab"
+                            class="support-tab"
+                            onclick="switchSupportType('support_deflection')">
+
+                            Support with Deflection
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- CONTENT -->
+
+                    <div class="support-popup-content">
+
+                        <h3 id="supportPopupTitle">
+                            Add Support
+                        </h3>
+
+
+                        <!-- DOF -->
+
+                        <div class="support-dof-section">
+
+                            <label>
+                                Degrees of Freedom to Restrain
+                            </label>
+
+                            <div class="support-dof-grid">
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportUx"
+                                                onchange="updateSupportValueInputs()">
+                                            Ux
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportUy"
+                                                onchange="updateSupportValueInputs()">
+                                            Uy
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportUz"
+                                                onchange="updateSupportValueInputs()">
+                                            Uz
+                                        </label>
+
+                                        <!-- ROTATIONS -->
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportRx"
+                                                onchange="updateSupportValueInputs()">
+                                            θx
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportRy"
+                                                onchange="updateSupportValueInputs()">
+                                            θy
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportRz"
+                                                onchange="updateSupportValueInputs()">
+                                            θz
+                                        </label>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PRESCRIBED VALUES -->
+
+                        <div
+                            id="supportDeflectionValues"
+                            class="support-deflection-values">
+
+                            <label>
+                                Prescribed Displacement / Rotation
+                            </label>
+
+                            <div class="support-value-row">
+
+                                <label>
+                                    Ux
+                                    <input
+                                        type="text"
+                                        id="supportUxValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    Uy
+                                    <input
+                                        type="text"
+                                        id="supportUyValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    Uz
+                                    <input
+                                        type="text"
+                                        id="supportUzValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    θx
+                                    <input
+                                        type="text"
+                                        id="supportRxValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    θy
+                                    <input
+                                        type="text"
+                                        id="supportRyValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    θz
+                                    <input
+                                        type="text"
+                                        id="supportRzValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                            </div>
+
+                            <small>
+                                Values are entered in global coordinates.
+                            </small>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="popup-buttons">
+
+                            <button onclick="saveSupport()">
+                                Save
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="closeSupportPopup()">
+
+                                Cancel
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================================================= -->
+            <!-- LOAD POPUP -->
+            <!-- ================================================= -->
+
+            <div
+                class="popup-overlay"
+                id="loadPopup">
+
+                <div class="popup-card popup-grid">
+
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeLoadPopup()">
+                        &times;
+                    </button>
+
+                    <!-- LEFT -->
+                    <div class="load-instruction-panel">
+                        <h4>Instructions</h4>
+                        <div id="loadInstructionContent">
+                            Select load type to view instructions.
+                        </div>
+
+                    </div>
+                    <!-- RIGHT -->
+                    <div class="popup-input-panel">
+
+                        <h3>Add Load</h3>
+
+                        <!-- CATEGORY -->
+                        <label>Category</label>
+
+                        <select
+                            id="loadCategory"
+                            onchange="updateLoadPopup()">
+
+                            <option value="nodal">
+                                Nodal Load
+                            </option>
+
+                            <option value="member">
+                                Member Load
+                            </option>
+
+                        </select>
+
+
+
+                        <!-- TYPE -->
+                        <label>Type</label>
+
+                        <select
+                            id="loadType"
+                            onchange="updateLoadFields()">
+
+                            <!-- Dynamic -->
+                        </select>
+
+
+
+                        <!-- DIRECTION -->
+                        <div id="directionGroup">
+
+                            <label>Direction</label>
+
+                            <select id="loadDirection">
+
+                                <option value="X">
+                                    Global-X
+                                </option>
+
+                                <option value="Y">
+                                    Global-Y
+                                </option>
+
+                                <option value="Z">
+                                    Global-Z
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- VALUE 1 -->
+                        <div id="value1Group">
+
+                            <label id="value1Label">
+                                Value
+                            </label>
+
+                            <input 
+                            id="loadValue1"
+                            type="text">
+
+                        </div>
+
+
+
+                        <!-- VALUE 2 -->
+                        <div id="value2Group">
+
+                            <label id="value2Label">
+                                Value 2
+                            </label>
+
+                            <input 
+                            id="loadValue2"
+                            type="text">
+
+                        </div>
+
+
+
+                        <!-- a -->
+                        <div id="aGroup">
+
+                            <label>a</label>
+
+                            <input 
+                            id="loadA"
+                            type="text">
+
+                        </div>
+
+
+
+                        <!-- b -->
+                        <div id="bGroup">
+
+                            <label>b</label>
+
+                            <input 
+                            id="loadB"
+                            type="text">
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+                        <div class="popup-buttons">
+
+                            <button onclick="saveLoad()">
+                                Save
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="closeLoadPopup()">
+
+                                Cancel
+
+                            </button>
+
+                        </div>
+
+                    </div>    
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ============================================== -->
+        <!-- ASSIGN ALL CONFIRMATION POPUP -->
+        <!-- ============================================== -->
+
+        <div
+            class="popup-overlay"
+            id="assignAllConfirmPopup">
+
+            <div class="popup-card assign-confirm-popup">
+
+                <button
+                    class="popup-close-btn"
+                    onclick="closeAssignAllConfirmation()">
+                    &times;
+                </button>
+
+                <h3 id="assignAllConfirmTitle">
+                    Assign to All?
+                </h3>
+
+                <p id="assignAllConfirmMessage">
+                    Do you really want to assign this to all?
+                </p>
+
+                <div class="popup-buttons">
+
+                    <button
+                        type="button"
+                        onclick="closeAssignAllConfirmation()">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        id="confirmAssignAllBtn">
+                        Assign All
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PAGE 4 ================= -->
+        <div class="page" id="page4" style="display:none;">
+
+            <div class="results-column">
+
+                <!-- LOADING -->
+                <div id="loading" style="display:none; text-align:center;">
+                    <div class="spinner"></div>
+                    <p>Running analysis...</p>
+                </div>
+
+                <!-- PLACEHOLDER -->
+                <div id="resultPlaceholder" class="card">
+                    <p style="text-align:center; font-size:13px;">
+                        Fill inputs and click <b>ANALYZE</b> to view results
+                    </p>
+                </div>
+
+                <!-- RESULTS LAYOUT -->
+                <div class="results-layout"
+                    style="display:none;">
+
+                    <!-- SIDEBAR -->
+                    <div class="results-sidebar">
+                        <button
+                            class="results-nav-btn active-result-tab"
+                            onclick="showResultTab('reactionTab',this); setDiagram('structure');">
+                            Reactions
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('displacementTab',this); setDiagram('structure');">
+                            Displacements
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('memberForceTab',this); setDiagram('structure');">
+                            Member Forces
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('afdTab',this); setDiagram('afd');">
+                            AFD
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('sfdTab',this); setDiagram('sfd');">
+                            SFD
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('bmdTab',this); setDiagram('bmd');">
+                            BMD
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('tmdTab',this); setDiagram('tmd');">
+                            TMD
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('deflectionTab',this); setDiagram('deflection');">
+                            Deflection
+                        </button>
+
+                    </div>
+
+                    <!-- RESULT CONTENT -->
+                    <div class="results-content">
+
+                        <!-- REACTIONS -->
+                        <div
+                            id="reactionTab"
+                            class="result-tab active-result-tab-content">
+                            <div id="reactionCard"></div>
+                        </div>
+
+                        <!-- DISPLACEMENT -->
+                        <div
+                            id="displacementTab"
+                            class="result-tab">
+                            <div id="displacementCard"></div>
+                        </div>
+
+                        <!-- MEMBER FORCES -->
+                        <div
+                            id="memberForceTab"
+                            class="result-tab">
+                            <div id="memberForceCard"></div>
+                        </div>
+
+                        <!-- AXIAL FORCE DIAGRAM -->
+                        <div
+                            id="afdTab"
+                            class="result-tab">
+                            <div id="afdTable"></div>
+                        </div>
+
+                        <!-- SFD -->
+                        <div
+                            id="sfdTab"
+                            class="result-tab">
+                            <div id="sfdTable"></div>
+                        </div>
+
+                        <!-- BMD -->
+                        <div
+                            id="bmdTab"
+                            class="result-tab">
+                            <div id="bmdTable"></div>
+                        </div>
+
+                        <!-- TORSIONAL MOMENT DIAGRAM -->
+                        <div
+                            id="tmdTab"
+                            class="result-tab">
+                            <div id="tmdTable"></div>
+                        </div>
+
+                        <!-- DEFLECTION -->
+                        <div
+                            id="deflectionTab"
+                            class="result-tab">
+                            <div id="deflectionTable"></div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button id="analyzeBtn"
+                        onclick="analyzeAndShow();">
+                        ANALYZE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page5" style="display:none;">
+
+            <div class="report-layout">
+
+                <div class="report-left">
+
+                    <div class="report-style">
+                        <label>
+                            <input
+                                type="radio"
+                                name="reportStyle"
+                                value="tabular"
+                                checked
+                                onchange="changeReportStyle()">
+                            Tabular Report
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="reportStyle"
+                                value="member"
+                                onchange="changeReportStyle()">
+                            Member-Wise Report
+                        </label>
+                    </div>
+
+                    <div class="report-bottom">
+                    
+                        <!-- LEFT SIDEBAR -->
+                        <div class="report-sidebar card" id="reportSidebar">
+
+                            <!-- TABULAR REPORT SIDEBAR -->
+                            <div id="tabularSidebar">
+
+                                <label class="report-select-all">
+                                    <input
+                                        type="checkbox"
+                                        id="reportSelectAll"
+                                        onchange="toggleSelectAllReport()">
+                                    <span>Select All Sections</span>
+                                </label>                   
+
+                                <button
+                                    class="report-nav-btn active-report-tab"
+                                    onclick="showReportSection('nodes',this)">
+                                    Nodes
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('members',this)">
+                                    Members
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('supports',this)">
+                                    Supports
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('loads',this)">
+                                    Loads
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('reactions',this)">
+                                    Reactions
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('displacements',this)">
+                                    Displacements
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('forces',this)">
+                                    Member Forces
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('sfd',this)">
+                                    SFD
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('bmd',this)">
+                                    BMD
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
+                                    onclick="showReportSection('deflection',this)">
+                                    Deflection
+                                </button>
+
+                            </div>
+
+                            <!-- MEMBER WISE REPORT SIDEBAR -->
+                            <div id="memberSidebar">
+
+                                <label class="report-select-all">
+                                    <input
+                                        type="checkbox" checked
+                                        id="memberContentSelectAll"
+                                        onchange="toggleReportMemberContentSelection()">
+
+                                    <span>Select All Contents</span>
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkGeometry"
+                                    onchange="updateMemberContentSelectAll()">
+                                    Geometry
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkLoads"
+                                    onchange="updateMemberContentSelectAll()">
+                                    Applied Loads
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkForces"
+                                    onchange="updateMemberContentSelectAll()">
+                                    End Forces
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkMaximum"
+                                    onchange="updateMemberContentSelectAll()">
+                                    Maximum Values
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkSFD"
+                                    onchange="updateMemberContentSelectAll()">
+                                    SFD
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkBMD"
+                                    onchange="updateMemberContentSelectAll()">
+                                    BMD
+                                </label>
+
+                                <label class="member-report-chkbox">
+                                    <input type="checkbox" checked id="chkDeflection"
+                                    onchange="updateMemberContentSelectAll()">
+                                    Deflection Diagram
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <!-- SELECTION AREA -->
+                        <div class="report-selection-panel card">
+
+                            <div class="report-selection-header">
+
+                                <h4 id="reportSelectionTitle">
+                                    Nodes
+                                </h4>
+
+                                <button
+                                    id="reportSelectionButton"
+                                    onclick="toggleCurrentSectionSelection()">
+                                    Select All
+
+                                </button>
+
+                            </div>
+
+                            <div
+                                id="reportSelectionContent"
+                                class="report-selection-content">
+
+                            </div>
+
+
+                            <div class="report-actions">
+                                <button onclick="generateReportPreview()">
+                                    Generate Preview
+                                </button>
+
+                                <button onclick="exportReportPDF()">
+                                    Export PDF
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT PANEL (ALWAYS VISIBLE) -->
+    <div class="right-panel">
+
+        <!-- STRUCTURE VIEW -->
+        <div class="card structure-card">
+
+            <div class="structureHeader">
+
+                <h4>Structure View</h4>
+
+                <div class="structureHeaderActions">
+
+                <button
+                    id="section3DRenderBtn"
+                    class="section3DRenderBtn"
+                    onclick="toggleSection3DRendering()"
+                    style="display:none;">
+                    3D RENDERING
+                </button>
+
+                <button id="resetBtn" onclick="resetView()">
+                    RESET VIEW
+                </button>
+
+                <!-- DIAGRAM MENU BUTTON -->
+                <div class="diagramMenuContainer">
+
+                    <button
+                        id="diagramMenuBtn"
+                        class="diagramMenuBtn"
+                        onclick="toggleDiagramMenu()"
+                        title="Diagram Settings">
+                        ☰
+                    </button>
+                    <!-- POPUP -->
+                    <div
+                        id="diagramMenuPopup"
+                        class="diagramMenuPopup">
+
+                        <div class="diagramMenuHeader">
+                            <span>Diagram Scales</span>
+                        </div>
+
+                        <!-- AFD -->
+                        <div class="diagramScaleRow">
+                            <span>AFD</span>
+                            <div class="diagramScaleControls">
+                                <input
+                                    type="text"
+                                    id="afdScaleInput"
+                                    value="0.03"
+                                    step="0.01"
+                                    min="0.001"
+                                    onchange="updateDiagramScale('afd')">
+                            </div>
+                        </div>
+
+                        <!-- SFD -->
+                        <div class="diagramScaleRow">
+                            <span>SFD</span>
+                            <div class="diagramScaleControls">
+                                <input
+                                    type="text"
+                                    id="sfdScaleInput"
+                                    value="0.20"
+                                    step="0.05"
+                                    min="0.01"
+                                    onchange="updateDiagramScale('sfd')"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- BMD -->
+                        <div class="diagramScaleRow">
+                            <span>BMD</span>
+                            <div class="diagramScaleControls">
+                                <input
+                                    type="text"
+                                    id="bmdScaleInput"
+                                    value="0.10"
+                                    step="0.05"
+                                    min="0.01"
+                                    onchange="updateDiagramScale('bmd')"
+                                >
+                            </div>
+                        </div>
+                        
+                        <!-- TMD -->
+                        <div class="diagramScaleRow">
+                            <span>TMD</span>
+                            <div class="diagramScaleControls">
+                                <input
+                                    type="text"
+                                    id="tmdScaleInput"
+                                    value="0.01"
+                                    step="0.01"
+                                    min="0.001"
+                                    onchange="updateDiagramScale('tmd')">
+                            </div>
+                        </div>
+
+                        <!-- DEFLECTION -->
+                        <div class="diagramScaleRow">
+                            <span>Deflection</span>
+                            <div class="diagramScaleControls">
+                                <input
+                                    type="text"
+                                    id="deflectionScaleInput"
+                                    value="1"
+                                    step="0.01"
+                                    min="0.01"
+                                    onchange="updateDiagramScale('deflection')"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- RESET BUTTON -->
+                        <button
+                            class="resetDiagramBtn"
+                            onclick="resetDiagramScales()"
+                        >
+                            Reset Diagram Scales
+                        </button>
+
+                        <!-- VISIBILITY -->
+                        <div class="diagramVisibilityHeader">
+                            View Options
+                        </div>
+                        <div class="diagramToggleRow">
+                            <label>
+                                <span>Show Loads</span>
+                                <input
+                                    type="checkbox"
+                                    id="showLoadsToggle"
+                                    checked
+                                    onchange="toggleViewOptions()"
+                                >
+                            </label>
+                        </div>
+
+                        <div class="diagramToggleRow">
+                            <label>
+                                <span>Show Supports</span>
+                                <input
+                                    type="checkbox"
+                                    id="showSupportsToggle"
+                                    checked
+                                    onchange="toggleViewOptions()"
+                                >
+                            </label>
+                        </div>
+
+                        <div class="diagramToggleRow">
+                            <label>
+                                <span>Show Labels</span>
+                                <input
+                                    type="checkbox"
+                                    id="showLabelsToggle"
+                                    checked
+                                    onchange="toggleViewOptions()"
+                                >
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="structureView">
+            <canvas id="structureCanvas"></canvas>
+            </div>
+
+        </div>
+
+        <div
+            class="card report-preview-card"
+            id="reportPreviewCard">
+
+            <h4>Report Preview</h4>
+
+            <div id="reportPreview">
+                <div class="report-preview-placeholder">
+                    <div class="placeholder-icon">📄</div>
+                    <h3>Report Preview</h3>
+                    <p>
+                        Select the desired report contents from the left panel and
+                        click <strong>Generate Preview</strong> to view the report.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div id="actionButtonArea">
+
+            <button id="previousBtn" onclick="previousPage()">PREVIOUS</button>
+
+            <button id="nextBtn" onclick="nextPage()">NEXT</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/data.js') }}"></script>
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- ORBIT CONTROLS -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+
+<!-- NEW 3D DRAWING -->
+<script src="{{ url_for('static', filename='js/drawing3D.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing3D_rendering.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing3D_supports.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing3D_loads.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing3D_diagrams.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+/* ==========================================================
+   RESULT_PAGE.CSS
+   Results Page
+   ========================================================== */
+
+
+
+
+/* ==========================================================
+   1. RESULTS LAYOUT
+   ========================================================== */
+
+.results-layout{
+    display:flex;
+    gap:20px;
+    flex:1;
+    min-height:0;
+}
+
+
+/* ==========================================================
+   2. RESULTS SIDEBAR
+   ========================================================== */
+
+.results-sidebar{
+    width:20%;
+    background:white;
+    border-radius:10px;
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.results-sidebar:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+}
+
+
+/* ==========================================================
+   3. RESULT NAVIGATION BUTTONS
+   ========================================================== */
+
+.results-nav-btn{
+    border:none;
+    background:#799df7;
+    padding:12px;
+    border-radius:8px;
+    cursor:pointer;
+    text-align:left;
+    font-weight:600;
+    transition:0.2s;
+}
+
+.results-nav-btn:hover{
+    background:#18398d;
+}
+
+.active-result-tab{
+    background:#18398d;
+    color:white;
+}
+
+
+/* ==========================================================
+   4. RESULTS CONTENT
+   ========================================================== */
+
+.results-content{
+    flex:1;
+    background:white;
+    border-radius:10px;
+    padding:10px;
+    overflow:auto;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.results-content:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+}
+
+
+/* ==========================================================
+   5. RESULTS COLUMN
+   ========================================================== */
+
+.results-column{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    gap:10px;
+}
+
+
+/* ==========================================================
+   6. RESULTS ACTIONS
+   ========================================================== */
+
+.results-actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:20px;
+}
+
+.results-actions button{
+    width:140px;
+}
+
+
+/* ==========================================================
+   7. RESULT TABS
+   ========================================================== */
+
+.result-tab{
+    display:none;
+}
+
+.active-result-tab-content{
+    display:block;
+}
+
+/* ==========================================================
+   8. ANALYSIS ERROR
+   ========================================================== */
+
+.analysis-error{
+    flex:1;
+    min-height:0;
+    background:#fff;
+    border-radius:10px;
+    border:1px solid #f1b5b5;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    padding:30px;
+    box-sizing:border-box;
+
+    text-align:center;
+}
+
+.analysis-error-title{
+    font-size:18px;
+    font-weight:700;
+    color:#c0392b;
+    margin-bottom:12px;
+}
+
+#analysisErrorMessage{
+    font-size:13px;
+    color:#c0392b;
+    max-width:90%;
+    line-height:1.5;
+}

@@ -1,0 +1,391 @@
+/* ==========================================================
+   PAGE3.CSS
+   Supports, Loads and Load Popup
+   ========================================================== */
+
+
+/* ==========================================================
+   1. LOAD CARDS
+   ========================================================== */
+
+.load-card-container{
+    flex:1;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.load-item{
+    background:#f7f9fc;
+    border-left:4px solid #2952cc;
+    padding:10px;
+    border-radius:6px;
+    font-size:12px;
+}
+
+.load-title{
+    font-weight:bold;
+    color:#1f3c88;
+    margin-bottom:4px;
+}
+
+
+/* ==========================================================
+   2. LOAD CARD LAYOUT
+   ========================================================== */
+
+.load-card-layout{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.load-left{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.load-right{
+    min-width:170px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:10px;
+}
+
+.load-description{
+    font-size:12px;
+    color:#444;
+    line-height:1.4;
+}
+
+.load-assignment{
+    font-size:11px;
+    color:#666;
+    text-align:right;
+}
+
+.load-buttons{
+    display:flex;
+    gap:6px;
+}
+
+
+/* ==========================================================
+   3. LOAD POPUP OVERLAY
+   ========================================================== */
+
+.popup-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.35);
+
+    display:none;
+    justify-content:flex-start;
+    align-items:center;
+    padding-left:1%;
+
+    z-index:1000;
+}
+
+
+/* ==========================================================
+   4. LOAD POPUP CARD
+   ========================================================== */
+
+.popup-card{
+    position:relative;
+    width:350px;
+    background:white;
+    border-radius:10px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.popup-card h3{
+    margin:0 0 10px;
+}
+
+.popup-buttons{
+    display:flex;
+    gap:10px;
+}
+
+
+/* ==========================================================
+   5. POPUP CLOSE BUTTON
+   ========================================================== */
+
+.popup-close-btn{
+    position:absolute;
+    top:12px;
+    right:12px;
+    width:28px;
+    height:28px;
+
+    padding:0;
+    margin:0;
+    border:none;
+    border-radius:50%;
+
+    background:#e74c3c;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    line-height:1;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.popup-close-btn:hover{
+    background:#c0392b;
+    transform:scale(1.08);
+}
+
+.popup-close-btn:active{
+    transform:scale(0.95);
+}
+
+
+/* ==========================================================
+   6. LOAD POPUP GRID
+   ========================================================== */
+
+.popup-grid{
+    width:700px;
+
+    display:grid;
+    grid-template-columns:260px 1fr;
+
+    gap:20px;
+}
+
+
+/* ==========================================================
+   7. LOAD INSTRUCTION PANEL
+   ========================================================== */
+
+.load-instruction-panel{
+    background:#f7f9fc;
+
+    border:1px solid #dce3f0;
+
+    border-radius:8px;
+
+    padding:12px;
+
+    font-size:12px;
+
+    line-height:1.5;
+}
+
+.load-instruction-panel h4{
+    margin-top:0;
+    margin-bottom:10px;
+    color:#1f3c88;
+}
+
+#loadInstructionContent b{
+    color:#1f3c88;
+}
+
+/* ==========================================================
+   SUPPORT CARDS
+   ========================================================== */
+
+.support-card-container{
+    flex:1;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+
+.support-item{
+    background:#f7f9fc;
+    border-left:4px solid #2952cc;
+    padding:10px;
+    border-radius:6px;
+    font-size:12px;
+}
+
+
+.support-card-layout{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+}
+
+
+.support-left{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+
+.support-right{
+    min-width:190px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:10px;
+}
+
+
+.support-title{
+    font-weight:bold;
+    color:#1f3c88;
+    margin-bottom:4px;
+}
+
+
+.support-description{
+    font-size:12px;
+    color:#444;
+    line-height:1.4;
+}
+
+
+.support-assignment{
+    font-size:11px;
+    color:#666;
+    text-align:right;
+}
+
+
+.support-assignment-section{
+    display:flex;
+    gap:5px;
+}
+
+
+.support-assignment-input{
+    width:120px;
+}
+
+
+.support-buttons{
+    display:flex;
+    gap:6px;
+}
+
+
+/* ==========================================================
+   SUPPORT POPUP
+   ========================================================== */
+
+.support-popup{
+    width:500px;
+    position:relative;
+}
+
+
+.support-popup-tabs{
+    display:flex;
+    gap:0;
+    border-bottom:2px solid #2952cc;
+    margin-bottom:15px;
+}
+
+
+.support-tab{
+    flex:1;
+    border:none;
+    border-radius:0;
+    background:#2952cc;
+    color:white;
+    padding:10px;
+    cursor:pointer;
+}
+
+
+.support-tab.active{
+    background:#1f3c88;
+    color:white;
+}
+
+
+.support-popup-content h3{
+    margin-top:0;
+}
+
+
+.support-dof-section{
+    margin-top:15px;
+}
+
+
+.support-dof-section > label,
+.support-deflection-values > label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+
+.support-dof-grid{
+    display:flex;
+    gap:25px;
+    padding:10px;
+    background:#f7f9fc;
+    border:1px solid #dce3f0;
+    border-radius:6px;
+}
+
+
+.support-dof-grid label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+
+.support-deflection-values{
+    margin-top:15px;
+    padding:12px;
+    background:#f7f9fc;
+    border:1px solid #dce3f0;
+    border-radius:6px;
+}
+
+
+.support-value-row{
+    display:flex;
+    gap:12px;
+}
+
+
+.support-value-row label{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    flex:1;
+}
+
+
+.support-value-row input{
+    width:100%;
+    box-sizing:border-box;
+}
+
+
+.support-deflection-values small{
+    display:block;
+    margin-top:8px;
+    color:#666;
+}

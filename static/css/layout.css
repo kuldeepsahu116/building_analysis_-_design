@@ -1,0 +1,111 @@
+/* ==========================================================
+   LAYOUT.CSS
+   Main application layout
+   ========================================================== */
+
+
+/* ==========================================================
+   1. MAIN APPLICATION LAYOUT
+   ========================================================== */
+
+.main-container{
+    display:flex;
+    gap:10px;
+    padding:10px;
+    /* Full screen height minus header + navigation */
+    height:calc(100vh - 120px);
+    box-sizing:border-box;
+}
+
+
+/* ==========================================================
+   2. LEFT PANEL
+   ========================================================== */
+
+.left-panel{
+    width:50%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+
+/* ==========================================================
+   3. RIGHT PANEL
+   ========================================================== */
+
+.right-panel{
+    width:50%;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    gap:10px;
+    min-height:0;
+}
+
+
+/* ==========================================================
+   6. PAGE CONTAINER
+   ========================================================== */
+
+.page{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    box-sizing:border-box;
+}
+
+
+/* ==========================================================
+   7. PAGE 1 LAYOUT
+   ========================================================== */
+/*👉
+.page1-top{
+    display:flex;
+    gap:10px;
+    height:calc(50% - 10px);
+    min-height:0;
+    margin-bottom:10px;
+}
+
+
+.page1-top .card{
+    width:50%;
+    min-height:0;
+}
+
+
+.members-card{
+    height:calc(50% - 10px);
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+👈*/
+
+/* ==========================================================
+   8. PAGE 3 LAYOUT
+   ========================================================== */
+
+.page3-half{
+    height:calc(50% - 20px);
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    margin-bottom:10px;
+}
+
+
+/* ==========================================================
+   9. ACTION BUTTON AREA
+   ========================================================== */
+
+#actionButtonArea{
+    margin-top:auto;
+    display:flex;
+    justify-content:center;
+    gap:20px;
+}

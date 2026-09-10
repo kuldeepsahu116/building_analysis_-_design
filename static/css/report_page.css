@@ -1,0 +1,296 @@
+/* ==========================================================
+   REPORT_PAGE.CSS
+   Report Page UI
+   ========================================================== */
+
+
+/* ==========================================================
+   1. REPORT PAGE LAYOUT
+   ========================================================== */
+
+.report-layout{
+    display:flex;
+    gap:20px;
+    height:100%;
+    min-height:0;
+}
+
+
+/* ==========================================================
+   2. LEFT SECTION
+   ========================================================== */
+
+.report-left{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+
+/* ==========================================================
+   3. REPORT STYLE CARD
+   ========================================================== */
+
+.report-style{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:80px;
+    width:100%;
+}
+
+.report-style label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:600;
+    white-space:nowrap;
+}
+
+
+/* ==========================================================
+   4. LOWER SECTION
+   ========================================================== */
+
+.report-bottom{
+    display:flex;
+    gap:2%;
+    flex:1;
+    min-height:0;
+}
+
+
+/* ==========================================================
+   5. NAVIGATION CARD
+   ========================================================== */
+
+.report-sidebar{
+    width:30%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;   
+    gap:1.2%;
+    padding:2%;
+
+    background:white;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+#tabularSidebar,
+#memberSidebar{
+
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:1.2%;
+
+}
+
+#memberSidebar{
+
+    display:none;
+
+}
+
+
+/* ==========================================================
+   6. REPORT NAVIGATION BUTTONS AND SELECT ALL BUTTON
+   ========================================================== */
+
+.report-nav-btn{
+    width:100%;
+    height:9%;
+    min-height:30px;
+    padding:0 6%;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+
+
+    font-weight:600;
+    border:none;
+    border-radius:8px;
+    background:#799df7;
+    box-sizing:border-box;
+    transition:.2s;
+}
+
+.report-nav-btn:hover{
+    background:#18398d;
+}
+
+.active-report-tab{
+    background:#18398d;
+    color:white;
+}
+
+
+.report-select-all,
+.member-report-chkbox{
+    width:100%;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    padding:10px 6%;
+    border-radius:8px;
+    background:#799df7;
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    box-sizing:border-box;
+    transition:0.2s;
+}
+
+.report-select-all:hover,
+.member-report-chkbox:hover{
+    background:#18398d;
+}
+
+.report-select-all input,
+.member-report-chkbox input{
+    width:18px;
+    height:18px;
+    cursor:pointer;
+    flex-shrink:0;
+}
+
+.member-report-chkbox{
+    margin-top: 3%;
+}
+
+
+/* ==========================================================
+   7. REPORT SELECTION CARD
+   ========================================================== */
+
+.report-selection-panel{
+    flex:1;
+    background:white;
+    border-radius:10px;
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+/* ==========================================================
+   8. SELECTION HEADER
+   ========================================================== */
+
+.report-selection-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom:10px;
+    border-bottom:1px solid #ddd;
+}
+
+
+/* ==========================================================
+   9. SELECTION CONTENT
+   ========================================================== */
+
+.report-selection-content{
+    flex:1;
+    overflow:auto;
+    margin-top:15px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+
+/* ==========================================================
+   10. REPORT ITEMS
+   ========================================================== */
+
+.report-item{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.report-item:hover{
+    background:#f5f8ff;
+}
+
+.report-item input[type="checkbox"]{
+    width:18px;
+    height:18px;
+
+    margin:0;
+
+    flex-shrink:0;
+}
+
+/* ==========================================================
+   11. REPORT ACTIONS
+   ========================================================== */
+
+.report-actions{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+
+/* ==========================================================
+   12. REPORT PREVIEW CARD
+   ========================================================== */
+
+.report-preview-card{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#reportPreview{
+    box-sizing:border-box;
+    flex:1;
+    height:87%;
+    min-height:0;
+    overflow-y:scroll;
+    overflow-x:auto;
+
+    padding:15px;
+    padding-bottom:24px;
+    border:1px solid #ddd;
+    background:white;
+    display:block;
+}
+
+
+/* ==========================================================
+   13. REPORT PREVIEW SCROLLBAR
+   ========================================================== */
+
+#reportPreview::-webkit-scrollbar{
+    width:10px;
+}
+
+#reportPreview::-webkit-scrollbar-track{
+    background:#f1f1f1;
+}
+
+#reportPreview::-webkit-scrollbar-thumb{
+    background:#888;
+    border-radius:5px;
+}
+
+#reportPreview::-webkit-scrollbar-thumb:hover{
+    background:#555;
+}

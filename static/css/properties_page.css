@@ -1,0 +1,538 @@
+/* ==========================================================
+   PROPERTIES_PAGE.CSS
+   Material & Section Properties
+   ========================================================== */
+
+
+/* ==========================================================
+   1. PROPERTIES PAGE
+   ========================================================== */
+
+.properties-page{
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    height:100%;
+    min-height:0;
+}
+
+
+/* ==========================================================
+   2. PROPERTY CARDS
+   ========================================================== */
+
+.properties-card{
+
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+
+/* ==========================================================
+   3. PROPERTY CARD CONTAINER
+   ========================================================== */
+
+.property-card-container{
+
+    flex:1;
+    min-height:0;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+}
+
+
+/* ==========================================================
+   4. PROPERTY ITEM
+   Same visual language as Load cards
+   ========================================================== */
+
+.property-card-container .load-item{
+
+    background:#f7f9fc;
+    border-left:4px solid #2952cc;
+    padding:10px;
+    border-radius:6px;
+    font-size:12px;
+    flex-shrink:0;
+}
+
+
+/* ==========================================================
+   5. PROPERTY CARD LAYOUT
+   ========================================================== */
+
+.property-card-container .load-card-layout{
+
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+
+}
+
+
+/* ==========================================================
+   6. LEFT SIDE
+   ========================================================== */
+
+.property-card-container .load-left{
+
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+
+}
+
+
+/* ==========================================================
+   7. RIGHT SIDE
+   ========================================================== */
+
+.property-card-container .load-right{
+
+    min-width:190px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:10px;
+
+}
+
+
+/* ==========================================================
+   8. MATERIAL / SECTION TITLE
+   ========================================================== */
+
+.material-title,
+.section-title,
+.beta-title{
+
+    font-weight:bold;
+    color:#1f3c88;
+    margin-bottom:4px;
+}
+
+
+/* ==========================================================
+   9. MATERIAL / SECTION DESCRIPTION
+   ========================================================== */
+
+.material-description,
+.section-description{
+
+    font-size:12px;
+    color:#444;
+    line-height:1.5;
+
+}
+
+
+/* ==========================================================
+   10. ASSIGNMENT SECTION
+   ========================================================== */
+
+.property-card-container .load-assignment-section{
+
+    display:flex;
+    gap:5px;
+    align-items:center;
+
+}
+
+
+/* ==========================================================
+   11. ASSIGNMENT INPUT
+   ========================================================== */
+
+.material-assignment-input,
+.section-assignment-input,
+.beta-assignment-input{
+
+    width:120px;
+    box-sizing:border-box;
+
+}
+
+
+/* ==========================================================
+   12. ASSIGN BUTTON
+   ========================================================== */
+
+.assign-material-btn,
+.assign-section-btn,
+.assign-beta-btn{
+
+    margin-top:0;
+    padding:5px 8px;
+    white-space:nowrap;
+
+}
+
+
+/* ==========================================================
+   13. CURRENT ASSIGNMENT
+   ========================================================== */
+
+.material-assignment,
+.section-assignment{
+
+    font-size:11px;
+    color:#666;
+    text-align:right;
+    max-width:250px;
+    word-break:break-word;
+
+}
+
+
+/* ==========================================================
+   14. ACTION BUTTONS
+   ========================================================== */
+
+.property-card-container .load-buttons{
+
+    display:flex;
+    gap:6px;
+
+}
+
+
+/* ==========================================================
+   15. PROPERTY ADD BUTTON
+   ========================================================== */
+
+.properties-card > button{
+
+    flex-shrink:0;
+
+}
+
+
+/* ==========================================================
+   16. POPUP INPUT PANEL
+   ========================================================== */
+
+#materialPopup .popup-input-panel,
+#sectionPopup .popup-input-panel,
+#betaPopup .popup-input-panel{
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
+}
+
+
+/* ==========================================================
+   17. POPUP INPUTS
+   ========================================================== */
+
+#materialPopup input,
+#sectionPopup input,
+#betaPopup input{
+
+    box-sizing:border-box;
+
+}
+
+
+/* ==========================================================
+   18. POPUP BUTTONS
+   ========================================================== */
+
+#materialPopup .popup-buttons,
+#sectionPopup .popup-buttons,
+#betaPopup .popup-buttons{
+
+    display:flex;
+    gap:10px;
+    margin-top:8px;
+
+}
+
+
+/* ==========================================================
+   19. PROPERTY POPUP
+   ========================================================== */
+
+#materialPopup .popup-grid,
+#sectionPopup .popup-grid,
+#betaPopup .popup-grid{
+
+    width:700px;
+    max-width:90vw;
+
+}
+
+
+/* ==========================================================
+   20. PROPERTY POPUP INSTRUCTIONS
+   ========================================================== */
+
+#materialPopup .load-instruction-panel,
+#sectionPopup .load-instruction-panel,
+#betaPopup .load-instruction-panel{
+
+    min-height:250px;
+
+}
+
+
+/* ==========================================================
+   21. EMPTY STATE
+   ========================================================== */
+
+.property-card-container:empty::before{
+
+    content:"No properties defined";
+    display:block;
+    padding:20px;
+    text-align:center;
+    color:#888;
+    font-size:12px;
+
+}
+
+.property-card-container
+.load-assignment-section
+input{
+
+    width:120px;
+
+}
+
+
+/* ==========================================================
+   SECTION SHAPE INPUT
+   ========================================================== */
+
+#sectionGeometryFields{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:8px;
+
+    margin-top:8px;
+}
+
+
+/* ==========================================================
+   CALCULATED SECTION PROPERTIES
+   ========================================================== */
+
+.section-calculated-properties{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:8px;
+
+    margin-top:12px;
+}
+
+
+.section-calculated-properties input{
+
+    background:#f3f3f3;
+
+    cursor:not-allowed;
+}
+
+
+/* ==========================================================
+   SECTION FIGURE
+   ========================================================== */
+
+.section-shape-figure{
+
+    width:100%;
+
+    min-height:180px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    margin:10px 0;
+}
+
+
+.section-svg{
+
+    width:100%;
+
+    max-width:230px;
+
+    height:180px;
+}
+
+
+.section-shape-instructions{
+
+    font-size:12px;
+
+    line-height:1.55;
+
+    margin-top:8px;
+}
+
+
+/* ==========================================================
+   CUSTOM SECTION
+   ========================================================== */
+
+.custom-section-note{
+
+    grid-column:1 / -1;
+
+    font-size:12px;
+
+    color:#555;
+
+    padding:8px;
+
+    background:#f5f5f5;
+
+    border-radius:4px;
+}
+
+
+.custom-section-figure{
+
+    text-align:center;
+
+    font-size:12px;
+
+    color:#555;
+
+    padding:20px;
+}
+
+
+.custom-section-symbol{
+
+    width:100px;
+
+    height:70px;
+
+    margin:0 auto 15px;
+
+    border:2px dashed #555;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:600;
+
+    font-size:14px;
+}
+
+
+
+/* ==========================================================
+   BETA ANGLE
+   ========================================================== */
+
+.beta-title{
+    font-weight:bold;
+    color:#1f3c88;
+    margin-bottom:4px;
+}
+
+.beta-description{
+    font-size:12px;
+    color:#444;
+    line-height:1.5;
+}
+
+.beta-assignment{
+    font-size:11px;
+    color:#666;
+    text-align:right;
+    max-width:250px;
+    word-break:break-word;
+}
+
+.beta-assignment-input{
+    width:120px;
+    box-sizing:border-box;
+}
+
+.assign-beta-btn{
+    margin-top:0;
+    padding:5px 8px;
+    white-space:nowrap;
+}
+
+
+/* ==========================================================
+   SECTION / BETA PROPERTY TABS
+   ========================================================== */
+
+.property-tabs{
+    display:flex;
+    gap:0;
+    flex-shrink:0;
+    border-bottom:1px solid #ccc;
+}
+
+.property-tab{
+    margin-top:0;
+    padding:7px 16px;
+    background:#e9edf5;
+    color:#444;
+    border:none;
+    cursor:pointer;
+    font-size:12px;
+    border-radius:5px 5px 0 0;
+}
+
+.property-tab:hover{
+    background:#dce3f0;
+    transform:none;
+}
+
+.property-tab.active{
+    background:#1f3c88;
+    color:white;
+}
+
+
+/* ==========================================================
+   SECTION / BETA CONTENT
+   ========================================================== */
+
+#sectionPropertyContent,
+#betaPropertyContent{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+}
+
+
+/* ADD BUTTON INSIDE SECTION / BETA CONTENT */
+
+#sectionPropertyContent > button,
+#betaPropertyContent > button{
+    flex-shrink:0;
+}

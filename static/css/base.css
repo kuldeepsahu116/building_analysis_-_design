@@ -1,0 +1,293 @@
+/* ==========================================================
+   BASE.CSS
+   Global styles shared across the entire application
+   ========================================================== */
+
+
+/* ==========================================================
+   1. BODY
+   ========================================================== */
+
+body{
+    margin:0;
+    font-family:Segoe UI, Arial;
+    background:#eef2f7;
+}
+
+
+/* ==========================================================
+   2. CARD COMPONENT
+   ========================================================== */
+
+.card{
+    background:white;
+    padding:10px;
+    border-radius:6px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.08);
+    transition:all 0.2s ease;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+}
+
+.card:focus-within{
+    box-shadow:0 0 0 2px #2952cc;
+}
+
+
+/* ==========================================================
+   3. HEADINGS
+   ========================================================== */
+
+h4{
+    margin:0 0 5px;
+    font-size:14px;
+}
+
+
+/* ==========================================================
+   4. INPUTS
+   ========================================================== */
+
+input,
+textarea,
+select{
+    width:100%;
+    font-size:12px;
+    padding:4px;
+    border:1px solid #ccc;
+}
+
+input:hover,
+textarea:hover,
+select:hover{
+    border:1px solid #2952cc;
+}
+
+
+/* ==========================================================
+   5. BUTTONS
+   ========================================================== */
+
+button{
+    margin-top:5px;
+    padding:6px;
+    font-size:12px;
+    background:#2952cc;
+    color:white;
+    border:none;
+    cursor:pointer;
+    transition:all 0.2s ease;
+}
+
+button:hover{
+    background:#163a8c;
+    transform:scale(1.02);
+}
+
+button:active{
+    transform:scale(0.97);
+}
+
+.delete-btn{
+    background:#e74c3c;
+    color:white;
+    border:none;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.delete-btn:hover{
+    background:#c0392b;
+}
+
+
+/* ==========================================================
+   6. TABLES
+   ========================================================== */
+
+.input-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.input-table th{
+    background:#2952cc;
+    color:white;
+    padding:4px;
+    font-size:12px;
+}
+
+.input-table td{
+    padding:3px;
+    font-size:12px;
+}
+
+.result-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:15px;
+}
+
+.result-table th{
+    background:#1f3c88;
+    color:white;
+    padding:5px;
+    font-size:12px;
+    border-bottom:1px solid #eee;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+.result-table td{
+    padding:4px;
+    border-bottom:1px solid #eee;
+    text-align:center;
+    font-size:12px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+
+/* ==========================================================
+   7. TABLE WRAPPER
+   ========================================================== */
+
+.table-wrapper{
+    flex:1;
+    min-height:0;
+    overflow:auto;
+    position:relative;
+}
+
+.table-wrapper::-webkit-scrollbar{
+    width:8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb{
+    background:#bbb;
+    border-radius:4px;
+}
+
+.input-table th,
+.result-table th{
+    position:sticky;
+    top:0;
+    z-index:2;
+    background:#2952cc;
+    color:white;
+}
+
+
+/* ==========================================================
+   8. LOADING SPINNER
+   ========================================================== */
+
+.spinner{
+    width:40px;
+    height:40px;
+    border:5px solid #ddd;
+    border-top:5px solid #2952cc;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin{
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+
+/* ==========================================================
+   9. RESULT PLACEHOLDER
+   ========================================================== */
+
+#resultPlaceholder{
+    text-align:center;
+    padding:20px;
+    color:#555;
+}
+
+
+/* ==========================================================
+   ASSIGN ALL BUTTON
+   ========================================================== */
+
+.assign-all-btn{
+    background:#1f3c88;
+    color:white;
+    margin-top:0;
+    padding:5px 8px;
+    white-space:nowrap;
+}
+
+.assign-all-btn:hover{
+    background:#163a8c;
+}
+
+
+/* ==========================================================
+   ASSIGNMENT BUTTON GROUP
+   ========================================================== */
+
+.load-assignment-section,
+.support-assignment-section{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+
+.load-assignment-section button,
+.support-assignment-section button{
+    flex-shrink:0;
+}
+
+/* ==========================================================
+   ASSIGN ALL CONFIRMATION POPUP
+   ========================================================== */
+
+.assign-confirm-popup{
+    position: fixed;
+    left: 25%;
+    transform: translate(-50%, 0%);
+    width:360px;
+    max-width:90vw;
+    box-sizing:border-box;
+}
+
+
+.assign-confirm-popup h3{
+    margin:0 0 8px;
+    color:#1f3c88;
+}
+
+
+.assign-confirm-popup p{
+    margin:5px 0 15px;
+    font-size:13px;
+    line-height:1.5;
+    color:#444;
+}
+
+
+.assign-confirm-popup .popup-buttons{
+    justify-content:flex-end;
+}
+
+
+.assign-confirm-popup #confirmAssignAllBtn{
+    background:#2952cc;
+}
+
+
+.assign-confirm-popup #confirmAssignAllBtn:hover{
+    background:#163a8c;
+}

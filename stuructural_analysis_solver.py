@@ -1,0 +1,1381 @@
+from dataclasses import dataclass, field
+import numpy as np
+
+
+# ----------------------------
+# MEMBER CLASS DEFINITION
+# ----------------------------
+@dataclass
+class Member:
+    name: int
+    start_node: int
+    end_node: int
+    E: float
+    G: float
+    A: float
+    I_yy: float
+    I_zz: float
+    J: float
+    beta: float = 0.0
+
+    # LOAD STORAGE
+    member_loads: list = field(default_factory=list)
+
+    # GEOMETRIC PROPERTIES 
+    start_point: tuple = field(init=False)
+    end_point: tuple = field(init=False)
+    L: float = field(init=False)
+
+    ex: float = field(init=False)
+    ey: float = field(init=False)
+    ez: float = field(init=False)
+
+    # MATRICES
+    k_local: np.ndarray = field(init=False)
+    k_global: np.ndarray = field(init=False)
+
+    T: np.ndarray = field(init=False)
+
+    # MEMBER END FORCES
+    F_Fixed_local: np.ndarray = field(init=False)
+    F_Fixed_Global: np.ndarray = field(init=False)
+
+    # SUPPORT DISPLACEMENT 
+    support_displacements_global: np.ndarray = field(init=False)
+    support_displacements_local: np.ndarray = field(init=False)
+
+    # MEMBER RESULTS
+    f_memb_force_local: np.ndarray = field(init=False)
+    d_local: np.ndarray = field(init=False)
+
+    # POST-PROCESSING STORAGE
+    shear_x: list = field(default_factory=list)
+    shear_V: dict = field(default_factory=dict)
+
+    axial_x: list = field(default_factory=list)
+    axial_N: list = field(default_factory=list)
+
+    moment_x: list = field(default_factory=list)
+    moment_M: dict = field(default_factory=dict)
+
+    torsion_x: list = field(default_factory=list)
+    torsion_T: list = field(default_factory=list)
+
+    deflection_position: list = field(default_factory=list)
+
+    deflection_local_x: list = field(default_factory=list)
+    deflection_local_y: list = field(default_factory=list)
+    deflection_local_z: list = field(default_factory=list)
+
+    deflection_x: list = field(default_factory=list)
+    deflection_y: list = field(default_factory=list)
+    deflection_z: list = field(default_factory=list)
+
+    # EXTREME VALUES
+    max_shear: dict = field(default_factory=dict)
+    x_max_shear: dict = field(default_factory=dict)
+    min_shear: dict = field(default_factory=dict)
+    x_min_shear: dict = field(default_factory=dict)
+
+    max_axial: float = 0.0
+    x_max_axial: float = 0.0
+    min_axial: float = 0.0
+    x_min_axial: float = 0.0
+
+    max_moment: dict = field(default_factory=dict)
+    x_max_moment: dict = field(default_factory=dict)
+    min_moment: dict = field(default_factory=dict)
+    x_min_moment: dict = field(default_factory=dict)
+
+    max_torsion: float = 0.0
+    x_max_torsion: float = 0.0
+    min_torsion: float = 0.0
+    x_min_torsion: float = 0.0
+
+    max_deflection: dict = field(default_factory=dict)
+    x_max_deflection: dict = field(default_factory=dict)
+    min_deflection: dict = field(default_factory=dict)
+    x_min_deflection: dict = field(default_factory=dict)
+
+    # ============================
+    # LOAD DEFINITIONS
+    # ============================
+    
+    # POINT LOAD
+    def add_point_load(self, P, a, direction):
+
+        self.member_loads.append({
+            "type": "point",
+            "P": P,   # load
+            "a": a,   # distance from start
+            "direction": direction  # direction of the point load
+        })
+
+    # UDL
+    def add_udl(self, w, direction):
+
+        self.member_loads.append({
+            "type": "udl",
+            "w": w,   # load intensity
+            "direction": direction  # direction of the point load
+        })
+
+    # PARTIAL UDL
+    def add_partial_udl(self, w, a, b, direction):
+
+        self.member_loads.append({
+            "type": "partial_udl",
+            "w": w,   # load intensity  
+            "a": a,   # start distance
+            "b": b,    # end distance
+            "direction": direction  # direction of the point load
+        })
+
+    # TRAPEZOIDAL LOAD
+    def add_trapezoidal_load(self, w1, w2, direction):
+
+        self.member_loads.append({
+            "type": "trapezoidal",
+            "w1": w1,   # start intensity
+            "w2": w2,    # end intensity
+            "direction": direction  # direction of the point load
+        })
+
+    # MEMBER MOMENT
+    def add_moment_load(self, M, a, direction):
+
+        self.member_loads.append({
+            "type": "moment",
+            "M": M,   # applied moment
+            "a": a,    # distance from start
+            "direction": direction  # direction of the point load
+        })
+
+    # ----------------------------
+    # INITIALIZATION
+    # ----------------------------
+    def initialize(self, nodes):
+
+        self.compute_geometry(nodes)
+
+        self.compute_transformation_matrix()
+
+        self.compute_local_stiffness()
+
+        self.compute_global_stiffness()
+
+        self.support_displacements_local = (self.T @ self.support_displacements_global)
+
+        self.compute_fixed_end_forces()
+
+
+    # GEOMETRY
+    def compute_geometry(self, nodes):
+
+        if self.start_node not in nodes or self.end_node not in nodes:
+            raise ValueError(f"Invalid node in member {self.name}")
+
+        self.start_point = nodes[self.start_node]
+        self.end_point = nodes[self.end_node]
+
+        x1, y1, z1 = self.start_point
+        x2, y2, z2 = self.end_point
+
+        dx = x2 - x1
+        dy = y2 - y1
+        dz = z2 - z1
+
+        self.L = np.sqrt(dx**2 + dy**2 + dz**2)
+        if self.L == 0:
+            raise ValueError("Zero length member detected")
+
+        self.ex = dx / self.L
+        self.ey = dy / self.L
+        self.ez = dz / self.L
+
+    # LOCAL COORDINATE STIFFNESS 
+    def compute_local_stiffness(self):
+
+        E = self.E
+        G = self.G
+        A = self.A
+        I_yy = self.I_yy
+        I_zz = self.I_zz
+        J = self.J
+        L = self.L
+
+        # Axial stiffness
+        EA_L = E * A / L
+
+        # Torsional stiffness
+        GJ_L = G * J / L
+
+        # Bending about local z-axis (v, theta_z)
+        k1_z = 12 * E * I_zz / L**3
+        k2_z = 6 * E * I_zz / L**2
+        k3_z = 4 * E * I_zz / L
+        k4_z = 2 * E * I_zz / L
+
+        # Bending about local y-axis (w, theta_y)
+        k1_y = 12 * E * I_yy / L**3
+        k2_y = 6 * E * I_yy / L**2
+        k3_y = 4 * E * I_yy / L
+        k4_y = 2 * E * I_yy / L
+
+        self.k_local = np.array([
+
+            # u1
+            [ EA_L,   0,       0,       0,       0,       0,
+            -EA_L,   0,       0,       0,       0,       0],
+
+            # v1
+            [ 0,      k1_z,    0,       0,       0,       k2_z,
+            0,     -k1_z,    0,       0,       0,       k2_z],
+
+            # w1
+            [ 0,      0,       k1_y,    0,      -k2_y,    0,
+            0,      0,      -k1_y,    0,      -k2_y,    0],
+
+            # theta_x1 (torsion)
+            [ 0,      0,       0,       GJ_L,    0,       0,
+            0,      0,       0,      -GJ_L,    0,       0],
+
+            # theta_y1
+            [ 0,      0,      -k2_y,    0,       k3_y,    0,
+            0,      0,       k2_y,    0,       k4_y,    0],
+
+            # theta_z1
+            [ 0,      k2_z,    0,       0,       0,       k3_z,
+            0,     -k2_z,    0,       0,       0,       k4_z],
+
+            # u2
+            [-EA_L,   0,       0,       0,       0,       0,
+            EA_L,   0,       0,       0,       0,       0],
+
+            # v2
+            [ 0,     -k1_z,    0,       0,       0,      -k2_z,
+            0,      k1_z,    0,       0,       0,      -k2_z],
+
+            # w2
+            [ 0,      0,      -k1_y,    0,       k2_y,    0,
+            0,      0,       k1_y,    0,       k2_y,    0],
+
+            # theta_x2 (torsion)
+            [ 0,      0,       0,      -GJ_L,    0,       0,
+            0,      0,       0,       GJ_L,    0,       0],
+
+            # theta_y2
+            [ 0,      0,      -k2_y,    0,       k4_y,    0,
+            0,      0,       k2_y,    0,       k3_y,    0],
+
+            # theta_z2
+            [ 0,      k2_z,    0,       0,       0,       k4_z,
+            0,     -k2_z,    0,       0,       0,       k3_z]
+
+        ], dtype=float)
+
+    # TRANSFORMATION MATRIX 
+    def compute_transformation_matrix(self):
+        # NODE COORDINATES
+        xi, yi, zi = self.start_point
+        xj, yj, zj = self.end_point
+
+        # LOCAL X-AXIS IN GLOBAL COORDINATES
+        dx = xj - xi
+        dy = yj - yi
+        dz = zj - zi
+
+        L = np.sqrt(dx**2 + dy**2 + dz**2)
+
+        if L <= 0:
+            raise ValueError("Element length must be greater than zero.")
+
+        local_x = np.array([dx, dy, dz], dtype=float) / L
+
+        # CHOOSE REFERENCE VECTOR
+        # Normally use Global Y If local X is too close to Global Y,use Global X instead.
+
+        cos_theta_y = np.dot(local_x, np.array([0.0, 1.0, 0.0]))
+
+        if cos_theta_y**2 > 0.5:
+            # Use Global X as reference
+            reference = np.array([1.0, 0.0, 0.0])
+
+        else:
+            # Use Global Y as reference
+            reference = np.array([0.0, 1.0, 0.0])
+
+
+        # LOCAL Z-AXIS IN GLOBAL COORDINATES
+        local_z = np.cross(local_x, reference)
+
+        local_z_norm = np.linalg.norm(local_z)
+
+        if local_z_norm < 1e-12:
+            raise ValueError("Unable to construct local coordinate system.")
+
+        local_z = local_z / local_z_norm
+
+
+        # LOCAL Y-AXIS IN GLOBAL COORDINATES
+        local_y = np.cross(local_z, local_x)
+
+        local_y = local_y / np.linalg.norm(local_y)
+
+        # BETA ANGLE ROTATION ABOUT LOCAL X-AXIS
+        beta_rad = np.deg2rad(self.beta)
+
+        cos_beta = np.cos(beta_rad)
+        sin_beta = np.sin(beta_rad)
+
+        local_y_rotated = (
+            cos_beta * local_y
+            + sin_beta * local_z)
+        
+        local_z_rotated = (
+            -sin_beta * local_y
+            + cos_beta * local_z)
+
+        local_y = local_y_rotated
+        local_z = local_z_rotated
+
+
+        # DIRECTION COSINE MATRIX
+        R = np.array([local_x, local_y, local_z])
+
+        # 12 × 12 TRANSFORMATION MATRIX
+        T = np.zeros((12, 12))
+
+        T[0:3, 0:3] = R
+        T[3:6, 3:6] = R
+
+        T[6:9, 6:9] = R
+        T[9:12, 9:12] = R
+
+
+        # Store results
+        self.L = L
+
+        self.local_x = local_x
+        self.local_y = local_y
+        self.local_z = local_z
+
+        self.R = R
+        self.T = T
+
+    # GLOBAL COORDINATE STIFFNESS
+    def compute_global_stiffness(self):
+
+        self.k_global = self.T.T @ self.k_local @ self.T
+
+    # --------------------------
+    # FIXED END FORCES 
+    # --------------------------
+    def compute_fixed_end_forces(self):
+
+        L = self.L
+
+        self.F_Fixed_local = np.zeros((12,1))
+
+        def add_bending_load(F_plane, direction):
+
+            if direction == "y":
+                # Bending in local X-Y plane [v1, rz1, v2, rz2]
+                indices = [1, 5, 7, 11]
+
+                for i, index in enumerate(indices):
+                    self.F_Fixed_local[index, 0] += F_plane[i, 0]
+
+
+            elif direction == "z":
+                # Bending in local X-Z plane [w1, ry1, w2, ry2]
+                indices = [2, 4, 8, 10]
+
+                F_z_plane = np.array([
+                    [F_plane[0, 0]],
+                    [-F_plane[1, 0]],
+                    [F_plane[2, 0]],
+                    [-F_plane[3, 0]]])
+
+                for i, index in enumerate(indices):
+                    self.F_Fixed_local[index, 0] += F_z_plane[i, 0]
+
+
+            else:
+                raise ValueError(f"Invalid load direction: {direction}. ""Use 'y' or 'z'.")
+
+        
+        for load in self.member_loads:
+            direction =  load["direction"]
+
+            # POINT LOAD
+            if load["type"] == "point":
+                P = -load["P"]
+                a = load["a"]
+                b = L - a
+
+                F = np.array([
+                    [P*b**2*(3*a+b)/L**3],
+                    [P*a*b**2/L**2],
+                    [P*a**2*(a+3*b)/L**3],
+                    [-P*a**2*b/L**2]
+                ])
+
+                add_bending_load(F, direction)
+
+            # UDL
+            elif load["type"] == "udl":
+
+                w = -load["w"]
+
+                F = np.array([
+                    [w*L/2],
+                    [w*L**2/12],
+                    [w*L/2],
+                    [-w*L**2/12]
+                ])
+
+                add_bending_load(F, direction)
+
+            # PARTIAL UDL
+            elif load["type"] == "partial_udl":
+
+                w = -load["w"]
+                a = load["a"]
+                b = load["b"]
+
+                length = b - a
+
+                W = w * length
+
+                R1 = (w / (2 * L**3)) * (2 * L**3 * (b - a) - 2 * L * (b**3 - a**3) + (b**4 - a**4))
+                R2 = W - R1
+                M1 = (w / (12 * L**2)) * (b**2 * (6 * L**2 - 8 * L * b + 3 * b**2) - 
+                                        a**2 * (6 * L**2 - 8 * L * a + 3 * a**2))
+                M2 = (-w / (12 * L**2)) * (b**3 * (4 * L - 3 * b) - a**3 * (4 * L - 3 * a))
+                F = np.array([
+                    [R1],
+                    [M1],
+                    [R2],
+                    [M2]
+                ])
+
+                add_bending_load(F, direction)
+
+            # TRAPEZOIDAL LOAD
+            elif load["type"] == "trapezoidal":
+
+                w1 = -load["w1"]
+                w2 = -load["w2"]
+
+                F = np.array([
+                    [(L/20)*(7*w1+3*w2)],
+                    [(L**2/60)*(3*w1+2*w2)],
+                    [(L/20)*(3*w1+7*w2)],
+                    [-(L**2/60)*(2*w1+3*w2)]
+                ])
+
+                add_bending_load(F, direction)
+
+
+            # MEMBER MOMENT
+            elif load["type"] == "moment":
+
+                M = load["M"]
+                a = load["a"]
+
+                b = L - a
+
+                F = np.array([
+                    [-6*M*a*b/L**3],
+                    [M*b*(2*a-b)/L**2],
+                    [6*M*a*b/L**3],
+                    [M*a*(2*b-a)/L**2]
+                ])
+
+                if direction == "z":
+                    add_bending_load(F, "y")
+
+                elif direction == "y":
+                    add_bending_load(F, "z")
+
+        # Fixed-end forces due to support movement
+        if np.any(self.support_displacements_local):
+
+            F_support_local = self.k_local @ self.support_displacements_local
+
+            self.F_Fixed_local += F_support_local
+
+        #Transform to global coordinates
+        self.F_Fixed_Global = self.T.T @ self.F_Fixed_local
+
+        self.f_memb_force_local = np.zeros((12,1))
+        self.d_local = np.zeros((12,1))
+
+    def add_support_displacement_global(self,
+        ux1=0.0, uy1=0.0, uz1=0.0, rx1=0.0, ry1=0.0, rz1=0.0,
+        ux2=0.0, uy2=0.0, uz2=0.0, rx2=0.0, ry2=0.0, rz2=0.0):
+
+        self.support_displacements_global = np.array([
+        [ux1], [uy1], [uz1], [rx1], [ry1], [rz1],
+        [ux2], [uy2], [uz2], [rx2], [ry2], [rz2]], dtype=float)
+
+
+    # ============================
+    # POST-PROCESSING 
+    # ============================
+
+    # SHEAR FORCE DISTRIBUTION
+    def compute_shear_distribution(self,n_points=40):
+
+        L = self.L
+        x_vals = np.linspace(0,L,n_points)
+
+        # LOCAL MEMBER END FORCES
+        # Local Y direction
+        V1 = {
+            "y": self.f_memb_force_local[1, 0],
+            "z": self.f_memb_force_local[2, 0]}
+
+        # End shear force at Node 2
+        V2 = {
+            "y": self.f_memb_force_local[7, 0],
+            "z": self.f_memb_force_local[8, 0]}
+
+        for direction in ("y", "z"):
+
+            shear_values = []
+        
+            for x in x_vals:
+                v = V1[direction]
+
+                # UDL
+                for load in self.member_loads:
+                    if load["direction"] != direction:
+                        continue
+
+                    if load["type"] == "udl":
+                        w = -load["w"]
+                        v -= w*x
+
+                    elif load["type"] == "partial_udl":
+                        w = -load["w"]
+                        a = load["a"]
+                        b = load["b"]
+
+                        if x <= a:
+                            pass
+                        elif x <= b:
+                            v -= w*(x-a)
+                        else:
+                            v -= w*(b-a)
+
+                    elif load["type"] == "point":
+                        P = -load["P"]
+                        a = load["a"]
+
+                        if x >= a:
+                            v -= P
+
+                    elif load["type"] == "trapezoidal":
+                        w1 = -load["w1"]
+                        w2 = -load["w2"]
+
+                        v -= (w1*x) + ((w2-w1)*x**2/(2*L))
+
+
+                shear_values.append(v)
+
+            shear_values[-1] += V2[direction]
+
+            V_arr = np.array(shear_values)
+
+            self.shear_V[direction] = shear_values
+
+            self.max_shear[direction] = np.max(V_arr)
+            self.x_max_shear[direction] = x_vals[np.argmax(V_arr)]
+
+            self.min_shear[direction] = np.min(V_arr)
+            self.x_min_shear[direction] = x_vals[np.argmin(V_arr)]
+
+        self.shear_x = x_vals.tolist()
+
+    # MOMENT DISTRIBUTION
+    def compute_moment_distribution(self, n_points=40):
+
+        L = self.L
+        x_vals = np.linspace(0, L, n_points)
+
+        V1 = {
+            "y": self.f_memb_force_local[2, 0],
+            "z": self.f_memb_force_local[1, 0]}
+        M1 = {
+            "y": self.f_memb_force_local[4, 0],
+            "z": self.f_memb_force_local[5, 0]}
+        force_direction = {
+            "y": "z",       # Vz produces My
+            "z": "y"}       # Vy produces Mz
+
+        for direction in ("y", "z"):
+
+            moment_values = []
+
+            for x in x_vals:
+
+                m = -M1[direction] + V1[direction]*x
+
+                # UDL
+                for load in self.member_loads:
+
+                    if load["type"] != "moment" and load["direction"] != force_direction[direction]:
+                        continue
+
+                    if load["type"] == "udl":
+                        w = -load["w"]
+                        m -= w*x*x/2
+
+                    elif load["type"] == "partial_udl":
+                        w = -load["w"]
+                        a = load["a"]
+                        b = load["b"]
+
+                        if x <= a:
+                            pass
+                        elif x <= b:
+                            m -= w*((x-a)**2)/2
+                        else:
+                            m -= (w*(b-a)*( x - (a+b)/2))
+
+                    elif load["type"] == "point":
+                        P = -load["P"]
+                        a = load["a"]
+                        if x >= a:
+                            m -= P*(x-a)
+
+                    elif load["type"] == "moment":
+                        if load["direction"] != direction:
+                            continue
+
+                        Mm = load["M"]
+                        a  = load["a"]
+
+                        if x >= a:
+                            m += Mm
+
+                    elif load["type"] == "trapezoidal":
+                        w1 = -load["w1"]
+                        w2 = -load["w2"]
+
+                        m -= (w1*x*x/2) + ((w2-w1)*x**3/(6*L))
+
+                moment_values.append(m)
+
+            self.moment_M[direction] = moment_values
+
+            M_arr = np.array(moment_values)
+
+            self.max_moment[direction] = np.max(M_arr)
+            self.x_max_moment[direction] = x_vals[np.argmax(M_arr)]
+
+            self.min_moment[direction] = np.min(M_arr)
+            self.x_min_moment[direction] = x_vals[np.argmin(M_arr)]
+
+        self.moment_x = x_vals.tolist()
+
+    # AXIAL FORCE DISTRIBUTION
+    def compute_axial_force_distribution(self, n_points=40):
+
+        L = self.L
+        x_vals = np.linspace(0, L, n_points)
+
+        # Axial force at Node 1
+        N1 = self.f_memb_force_local[0, 0]
+        N2 = self.f_memb_force_local[6, 0]
+
+        axial_values = []
+
+        for x in x_vals:
+
+            n = N1
+
+            for load in self.member_loads:
+
+                # Only loads acting along local x
+                if load.get("direction") != "x":
+                    continue
+
+                # POINT LOAD
+                if load["type"] == "point":
+
+                    P = -load["P"]
+                    a = load["a"]
+
+                    if x >= a:
+                        n -= P
+
+
+                # UDL
+                elif load["type"] == "udl":
+
+                    w = -load["w"]
+
+                    n -= w * x
+
+
+                # PARTIAL UDL
+                elif load["type"] == "partial_udl":
+
+                    w = -load["w"]
+                    a = load["a"]
+                    b = load["b"]
+
+                    if x <= a:
+                        pass
+
+                    elif x <= b:
+                        n -= w * (x - a)
+
+                    else:
+                        n -= w * (b - a)
+
+
+                # TRAPEZOIDAL LOAD
+                elif load["type"] == "trapezoidal":
+
+                    w1 = -load["w"]
+                    w2 = -load["w2"]
+
+                    n -= (
+                        w1 * x
+                        + (w2 - w1) * x**2 / (2 * L)
+                    )
+
+
+            axial_values.append(n)
+        axial_values[-1] += N2
+
+        self.axial_x = x_vals.tolist()
+        self.axial_N = axial_values
+
+        N_arr = np.array(axial_values)
+
+        self.max_axial = np.max(N_arr)
+        self.x_max_axial = x_vals[np.argmax(N_arr)]
+
+        self.min_axial = np.min(N_arr)
+        self.x_min_axial = x_vals[np.argmin(N_arr)]
+
+    # TORSION DISTRIBUTION
+    def compute_torsion_distribution(self, n_points=40):
+
+        L = self.L
+        x_vals = np.linspace(0, L, n_points)
+
+        # Torsional moment at Node 1
+        T1 = self.f_memb_force_local[3, 0]
+
+        torsion_values = []
+
+        for x in x_vals:
+
+            t = T1
+
+            for load in self.member_loads:
+
+                # Only moments about local x affect torsion
+                if load["type"] != "moment":
+                    continue
+
+                if load.get("direction") != "x":
+                    continue
+
+                M = load["M"]
+                a = load["a"]
+
+                # Applied torque causes a jump
+                if x >= a:
+                    t += M
+
+            torsion_values.append(t)
+
+        self.torsion_x = x_vals.tolist()
+        self.torsion_T = torsion_values
+
+        T_arr = np.array(torsion_values)
+
+        self.max_torsion = np.max(T_arr)
+        self.x_max_torsion = x_vals[np.argmax(T_arr)]
+
+        self.min_torsion = np.min(T_arr)
+        self.x_min_torsion = x_vals[np.argmin(T_arr)]
+
+# ----------------------------
+# MEMBER INITIALIZATION
+# ----------------------------
+def initialize_members(members, nodes):
+    for m in members:
+        m.initialize(nodes)
+
+# ----------------------------
+# GLOBAL FORCE VECTOR
+# ----------------------------
+def assemble_force_vector(nodes, members, F_node):
+    F = np.zeros((6*len(nodes),1))
+
+    # Node loads
+    F += F_node
+
+    # Member loads
+    for m in members:
+        dofs = [
+            6 * m.start_node,
+            6 * m.start_node + 1,
+            6 * m.start_node + 2,
+            6 * m.start_node + 3,
+            6 * m.start_node + 4,
+            6 * m.start_node + 5,
+
+            6 * m.end_node,
+            6 * m.end_node + 1,
+            6 * m.end_node + 2,
+            6 * m.end_node + 3,
+            6 * m.end_node + 4,
+            6 * m.end_node + 5
+        ]
+
+        for a in range(12):
+            F[dofs[a], 0] -= m.F_Fixed_Global[a, 0]
+
+    return F
+
+
+# ----------------------------
+# GLOBAL STIFFNESS MATRIX
+# ----------------------------
+def assemble_stiffness(nodes, members):
+    n_nodes = len(nodes)
+    K_global = np.zeros((6*n_nodes, 6*n_nodes))
+
+    for m in members:
+        dofs = [
+            6 * m.start_node,
+            6 * m.start_node + 1,
+            6 * m.start_node + 2,
+            6 * m.start_node + 3,
+            6 * m.start_node + 4,
+            6 * m.start_node + 5,
+
+            6 * m.end_node,
+            6 * m.end_node + 1,
+            6 * m.end_node + 2,
+            6 * m.end_node + 3,
+            6 * m.end_node + 4,
+            6 * m.end_node + 5
+        ]
+
+        for a in range(12):
+            for b in range(12):
+                K_global[dofs[a], dofs[b]] += m.k_global[a, b]
+
+    return K_global
+
+
+# ----------------------------
+# SOLVER
+# ----------------------------
+def solve_system(K_global, F, fixed_dofs):
+
+    n = len(F)
+
+    all_dofs = np.arange(n)
+    fixed_dofs = fixed_dofs.flatten()
+    free_dofs = np.setdiff1d(all_dofs, fixed_dofs)
+
+    K_red = K_global[np.ix_(free_dofs, free_dofs)]
+    F_red = F[free_dofs]
+
+    try:
+        D_red = np.linalg.solve(K_red, F_red)
+    except np.linalg.LinAlgError:
+        raise ValueError("Structure unstable (insufficient constraints) or mechanism formed")
+
+    D = np.zeros((n,1))
+    D[free_dofs] = D_red
+
+    R = (K_global @ D) - F
+
+    return D, R, K_red, F_red
+
+
+# ----------------------------
+# MEMBER FORCES
+# ----------------------------
+def compute_member_forces(members, D):
+
+    for m in members:
+        d_Global_Coo = np.array([
+            D[6 * m.start_node + 0, 0],
+            D[6 * m.start_node + 1, 0],
+            D[6 * m.start_node + 2, 0],
+            D[6 * m.start_node + 3, 0],
+            D[6 * m.start_node + 4, 0],
+            D[6 * m.start_node + 5, 0],
+
+            D[6 * m.end_node + 0, 0],
+            D[6 * m.end_node + 1, 0],
+            D[6 * m.end_node + 2, 0],
+            D[6 * m.end_node + 3, 0],
+            D[6 * m.end_node + 4, 0],
+            D[6 * m.end_node + 5, 0]
+        ]).reshape(12, 1)
+
+        # CONVERT → LOCAL
+        d_local = m.T @ d_Global_Coo
+
+        m.d_local = d_local
+
+
+        m.f_memb_force_local = (m.k_local @ d_local) + m.F_Fixed_local
+        m.f_memb_force_local = np.round(m.f_memb_force_local, 3)
+
+
+# ----------------------------
+# Support Settlement
+# ----------------------------
+def build_display_displacements(D, support_settlements):
+
+    D_display = D.copy()
+
+    for node_id, settlement in support_settlements.items():
+
+        ux, uy, uz, rx, ry, rz = settlement
+
+        D_display[6 * node_id + 0, 0] += ux
+        D_display[6 * node_id + 1, 0] += uy
+        D_display[6 * node_id + 2, 0] += uz
+        D_display[6 * node_id + 3, 0] += rx
+        D_display[6 * node_id + 4, 0] += ry
+        D_display[6 * node_id + 5, 0] += rz
+
+    return D_display
+
+def assign_support_displacements(members, support_settlements):
+
+    for m in members:
+
+        ux1 = uy1 = uz1 = 0.0
+        rx1 = ry1 = rz1 = 0.0
+
+        ux2 = uy2 = uz2 = 0.0
+        rx2 = ry2 = rz2 = 0.0
+
+        if m.start_node in support_settlements:
+            ux1, uy1, uz1, rx1, ry1, rz1 = support_settlements[m.start_node]
+
+        if m.end_node in support_settlements:
+            ux2, uy2, uz2, rx2, ry2, rz2 = support_settlements[m.end_node]
+
+        m.add_support_displacement_global(
+            ux1, uy1, uz1,
+            rx1, ry1, rz1,
+
+            ux2, uy2, uz2,
+            rx2, ry2, rz2
+        )
+
+
+# ----------------------------
+# Deflection Diagram
+# ----------------------------
+def create_local_refined_member(original_member, n_divisions=30):
+
+    L = original_member.L
+
+    # Start with equal divisions
+    x_refined_values = list(np.linspace(0.0, L, n_divisions + 1))
+
+    # Add locations where load behaviour changes
+    for load in original_member.member_loads:
+
+        if load["type"] in ["point", "moment"]:
+            x_refined_values.append(load["a"])
+
+        elif load["type"] == "partial_udl":
+            x_refined_values.append(load["a"])
+            x_refined_values.append(load["b"])
+
+    # Remove duplicates and sort
+    x_refined_values = sorted(set(round(x, 12) for x in x_refined_values))
+
+    # Temporary node coordinates
+    refined_nodes = {
+        i: (x, 0.0, 0.0)
+        for i, x in enumerate(x_refined_values)}
+
+    # Temporary Member objects
+    refined_members = []
+
+    for i in range(len(x_refined_values) - 1):
+
+        m = Member(
+            name=i,
+            start_node=i,
+            end_node=i + 1,
+
+            E=original_member.E,
+            G=original_member.G,
+
+            A=original_member.A,
+
+            I_yy=original_member.I_yy,
+            I_zz=original_member.I_zz,
+
+            J=original_member.J
+        )
+
+        refined_members.append(m)
+
+    return x_refined_values, refined_nodes, refined_members
+
+def transfer_local_refined_loads(original_member, refined_members, refined_x):
+
+    L = original_member.L
+
+    # Refined nodal global loads
+    F_refined_node = np.zeros((6 * len(refined_x), 1))
+
+    force_dof = {
+        "x": 0,
+        "y": 1,
+        "z": 2
+    }
+
+    moment_dof = {
+        "x": 3,
+        "y": 4,
+        "z": 5
+    }
+
+    for load in original_member.member_loads:
+
+        load_type = load["type"]
+        direction = load["direction"]
+
+        if load_type == "udl":
+
+            w = load["w"]
+
+            for m in refined_members:
+                m.add_udl(w, direction)
+
+
+        elif load_type == "partial_udl":
+
+            w = load["w"]
+            a = load["a"]
+            b = load["b"]
+
+            for i, m in enumerate(refined_members):
+
+                x1 = refined_x[i]
+                x2 = refined_x[i + 1]
+
+                # Element completely inside loaded region
+                if x1 >= a and x2 <= b:
+                    m.add_udl(w, direction)
+
+        elif load_type == "trapezoidal":
+
+            w1 = load["w1"]
+            w2 = load["w2"]
+
+            for i, m in enumerate(refined_members):
+
+                x1 = refined_x[i]
+                x2 = refined_x[i + 1]
+
+                # Linear interpolation
+                r1 = x1 / L
+                r2 = x2 / L
+
+                we1 = w1 + (w2 - w1) * r1
+                we2 = w1 + (w2 - w1) * r2
+
+                m.add_trapezoidal_load(we1, we2, direction)
+
+        elif load_type == "point":
+
+            P = load["P"]
+            a = load["a"]
+
+            node_index = min(range(len(refined_x)),
+                key=lambda i: abs(refined_x[i] - a))
+
+            if abs(refined_x[node_index] - a) > 1e-8:
+                raise ValueError(
+                    f"Point load location {a} "
+                    "does not match refined node.")
+
+            F_refined_node[6 * node_index + force_dof[direction], 0] += P
+
+        elif load_type == "moment":
+
+            M = load["M"]
+            a = load["a"]
+
+            node_index = min(range(len(refined_x)),
+                key=lambda i: abs(refined_x[i] - a))
+
+            if abs(refined_x[node_index] - a) > 1e-8:
+                raise ValueError(
+                    f"Moment location {a} "
+                    "does not match refined node.")
+
+            F_refined_node[6 * node_index + moment_dof[direction], 0] += M
+
+    return F_refined_node
+
+def calculate_refined_member_deflection(original_member, D_display, n_divisions=30):
+
+    refined_x, refined_nodes, refined_members = create_local_refined_member(original_member, n_divisions)
+
+    F_refined_node = transfer_local_refined_loads(original_member, refined_members, refined_x)
+
+
+    d_global = np.array([
+        D_display[6 * original_member.start_node + 0, 0],
+        D_display[6 * original_member.start_node + 1, 0],
+        D_display[6 * original_member.start_node + 2, 0],
+        D_display[6 * original_member.start_node + 3, 0],
+        D_display[6 * original_member.start_node + 4, 0],
+        D_display[6 * original_member.start_node + 5, 0],
+
+        D_display[6 * original_member.end_node + 0, 0],
+        D_display[6 * original_member.end_node + 1, 0],
+        D_display[6 * original_member.end_node + 2, 0],
+        D_display[6 * original_member.end_node + 3, 0],
+        D_display[6 * original_member.end_node + 4, 0],
+        D_display[6 * original_member.end_node + 5, 0]
+
+    ]).reshape(12, 1)
+
+    d_local = original_member.T @ d_global
+
+    last_node = len(refined_nodes) - 1
+
+    support_displacements = {
+
+        0: (float(d_local[0, 0]),     # ux
+            float(d_local[1, 0]),     # uy
+            float(d_local[2, 0]),     # uz
+
+            float(d_local[3, 0]),     # rx
+            float(d_local[4, 0]),     # ry
+            float(d_local[5, 0])),    # rz
+
+
+        last_node: (
+            float(d_local[6, 0]),     # ux
+            float(d_local[7, 0]),     # uy
+            float(d_local[8, 0]),     # uz
+
+            float(d_local[9, 0]),     # rx
+            float(d_local[10, 0]),    # ry
+            float(d_local[11, 0]))}   # rz
+
+    fixed_dofs = np.array([
+        [0], [1], [2], [3], [4], [5],
+
+        [6 * last_node + 0],
+        [6 * last_node + 1],
+        [6 * last_node + 2],
+        [6 * last_node + 3],
+        [6 * last_node + 4],
+        [6 * last_node + 5]])
+
+    assign_support_displacements(refined_members, support_displacements)
+
+    initialize_members(refined_members, refined_nodes)
+
+    F = assemble_force_vector(refined_nodes, refined_members,F_refined_node)
+
+    K_global = assemble_stiffness(refined_nodes, refined_members)
+
+    D, R, K_red, F_red = solve_system(K_global, F, fixed_dofs)
+
+    D_display_refined = build_display_displacements(D,support_displacements)
+
+
+    deflection_position = []
+    deflection_local_x = []
+    deflection_local_y = []
+    deflection_local_z = []
+
+    deflection_global_x = []
+    deflection_global_y = []
+    deflection_global_z = []
+
+    x1, y1, z1 = original_member.start_point
+
+    # LOCAL → GLOBAL TRANSFORMATION R is cos matrix
+    R_local_to_global = original_member.R.T
+
+    for i, x in enumerate(refined_x):
+
+        u_local = np.array([
+            D_display_refined[6 * i + 0, 0],
+            D_display_refined[6 * i + 1, 0],
+            D_display_refined[6 * i + 2, 0]])
+
+        # Store local transverse displacement
+        deflection_local_x.append(u_local[0])
+        deflection_local_y.append(u_local[1])
+        deflection_local_z.append(u_local[2])
+
+        # Local displacement → global displacement
+        u_global = (R_local_to_global @ u_local)
+
+        # Original point in global coordinates
+        original_position = np.array([x1, y1, z1
+            ]) + x * original_member.local_x
+
+        # Actual displaced global coordinates
+        displaced_position = (original_position + u_global)
+
+        deflection_position.append(x)
+
+        deflection_global_x.append(displaced_position[0])
+        deflection_global_y.append(displaced_position[1])
+        deflection_global_z.append(displaced_position[2])
+
+    original_member.deflection_position = deflection_position
+
+    original_member.deflection_local_x = deflection_local_x
+    original_member.deflection_local_y = deflection_local_y
+    original_member.deflection_local_z = deflection_local_z
+
+    original_member.deflection_x = deflection_global_x
+    original_member.deflection_y = deflection_global_y
+    original_member.deflection_z = deflection_global_z
+
+    for direction, values in {
+        "y": deflection_local_y,
+        "z": deflection_local_z}.items():
+
+        values_arr = np.array(values)
+
+        original_member.max_deflection[direction] = float(np.max(values_arr))
+
+        original_member.x_max_deflection[direction] = float(refined_x[np.argmax(values_arr)])
+
+        original_member.min_deflection[direction] = float(np.min(values_arr))
+
+        original_member.x_min_deflection[direction] = float(refined_x[np.argmin(values_arr)])
+
+# ----------------------------
+# MAIN ANALYSIS FUNCTION
+# ----------------------------
+def run_analysis(nodes, members, F_node, fixed_dofs, support_settlements={}):
+
+    # Step 0: assign support displacements
+    assign_support_displacements(members, support_settlements)
+
+    # Step 1: initialize members
+    initialize_members(members, nodes)
+
+    # Step 2: force vector
+    F = assemble_force_vector(nodes, members, F_node)
+
+    # Step 3: stiffness matrix
+    K_global = assemble_stiffness(nodes, members)
+
+    # Step 4: solve
+    D, R, K_red, F_red = solve_system(K_global, F, fixed_dofs)
+
+    D_display = build_display_displacements(D,support_settlements)
+
+    # Step 5: member forces
+    compute_member_forces(members, D)
+
+    # Step 6: post-process members
+    for m in members:
+
+        m.compute_axial_force_distribution()
+
+        m.compute_shear_distribution()
+
+        m.compute_moment_distribution()
+
+        m.compute_torsion_distribution()
+
+        calculate_refined_member_deflection(m, D_display, n_divisions=30)
+
+    # return everything
+    return {
+        "K_global": K_global,
+        "K_reduced": K_red,
+        "F_reduced": F_red,
+        "displacements": D_display,
+        "reactions": R,
+        "members": members,
+       
+    }
+
+#----------------------------
+# Run analysis 
+#----------------------------
+
+if __name__ == "__main__":
+
+    # Nodes
+    nodes = {
+        0: (0, 0, 0),
+        1: (1, 0, 0),
+        2: (2, 0, 0),
+        3: (3, 0, 0),
+        4: (5, 0, 0),
+    }
+
+    # Members
+
+    E = 1
+    G = 1
+    A = 1
+
+    I_yy = 1
+    I_zz = 1
+
+    J = 1
+  
+    m1=Member(1, 0, 1, E, G, A, I_yy, I_zz, J)
+    m2=Member(2, 1, 2, E, G, A, I_yy, I_zz, J)
+    m3=Member(3, 2, 3, E, G, A, I_yy, I_zz, J)
+    m4=Member(4, 3, 4, E, G, A, I_yy, I_zz, J)
+    
+    m4.add_udl(w=-6, direction = "y")
+
+    members = [m1, m2, m3, m4]
+
+    # Loads
+    F_node = np.zeros((6 * len(nodes), 1))
+
+    F_node[6*1 + 1] = -16   # v direction
+
+    # Supports
+    fixed_dofs = np.array([
+    [0], [1], [2], [3], [4], [5],         # Node 0 → fixed
+    [12], [13], [14],                     # Node 2 → roller (u,v fixed)
+    [18], [19], [20],                     # Node 3 → roller
+    [24], [25], [26], [27], [28], [29]    # Node 4 → fixed
+    ])
+
+    # support_settlements = {0: (0.0, -0.02, 0.0), 2: (0.0, -0.01, 0.0)}
+
+    # Run
+    result = run_analysis(nodes, members, F_node, fixed_dofs)
+
+    print("Displacements:\n", result["displacements"])
+    print("Reactions:\n", result["reactions"])
+
+    for m in result["members"]:
+        print(f"Member {m.start_node}-{m.end_node} force:\n", m.f_memb_force_local)

@@ -1,0 +1,603 @@
+<!-- =====================================================
+     GETTING STARTED
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Getting Started</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p>
+            This application is a web-based <b>3D Frame Structural Analyzer</b>
+            for defining, analysing and visualising three-dimensional
+            frame structures.
+        </p>
+
+        <p><b>Recommended workflow:</b></p>
+
+        <ol>
+            <li>Define Nodes.</li>
+            <li>Define Members connecting the nodes.</li>
+            <li>Define Material Properties.</li>
+            <li>Define Section Properties.</li>
+            <li>Define Beta Angles if required.</li>
+            <li>Define Supports.</li>
+            <li>Apply Nodal and/or Member Loads.</li>
+            <li>Run <b>ANALYZE</b>.</li>
+            <li>Review the analysis results and diagrams.</li>
+            <li>Generate the required report.</li>
+        </ol>
+
+        <p>
+            The main navigation is:
+            <b>Model → Properties → Supports & Loads → Results → Report</b>.
+        </p>
+
+        <p>
+            Use the <b>Previous</b> and <b>Next</b> buttons or the navigation
+            bar to move between sections.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODEL
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Model Definition</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p><b>Nodes</b></p>
+
+        <ul>
+            <li>Each node requires a unique ID.</li>
+            <li>Enter the global <b>X, Y and Z</b> coordinates.</li>
+            <li>Use the same units consistently throughout the model.</li>
+            <li>Define nodes before creating members.</li>
+        </ul>
+
+        <p><b>Members</b></p>
+
+        <ul>
+            <li>Each member requires a unique ID.</li>
+            <li>Specify its <b>Start</b> and <b>End</b> node.</li>
+            <li>Both start and end nodes must exist.</li>
+            <li>A member connects two nodes in the 3D model.</li>
+        </ul>
+
+        <p><b>Model View</b></p>
+
+        <ul>
+            <li>The structure is displayed automatically as inputs are changed.</li>
+            <li>Nodes and members can be visually checked in the 3D view.</li>
+            <li>Use the view controls to rotate, zoom and pan the model.</li>
+        </ul>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PROPERTIES
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Properties</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p><b>Material Properties</b></p>
+
+        <ul>
+            <li>Define the required material properties.</li>
+            <li>Enter the elastic modulus <b>E</b>.</li>
+            <li>Enter the shear modulus <b>G</b>.</li>
+            <li>Assign a material to the required members.</li>
+            <li>Use <b>Assign All</b> when the same material is required for all members.</li>
+        </ul>
+
+        <p><b>Section Properties</b></p>
+
+        <ul>
+            <li>Define the section required for each member.</li>
+            <li>Important section properties are <b>A, Iyy, Izz and J</b>.</li>
+            <li>A section can be assigned to multiple members.</li>
+            <li>Each member should have the required section assigned before analysis.</li>
+        </ul>
+
+        <p><b>Beta Angle</b></p>
+
+        <ul>
+            <li>Beta rotates the local Y-Z axes about the member's local X axis.</li>
+            <li><b>Beta = 0°</b> means no rotation.</li>
+            <li>Positive beta follows the right-hand rule.</li>
+            <li>Negative beta angles are allowed.</li>
+            <li>Beta is independent of the section property.</li>
+            <li>The same beta property can be reused for multiple members.</li>
+        </ul>
+
+        <p><b>3D Section Rendering</b></p>
+
+        <ul>
+            <li>On the Properties page, use <b>3D RENDERING</b> to display members using their actual section geometry.</li>
+            <li>The rendered section follows the member's local orientation and beta angle.</li>
+        </ul>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     SUPPORTS
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Supports</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p>
+            Supports define the restrained degrees of freedom at nodes.
+        </p>
+
+        <p><b>Translational DOFs</b></p>
+
+        <ul>
+            <li><b>Ux</b> – translation in global X.</li>
+            <li><b>Uy</b> – translation in global Y.</li>
+            <li><b>Uz</b> – translation in global Z.</li>
+        </ul>
+
+        <p><b>Rotational DOFs</b></p>
+
+        <ul>
+            <li><b>Rx</b> – rotation about global X.</li>
+            <li><b>Ry</b> – rotation about global Y.</li>
+            <li><b>Rz</b> – rotation about global Z.</li>
+        </ul>
+
+        <p><b>Support with Deflection</b></p>
+
+        <ul>
+            <li>Use the support-deflection option when a restrained DOF has a prescribed displacement or rotation.</li>
+            <li>Only enabled DOFs accept corresponding deflection values.</li>
+            <li>Assign the support to the required nodes.</li>
+        </ul>
+
+        <p>
+            A stable support system is required for a meaningful structural
+            analysis.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     LOADS
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Loads</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p><b>Nodal Loads</b></p>
+
+        <ul>
+            <li>Nodal forces act in global <b>X, Y or Z</b>.</li>
+            <li>Nodal moments act about global <b>MX, MY or MZ</b>.</li>
+            <li>Assign nodal loads to one or more nodes.</li>
+        </ul>
+
+        <p><b>Member Loads</b></p>
+
+        <p>
+            Member loads use the member's <b>local x, y and z directions</b>.
+        </p>
+
+        <ul>
+            <li><b>Point Load</b> – concentrated load at distance <b>a</b> from the member start.</li>
+            <li><b>Moment</b> – concentrated moment at distance <b>a</b>.</li>
+            <li><b>UDL</b> – uniformly distributed load over the member.</li>
+            <li><b>Partial UDL</b> – distributed load between specified distances <b>a</b> and <b>b</b>.</li>
+            <li><b>Trapezoidal Load</b> – distributed load varying between two intensities.</li>
+        </ul>
+
+        <p><b>Load Assignment</b></p>
+
+        <ul>
+            <li>Loads can be assigned to selected nodes or members.</li>
+            <li>Use <b>Assign All</b> when the same load is required everywhere.</li>
+            <li>Check the assignment shown on each load card before analysis.</li>
+        </ul>
+
+        <p>
+            The 3D view displays loads graphically when load visibility is enabled.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     INPUT CALCULATION & UNIT CONVERSION
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Input Calculation & Unit Conversion</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p>
+            Text input fields support simple arithmetic expressions.
+            The expression is evaluated when the input loses focus or
+            when <b>Enter</b> is pressed.
+        </p>
+
+        <p><b>Arithmetic operators</b></p>
+
+        <ul>
+            <li>Addition: <b>+</b></li>
+            <li>Subtraction: <b>-</b></li>
+            <li>Multiplication: <b>*</b></li>
+            <li>Division: <b>/</b></li>
+            <li>Parentheses: <b>( )</b></li>
+        </ul>
+
+        <p><b>Examples</b></p>
+
+        <ul>
+            <li><b>2 + 3</b> → 5</li>
+            <li><b>10 / 2</b> → 5</li>
+            <li><b>2 * (3 + 4)</b> → 14</li>
+            <li><b>3.5 + 2.5</b> → 6</li>
+        </ul>
+
+        <p><b>Length Unit Conversion</b></p>
+
+        <ul>
+            <li><b>mm</b> → converted to metres.</li>
+            <li><b>cm</b> → converted to metres.</li>
+            <li><b>m</b> → metres.</li>
+            <li><b>in</b> or <b>"</b> → converted to metres.</li>
+            <li><b>ft</b> or <b>'</b> → converted to metres.</li>
+        </ul>
+
+        <p><b>Examples</b></p>
+
+        <ul>
+            <li><b>300mm</b> → 0.3 m</li>
+            <li><b>30cm</b> → 0.3 m</li>
+            <li><b>2m</b> → 2 m</li>
+            <li><b>12in</b> → 0.3048 m</li>
+            <li><b>2ft</b> → 0.6096 m</li>
+            <li><b>2'11"</b> → automatically converted to metres.</li>
+        </ul>
+
+        <p>
+            <b>Tip:</b> You can combine conversion and calculation,
+            for example <b>300mm + 200mm</b>.
+        </p>
+
+        <p>
+            If an expression is invalid, the original input is retained.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     3D VIEW CONTROLS
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>3D View Controls</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p><b>Navigation</b></p>
+
+        <ul>
+            <li>Use mouse controls to rotate the 3D model.</li>
+            <li>Use zoom controls to change the viewing distance.</li>
+            <li>Use pan controls to move the model in the viewing area.</li>
+        </ul>
+
+        <p><b>Reset View</b></p>
+
+        <ul>
+            <li>Click <b>RESET VIEW</b> to automatically refit the model.</li>
+            <li>The view is centred around the model geometry.</li>
+            <li>Use this if the structure moves outside the visible area.</li>
+        </ul>
+
+        <p><b>View Options</b></p>
+
+        <ul>
+            <li><b>Show Loads</b> – display or hide load symbols.</li>
+            <li><b>Show Supports</b> – display or hide support symbols.</li>
+            <li><b>Show Labels</b> – display or hide node/member labels.</li>
+        </ul>
+
+        <p>
+            The visibility settings affect the graphical representation
+            without changing the structural input data.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ANALYSIS & RESULTS
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Analysis & Results</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p><b>Running Analysis</b></p>
+
+        <ol>
+            <li>Complete the model.</li>
+            <li>Assign material and section properties.</li>
+            <li>Define beta angles where required.</li>
+            <li>Define supports.</li>
+            <li>Apply loads.</li>
+            <li>Click <b>ANALYZE</b>.</li>
+        </ol>
+
+        <p>
+            The application sends the structural input to the analysis
+            solver and displays the returned results.
+        </p>
+
+        <p><b>Available Results</b></p>
+
+        <ul>
+            <li><b>Reactions</b></li>
+            <li><b>Displacements</b></li>
+            <li><b>Member Forces</b></li>
+            <li><b>AFD</b> – Axial Force Diagram</li>
+            <li><b>SFD</b> – Shear Force Diagram</li>
+            <li><b>BMD</b> – Bending Moment Diagram</li>
+            <li><b>TMD</b> – Torsional Moment Diagram</li>
+            <li><b>Deflection</b></li>
+        </ul>
+
+        <p>
+            Analysis results are available only after a successful analysis.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     DIAGRAM SCALING
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Diagram Scaling & Visibility</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p>
+            The diagram menu allows independent control of the graphical
+            scale of analysis diagrams.
+        </p>
+
+        <p><b>Available Diagram Scales</b></p>
+
+        <ul>
+            <li><b>AFD</b> scale</li>
+            <li><b>SFD</b> scale</li>
+            <li><b>BMD</b> scale</li>
+            <li><b>TMD</b> scale</li>
+            <li><b>Deflection</b> scale</li>
+        </ul>
+
+        <p><b>Scaling Tips</b></p>
+
+        <ul>
+            <li>Increase a diagram scale when the diagram is too small to see.</li>
+            <li>Decrease the scale when the diagram becomes too large.</li>
+            <li>Each diagram can be scaled independently.</li>
+            <li>Use <b>Reset Diagram Scales</b> to restore the default scales.</li>
+        </ul>
+
+        <p><b>Visibility</b></p>
+
+        <ul>
+            <li>Use <b>Show Loads</b> to control load visibility.</li>
+            <li>Use <b>Show Supports</b> to control support visibility.</li>
+            <li>Use <b>Show Labels</b> to control node and member labels.</li>
+        </ul>
+
+        <p>
+            Scaling changes only the visual representation of diagrams;
+            it does not modify the calculated structural values.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     REPORT
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Report</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p>
+            The Report page allows you to select the information that
+            should appear in the generated structural analysis report.
+        </p>
+
+        <p><b>Report Styles</b></p>
+
+        <ul>
+            <li><b>Tabular Report</b> – select individual categories and items for the report.</li>
+            <li><b>Member-wise Report</b> – generate a report organised member by member.</li>
+        </ul>
+
+        <p><b>Tabular Report Contents</b></p>
+
+        <ul>
+            <li>Nodes</li>
+            <li>Members</li>
+            <li>Supports</li>
+            <li>Loads</li>
+            <li>Reactions</li>
+            <li>Displacements</li>
+            <li>Member Forces</li>
+            <li>SFD</li>
+            <li>BMD</li>
+            <li>Deflection</li>
+        </ul>
+
+        <p><b>Member-wise Report</b></p>
+
+        <ul>
+            <li>Select the required members.</li>
+            <li>Choose the desired member information.</li>
+            <li>Available information includes geometry, loads, end forces, maximum values, SFD, BMD and deflection.</li>
+        </ul>
+
+        <p><b>Report Tip</b></p>
+
+        <ul>
+            <li>Select only the required information for a concise report.</li>
+            <li>Use select-all functionality when the complete model/results are required.</li>
+            <li>Generate the preview after making your selections.</li>
+        </ul>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     USEFUL TIPS & TROUBLESHOOTING
+     ===================================================== -->
+
+<div class="instruction-section">
+
+    <button class="instruction-heading"
+            onclick="toggleInstruction(this)">
+        <span>Useful Tips & Troubleshooting</span>
+        <span class="instruction-arrow">▼</span>
+    </button>
+
+    <div class="instruction-content">
+
+        <p><b>Before Analysis</b></p>
+
+        <ul>
+            <li>Check that all node IDs are unique.</li>
+            <li>Check that every member references valid start and end nodes.</li>
+            <li>Ensure required material properties are assigned.</li>
+            <li>Ensure required section properties are assigned.</li>
+            <li>Check beta angles for members whose local orientation requires rotation.</li>
+            <li>Check support assignments and restrained DOFs.</li>
+            <li>Check load directions and magnitudes.</li>
+            <li>Check member load positions against the member length.</li>
+        </ul>
+
+        <p><b>For a Better 3D View</b></p>
+
+        <ul>
+            <li>Use <b>RESET VIEW</b> if the model is difficult to locate.</li>
+            <li>Hide loads/supports/labels when they make the model difficult to read.</li>
+            <li>Adjust diagram scales when result diagrams overlap the structure.</li>
+            <li>Use 3D section rendering when checking section orientation.</li>
+        </ul>
+
+        <p><b>If Results Are Not Visible</b></p>
+
+        <ul>
+            <li>Make sure the analysis completed successfully.</li>
+            <li>Check that the Results page is selected.</li>
+            <li>Check diagram visibility settings.</li>
+            <li>Adjust the diagram scale if the diagram is too small or too large.</li>
+        </ul>
+
+        <p><b>Important</b></p>
+
+        <p>
+            Always verify the structural model, loading, support conditions,
+            units and assignments before relying on the analysis results.
+        </p>
+
+    </div>
+
+</div>

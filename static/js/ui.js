@@ -844,20 +844,90 @@ function saveLoad(){
                 "loadType"
             ).value,
 
-        direction:
+        coordinate_system:
             document.getElementById(
-                "loadDirection"
+                "loadCoordinateSystem"
             ).value,
 
-        value1:
+        // FORCE COMPONENTS
+        Fx:
             +document.getElementById(
-                "loadValue1"
-            ).value,
+                "loadFx"
+            ).value || 0,
 
-        value2:
+        Fy:
             +document.getElementById(
-                "loadValue2"
-            ).value,
+                "loadFy"
+            ).value || 0,
+
+        Fz:
+            +document.getElementById(
+                "loadFz"
+            ).value || 0,
+
+        // MOMENT COMPONENTS
+        Mx:
+            +document.getElementById(
+                "loadMx"
+            ).value || 0,
+
+        My:
+            +document.getElementById(
+                "loadMy"
+            ).value || 0,
+
+        Mz:
+            +document.getElementById(
+                "loadMz"
+            ).value || 0,
+
+        // DISTRIBUTED LOAD
+        wx:
+            +document.getElementById(
+                "loadWx"
+            ).value || 0,
+
+        wy:
+            +document.getElementById(
+                "loadWy"
+            ).value || 0,
+
+        wz:
+            +document.getElementById(
+                "loadWz"
+            ).value || 0,
+
+        // TRAPEZOIDAL START
+        wx1:
+            +document.getElementById(
+                "loadWx1"
+            ).value || 0,
+
+        wy1:
+            +document.getElementById(
+                "loadWy1"
+            ).value || 0,
+
+        wz1:
+            +document.getElementById(
+                "loadWz1"
+            ).value || 0,
+
+        // TRAPEZOIDAL END
+        wx2:
+            +document.getElementById(
+                "loadWx2"
+            ).value || 0,
+
+        wy2:
+            +document.getElementById(
+                "loadWy2"
+            ).value || 0,
+
+        wz2:
+            +document.getElementById(
+                "loadWz2"
+            ).value || 0,
 
         a:
             +document.getElementById(
@@ -920,13 +990,7 @@ function renderLoadCards(){
 
     container.innerHTML = "";
 
-
-
     loadDatabase.forEach((load,index)=>{
-
-        // ---------------------------------------------
-        // CLONE TEMPLATE
-        // ---------------------------------------------
 
         let template =
             document.getElementById(
@@ -937,101 +1001,66 @@ function renderLoadCards(){
             template.firstElementChild.cloneNode(true);
 
 
-
-        // ---------------------------------------------
         // DESCRIPTION
-        // ---------------------------------------------
-
         let description = "";
-
-
 
         if(load.category === "nodal"){
 
-            if(load.type === "point"){
-                description =
-                    `Force = ${load.value1} kN
-                    | Direction: Global-${load.direction}`;
-            }
-            else if(load.type === "moment"){
-                let axis =
-                    load.direction.replace("M", "");
-
-                description =
-                    `Moment = ${load.value1} kN-m
-                    | About Global-${axis}`;
-            }
+            description = `
+                Fx: ${load.Fx}, Fy: ${load.Fy}, Fz: ${load.Fz} kN
+                Mx: ${load.Mx}, My: ${load.My}, Mz: ${load.Mz} kN·m
+            `;
         }
 
         else{
 
             if(load.type === "point"){
 
-                description =
-                    `Point Load = ${load.value1} kN
-                    | Direction: Local-${load.direction}
-                    | a = ${load.a} m`;
-            }
-
-            else if(load.type === "moment"){
-
-                description =
-                    `Moment =${load.value1} kN-m
-                    | About Local-${load.direction}
-                    | a = ${load.a} m`;
+                description = `
+                    Coordinate: ${load.coordinate_system}
+                    Fx: ${load.Fx}, Fy: ${load.Fy}, Fz: ${load.Fz} kN 
+                    Mx: ${load.Mx}, My: ${load.My}, Mz: ${load.Mz} kN·m
+                    a = ${load.a} m
+                `;
             }
 
             else if(load.type === "udl"){
 
-                description =
-                    `UDL =${load.value1} kN/m
-                    | Direction: Local-${load.direction}`;
+                description = `
+                    Coordinate: ${load.coordinate_system}
+                    wx: ${load.wx}, wy: ${load.wy}, wz: ${load.wz} kN/m
+                `;
             }
 
             else if(load.type === "partial_udl"){
 
-                description =
-                    `Partial UDL = ${load.value1} kN/m
-                    | Direction: Local-${load.direction}
-                    | from ${load.a} m to ${load.b} m`;
+                description = `
+                    Coordinate: ${load.coordinate_system}
+                    wx: ${load.wx}, wy: ${load.wy}, wz: ${load.wz} kN/m
+                    a = ${load.a} m | b = ${load.b} m
+                `;
             }
 
             else if(load.type === "trapezoidal"){
 
-                description =
-                    `Trapezoidal = ${load.value1} → ${load.value2} kN/m
-                    | Direction: Local-${load.direction}`;
+                description = `
+                    Coordinate: ${load.coordinate_system}
+                    Start: (${load.wx1}, ${load.wy1}, ${load.wz1}) kN/m
+                    End:   (${load.wx2}, ${load.wy2}, ${load.wz2}) kN/m
+                `;
             }
         }
-
-
 
         // ---------------------------------------------
         // ASSIGNMENT
         // ---------------------------------------------
-
-        let assignment = "";
-
-        if(load.category === "nodal"){
-            
-            assignment =
-                `Nodes:
-                ${load.assignedNodes.join(", ")}`;
-        }
-
-        else{
-
-            assignment =
-                `Members:
-                ${load.assignedMembers.join(", ")}`;
-        }
-
-
+        let assignment = load.category === "nodal"
+            ? `Nodes: ${load.assignedNodes.join(", ")}`
+            : `Members: ${load.assignedMembers.join(", ")}`;
 
         // ---------------------------------------------
         // FILL CONTENT
         // ---------------------------------------------
-
         card.querySelector(".load-title")
             .innerText =
 
@@ -1079,7 +1108,7 @@ function renderLoadCards(){
         );
 
         card.querySelector(".assign-load-btn")
-        .onclick = () => assignLoad(index);
+        .onclick = () => assignLoad(index, card);
 
         card.querySelector(".assign-all-btn")
         .onclick =
@@ -1088,26 +1117,18 @@ function renderLoadCards(){
                 index
             );
 
-
-
         // ---------------------------------------------
         // BUTTONS
         // ---------------------------------------------
-
         card.querySelector(".edit-load-btn")
             .onclick = () => editLoad(index);
-
-
 
         card.querySelector(".delete-btn")
             .onclick = () => deleteLoad(index);
 
-
-
         // ---------------------------------------------
         // ADD CARD
         // ---------------------------------------------
-
         container.appendChild(card);
     });
 }
@@ -1129,21 +1150,15 @@ function updateLoadPopup(){
         );
 
 
-
     // ---------------------------------------------
     // BUILD TYPE OPTIONS
     // ---------------------------------------------
 
     if(category === "nodal"){
 
-        typeSelect.innerHTML = `
-
+         typeSelect.innerHTML = `
             <option value="point">
-                Force
-            </option>
-
-            <option value="moment">
-                Moment
+                Nodal Load
             </option>
         `;
     }
@@ -1153,11 +1168,7 @@ function updateLoadPopup(){
         typeSelect.innerHTML = `
 
             <option value="point">
-                Concentrated Force
-            </option>
-
-            <option value="moment">
-                Concentrated Moment
+                Point Load
             </option>
 
             <option value="udl">
@@ -1207,9 +1218,15 @@ function updateLoadFields(){
     // HIDE EVERYTHING FIRST
     // -------------------------------------------------
 
-    hideGroup("directionGroup");
+    hideGroup("coordinateSystemGroup");
 
-    hideGroup("value2Group");
+    hideGroup("forceComponentsGroup");
+
+    hideGroup("momentComponentsGroup");
+
+    hideGroup("distributedLoadComponentsGroup");
+
+    hideGroup("trapezoidalComponentsGroup");
 
     hideGroup("aGroup");
 
@@ -1223,51 +1240,10 @@ function updateLoadFields(){
 
     if(category === "nodal"){
 
-        showGroup("directionGroup");
+        hideGroup("coordinateSystemGroup");
 
-        let directionSelect =
-            document.getElementById(
-                "loadDirection"
-            );
-        // FORCE
-        if(type === "point"){
-            document.getElementById(
-                "value1Label"
-            ).innerText = "Force";
-            
-            directionSelect.innerHTML = `
-                <option value="X">
-                    Global-X
-                </option>
-                <option value="Y">
-                    Global-Y
-                </option>
-                <option value="Z">
-                    Global-Z
-                </option>
-            `;
-        }
-
-        // MOMENT
-        else{
-            document.getElementById(
-                "value1Label"
-            ).innerText = "Moment";
-
-            directionSelect.innerHTML = `
-                <option value="MX">
-                    Moment about Global-X
-                </option>
-
-                <option value="MY">
-                    Moment about Global-Y
-                </option>
-
-                <option value="MZ">
-                    Moment about Global-Z
-                </option>
-            `;
-        }
+        showGroup("forceComponentsGroup");
+        showGroup("momentComponentsGroup");
     }
 
 
@@ -1277,131 +1253,105 @@ function updateLoadFields(){
 
     else{
 
-        const directionSelect =
-            document.getElementById("loadDirection");
-
-        // Show direction for all member loads
-        showGroup("directionGroup");
-
+        // COORDINATE SYSTEM
+        showGroup(
+            "coordinateSystemGroup"
+        );
 
         // POINT LOAD
         if(type === "point"){
 
-            showGroup("aGroup");
+            showGroup(
+                "forceComponentsGroup"
+            );
 
-            document.getElementById(
-                "value1Label"
-            ).innerText = "Concentrated Force";
+            showGroup(
+                "momentComponentsGroup"
+            );
 
-            directionSelect.innerHTML = `
-                <option value="x">
-                    Local-X
-                </option>
+            hideGroup(
+                "distributedLoadComponentsGroup"
+            );
 
-                <option value="y">
-                    Local-Y
-                </option>
-
-                <option value="z">
-                    Local-Z
-                </option>
-            `;
-        }
-
-
-
-        // MOMENT
-        else if(type === "moment"){
+            hideGroup(
+                "trapezoidalComponentsGroup"
+            );
 
             showGroup("aGroup");
 
-            document.getElementById(
-                "value1Label"
-            ).innerText = "Concentrated Moment";
-
-            directionSelect.innerHTML = `
-                <option value="x">
-                    Moment about Local-X
-                </option>
-
-                <option value="y">
-                    Moment about Local-Y
-                </option>
-
-                <option value="z">
-                    Moment about Local-Z
-                </option>
-            `;
+            hideGroup("bGroup");
         }
-
-
 
         // UDL
         else if(type === "udl"){
 
-            document.getElementById(
-                "value1Label"
-            ).innerText = "UDL";
+            hideGroup(
+                "forceComponentsGroup"
+            );
 
-            directionSelect.innerHTML = `
-                <option value="y">
-                    Local-Y
-                </option>
+            hideGroup(
+                "momentComponentsGroup"
+            );
 
-                <option value="z">
-                    Local-Z
-                </option>
-            `;
+            showGroup(
+                "distributedLoadComponentsGroup"
+            );
+
+            hideGroup(
+                "trapezoidalComponentsGroup"
+            );
+
+            hideGroup("aGroup");
+
+            hideGroup("bGroup");
         }
-
-
 
         // PARTIAL UDL
         else if(type === "partial_udl"){
 
+            hideGroup(
+                "forceComponentsGroup"
+            );
+
+            hideGroup(
+                "momentComponentsGroup"
+            );
+
+            showGroup(
+                "distributedLoadComponentsGroup"
+            );
+
+            hideGroup(
+                "trapezoidalComponentsGroup"
+            );
+
             showGroup("aGroup");
 
             showGroup("bGroup");
-
-            document.getElementById(
-                "value1Label"
-            ).innerText = "UDL";
-
-            directionSelect.innerHTML = `
-                <option value="y">
-                    Local-Y
-                </option>
-
-                <option value="z">
-                    Local-Z
-                </option>
-            `;
         }
-
-
 
         // TRAPEZOIDAL
         else if(type === "trapezoidal"){
 
-            showGroup("value2Group");
+            hideGroup(
+                "forceComponentsGroup"
+            );
 
-            document.getElementById(
-                "value1Label"
-            ).innerText = "Start Load";
+            hideGroup(
+                "momentComponentsGroup"
+            );
 
-            document.getElementById(
-                "value2Label"
-            ).innerText = "End Load";
+            hideGroup(
+                "distributedLoadComponentsGroup"
+            );
 
-            directionSelect.innerHTML = `
-                <option value="y">
-                    Local-Y
-                </option>
+            showGroup(
+                "trapezoidalComponentsGroup"
+            );
 
-                <option value="z">
-                    Local-Z
-                </option>
-            `;
+            hideGroup("aGroup");
+
+            hideGroup("bGroup");
         }
     }
 
@@ -1462,66 +1412,50 @@ function updateLoadInstructions(){
     }
 
     // MEMBER LOADS
-
     else{
 
         // POINT LOAD
         if(type === "point"){
             html = `
-                <b>Sign Convention</b><br>
-                Positive → Along the selected local axis<br>
-                Negative → Opposite to the selected local axis
+                <b>Coordinate System</b><br>
+                Select whether the load is defined in
+                Local or Global coordinates.
+
                 <br><br>
-                <b>Concentrated Force</b><br>
-                Magnitude of Concentrated Force in kN.
+
+                <b>Force</b><br>
+                Enter Fx, Fy and Fz simultaneously.
+
                 <br><br>
-                <b>Direction</b><br>
-                Local-X → Axial force along the member<br>
-                Local-Y → Transverse force in local Y<br>
-                Local-Z → Transverse force in local Z
+
+                <b>Moment</b><br>
+                Enter Mx, My and Mz simultaneously.
+
                 <br><br>
+
                 <b>a</b><br>
-                Distance of Load from member start node.
+                Distance of the point load from the
+                member start node.
             `;
         }
-
-        // MOMENT
-        else if(type === "moment"){
-
-            html = `
-                <b>Sign Convention</b><br>
-                Positive → Positive rotation about the
-                selected local axis<br>
-                Negative → Opposite rotation
-                <br><br>
-                <b>Concentrated Moment</b><br>
-                Applied Concentrated Moment on member in kN-m.
-                <br><br>
-                <b>Direction</b><br>
-                Local-X → Moment about local X-axis<br>
-                Local-Y → Moment about local Y-axis<br>
-                Local-Z → Moment about local Z-axis
-                <br><br>
-                <b>a</b><br>
-                Distance of Load from member start node.
-            `;
-        }
-
-
 
         // UDL
         else if(type === "udl"){
 
             html = `
-                <b>Sign Convention</b><br>
-                Positive → Along the selected local axis<br>
-                Negative → Opposite to the selected local axis
+                <b>Coordinate System</b><br>
+                Select Local or Global coordinates.
+
                 <br><br>
+
                 <b>UDL</b><br>
-                Uniformly distributed load intensity in kN/m.
-                <b>Direction</b><br>
-                Local-Y → Distributed load along local Y<br>
-                Local-Z → Distributed load along local Z
+                Enter distributed load intensity
+                wx, wy and wz in kN/m.
+
+                <br><br>
+
+                Positive values act along the selected
+                coordinate directions.
             `;
         }
 
@@ -1531,22 +1465,23 @@ function updateLoadInstructions(){
         else if(type === "partial_udl"){
 
             html = `
-                <b>Sign Convention</b><br>
-                Positive → Along the selected local axis<br>
-                Negative → Opposite to the selected local axis
+                <b>Coordinate System</b><br>
+                Select Local or Global coordinates.
+
                 <br><br>
-                <b>UDL</b><br>
-                Uniformly distributed load intensity in kN/m.
+
+                <b>Partial UDL</b><br>
+                Enter wx, wy and wz in kN/m.
+
                 <br><br>
-                <b>Direction</b><br>
-                Local-Y → Distributed load along local Y<br>
-                Local-Z → Distributed load along local Z
-                <br><br>
+
                 <b>a</b><br>
-                Start distance of UDL from member start node.
+                Start position of the UDL.
+
                 <br><br>
+
                 <b>b</b><br>
-                End distance of UDL from member start node.
+                End position of the UDL.
             `;
         }
 
@@ -1556,19 +1491,22 @@ function updateLoadInstructions(){
         else if(type === "trapezoidal"){
 
             html = `
-                <b>Sign Convention</b><br>
-                Positive → Along the selected local axis<br>
-                Negative → Opposite to the selected local axis
+                <b>Coordinate System</b><br>
+                Select Local or Global coordinates.
+
                 <br><br>
+
                 <b>Start Load</b><br>
-                Load intensity at start node in kN/m.
+                Enter wx₁, wy₁ and wz₁.
+
                 <br><br>
+
                 <b>End Load</b><br>
-                Load intensity at end node in kN/m.
+                Enter wx₂, wy₂ and wz₂.
+
                 <br><br>
-                <b>Direction</b><br>
-                Local-Y → Distributed load along local Y<br>
-                Local-Z → Distributed load along local Z
+
+                Units: kN/m.
             `;
         }
     }
@@ -1650,27 +1588,100 @@ function editLoad(index){
     // UPDATE FIELDS
     updateLoadFields();
 
-    // DIRECTION
+    // COORDINATE SYSTEM
     document.getElementById(
-        "loadDirection"
-    ).value = load.direction;
+        "loadCoordinateSystem"
+    ).value =
+        load.coordinate_system || "local";
 
-    // VALUES
+    // FORCE
     document.getElementById(
-        "loadValue1"
-    ).value = load.value1;
+        "loadFx"
+    ).value =
+        load.Fx ?? 0;
 
     document.getElementById(
-        "loadValue2"
-    ).value = load.value2;
+        "loadFy"
+    ).value =
+        load.Fy ?? 0;
 
+    document.getElementById(
+        "loadFz"
+    ).value =
+        load.Fz ?? 0;
+
+    // MOMENT
+    document.getElementById(
+        "loadMx"
+    ).value =
+        load.Mx ?? 0;
+
+    document.getElementById(
+        "loadMy"
+    ).value =
+        load.My ?? 0;
+
+    document.getElementById(
+        "loadMz"
+    ).value =
+        load.Mz ?? 0;
+
+    // DISTRIBUTED
+    document.getElementById(
+        "loadWx"
+    ).value =
+        load.wx ?? 0;
+
+    document.getElementById(
+        "loadWy"
+    ).value =
+        load.wy ?? 0;
+
+    document.getElementById(
+        "loadWz"
+    ).value =
+        load.wz ?? 0;
+
+    // TRAPEZOIDAL START
+    document.getElementById(
+        "loadWx1"
+    ).value =
+        load.wx1 ?? 0;
+
+    document.getElementById(
+        "loadWy1"
+    ).value =
+        load.wy1 ?? 0;
+
+    document.getElementById(
+        "loadWz1"
+    ).value =
+        load.wz1 ?? 0;
+
+    // TRAPEZOIDAL END
+    document.getElementById(
+        "loadWx2"
+    ).value =
+        load.wx2 ?? 0;
+
+    document.getElementById(
+        "loadWy2"
+    ).value =
+        load.wy2 ?? 0;
+
+    document.getElementById(
+        "loadWz2"
+    ).value =
+        load.wz2 ?? 0;
+
+    // POSITIONS 
     document.getElementById(
         "loadA"
-    ).value = load.a;
+    ).value = load.a ?? 0;
 
     document.getElementById(
         "loadB"
-    ).value = load.b;
+    ).value = load.b ?? 0;
 
 }
 
@@ -1679,9 +1690,14 @@ function editLoad(index){
 // #region  ASSIGN LOAD
 // -----------------------------------------------------
 
-function assignLoad(index){
+function assignLoad(index, card){
 
-    let card = document.querySelectorAll(".load-item")[index];
+    if(!card){
+        console.error(
+            "assignLoad(): card not provided"
+        );
+        return;
+    }
 
     let input = card.querySelector(".load-assignment-input");
 

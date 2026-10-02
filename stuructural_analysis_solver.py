@@ -102,54 +102,145 @@ class Member:
     # ============================
     
     # POINT LOAD
-    def add_point_load(self, P, a, direction):
+    def add_point_load(
+        self,
+        Fx=0.0,
+        Fy=0.0,
+        Fz=0.0,
+        a=0.0,
+        Mx=0.0,
+        My=0.0,
+        Mz=0.0,
+        coordinate_system="local"):
 
         self.member_loads.append({
+
             "type": "point",
-            "P": P,   # load
-            "a": a,   # distance from start
-            "direction": direction  # direction of the point load
+
+            "coordinate_system": coordinate_system,
+
+            "a": float(a),
+
+            "Fx": float(Fx),
+            "Fy": float(Fy),
+            "Fz": float(Fz),
+
+            "Mx": float(Mx),
+            "My": float(My),
+            "Mz": float(Mz)
         })
 
     # UDL
-    def add_udl(self, w, direction):
+    def add_udl(
+        self,
+        wx=0.0,
+        wy=0.0,
+        wz=0.0,
+        coordinate_system="local"):
 
         self.member_loads.append({
+
             "type": "udl",
-            "w": w,   # load intensity
-            "direction": direction  # direction of the point load
+            "coordinate_system": coordinate_system,
+
+            "wx": float(wx),
+            "wy": float(wy),
+            "wz": float(wz)
         })
 
     # PARTIAL UDL
-    def add_partial_udl(self, w, a, b, direction):
+    def add_partial_udl(
+        self,
+        wx=0.0,
+        wy=0.0,
+        wz=0.0,
+        a=0.0,
+        b=0.0,
+        coordinate_system="local"):
 
         self.member_loads.append({
+
             "type": "partial_udl",
-            "w": w,   # load intensity  
-            "a": a,   # start distance
-            "b": b,    # end distance
-            "direction": direction  # direction of the point load
+
+            "coordinate_system": coordinate_system,
+
+            "a": float(a),
+            "b": float(b),
+
+            "wx": float(wx),
+            "wy": float(wy),
+            "wz": float(wz)
         })
 
     # TRAPEZOIDAL LOAD
-    def add_trapezoidal_load(self, w1, w2, direction):
+    def add_trapezoidal_load(
+        self,
+        wx1=0.0,
+        wy1=0.0,
+        wz1=0.0,
+
+        wx2=0.0,
+        wy2=0.0,
+        wz2=0.0,
+
+        coordinate_system="local"):
 
         self.member_loads.append({
+
             "type": "trapezoidal",
-            "w1": w1,   # start intensity
-            "w2": w2,    # end intensity
-            "direction": direction  # direction of the point load
+
+            "coordinate_system": coordinate_system,
+
+            "wx1": float(wx1),
+            "wy1": float(wy1),
+            "wz1": float(wz1),
+
+            "wx2": float(wx2),
+            "wy2": float(wy2),
+            "wz2": float(wz2)
         })
 
-    # MEMBER MOMENT
-    def add_moment_load(self, M, a, direction):
+    # SUPPORT DISPLACEMENT
+    def add_support_displacement_global(self,
+        ux1=0.0, uy1=0.0, uz1=0.0, rx1=0.0, ry1=0.0, rz1=0.0,
+        ux2=0.0, uy2=0.0, uz2=0.0, rx2=0.0, ry2=0.0, rz2=0.0):
 
-        self.member_loads.append({
-            "type": "moment",
-            "M": M,   # applied moment
-            "a": a,    # distance from start
-            "direction": direction  # direction of the point load
-        })
+        self.support_displacements_global = np.array([
+        [ux1], [uy1], [uz1], [rx1], [ry1], [rz1],
+        [ux2], [uy2], [uz2], [rx2], [ry2], [rz2]], dtype=float)
+
+    def validate_member_loads(self):
+
+        for load in self.member_loads:
+
+            load_type = load["type"]
+
+            if load_type == "point":
+
+                a = load["a"]
+
+                if a < 0 or a > self.L:
+
+                    raise ValueError(
+                        f"Point load position "
+                        f"a={a} is outside member "
+                        f"{self.name} length {self.L}"
+                    )
+
+
+            elif load_type == "partial_udl":
+
+                a = load["a"]
+                b = load["b"]
+
+                if a < 0 or b > self.L or b <= a:
+
+                    raise ValueError(
+                        f"Invalid partial UDL range "
+                        f"a={a}, b={b} "
+                        f"for member {self.name} "
+                        f"with length {self.L}"
+                    )
 
     # ----------------------------
     # INITIALIZATION
@@ -159,6 +250,10 @@ class Member:
         self.compute_geometry(nodes)
 
         self.compute_transformation_matrix()
+
+        self.validate_member_loads()
+
+        self.convert_global_loads_to_local()
 
         self.compute_local_stiffness()
 
@@ -368,14 +463,183 @@ class Member:
 
         self.k_global = self.T.T @ self.k_local @ self.T
 
-    # --------------------------
+    # GLOBAL → LOCAL MEMBER LOAD CONVERSION
+    def convert_global_loads_to_local(self):
+
+        if self.R is None:
+            raise ValueError(
+                f"Transformation matrix is not available "
+                f"for member {self.name}")
+
+        R = self.R
+
+        converted_loads = []
+
+        for load in self.member_loads:
+
+            coordinate_system = load.get("coordinate_system","local").lower()
+
+            # LOCAL LOAD
+            if coordinate_system == "local":
+
+                local_load = load.copy()
+                local_load["coordinate_system"] = "local"
+                converted_loads.append(local_load)
+                continue
+
+            # GLOBAL LOAD
+            if coordinate_system != "global":
+
+                raise ValueError(
+                    f"Invalid coordinate system "
+                    f"'{coordinate_system}' "
+                    f"for member load on member {self.name}. "
+                    f"Use 'local' or 'global'."
+                )
+
+            load_type = load["type"]
+
+            # POINT LOAD
+            if load_type == "point":
+                # Global force vector
+                F_global = np.array([
+                    load.get("Fx", 0.0),
+                    load.get("Fy", 0.0),
+                    load.get("Fz", 0.0)
+                ], dtype=float)
+
+                # Global moment vector
+                M_global = np.array([
+                    load.get("Mx", 0.0),
+                    load.get("My", 0.0),
+                    load.get("Mz", 0.0)
+                ], dtype=float)
+
+                # Transform
+                F_local = R @ F_global
+                M_local = R @ M_global
+
+
+                local_load = load.copy()
+
+                local_load["coordinate_system"] = "local"
+
+                local_load["Fx"] = float(F_local[0])
+                local_load["Fy"] = float(F_local[1])
+                local_load["Fz"] = float(F_local[2])
+
+                local_load["Mx"] = float(M_local[0])
+                local_load["My"] = float(M_local[1])
+                local_load["Mz"] = float(M_local[2])
+
+
+                converted_loads.append(local_load)
+
+            # UDL
+            elif load_type == "udl":
+
+                w_global = np.array([
+                    load.get("wx", 0.0),
+                    load.get("wy", 0.0),
+                    load.get("wz", 0.0)
+                ], dtype=float)
+
+                w_local = R @ w_global
+
+                local_load = load.copy()
+
+                local_load["coordinate_system"] = "local"
+
+                local_load["wx"] = float(w_local[0])
+                local_load["wy"] = float(w_local[1])
+                local_load["wz"] = float(w_local[2])
+
+                converted_loads.append(local_load)
+
+            # PARTIAL UDL
+            elif load_type == "partial_udl":
+
+                w_global = np.array([
+                    load.get("wx", 0.0),
+                    load.get("wy", 0.0),
+                    load.get("wz", 0.0)
+                ], dtype=float)
+
+                w_local = R @ w_global
+
+                local_load = load.copy()
+
+                local_load["coordinate_system"] = "local"
+
+                local_load["wx"] = float(w_local[0])
+                local_load["wy"] = float(w_local[1])
+                local_load["wz"] = float(w_local[2])
+
+
+                converted_loads.append(local_load)
+
+            # TRAPEZOIDAL LOAD
+            elif load_type == "trapezoidal":
+
+                # Start intensity
+                w1_global = np.array([
+                    load.get("wx1", 0.0),
+                    load.get("wy1", 0.0),
+                    load.get("wz1", 0.0)
+                ], dtype=float)
+
+                # End intensity
+                w2_global = np.array([
+                    load.get("wx2", 0.0),
+                    load.get("wy2", 0.0),
+                    load.get("wz2", 0.0)
+                ], dtype=float)
+
+                # Transform both
+                w1_local = R @ w1_global
+                w2_local = R @ w2_global
+
+
+                local_load = load.copy()
+
+                local_load["coordinate_system"] = "local"
+
+                local_load["wx1"] = float(w1_local[0])
+                local_load["wy1"] = float(w1_local[1])
+                local_load["wz1"] = float(w1_local[2])
+
+                local_load["wx2"] = float(w2_local[0])
+                local_load["wy2"] = float(w2_local[1])
+                local_load["wz2"] = float(w2_local[2])
+
+                converted_loads.append(local_load)
+
+            # UNKNOWN LOAD TYPE
+            else:
+                raise ValueError(
+                    f"Unsupported member load type "
+                    f"'{load_type}' on member {self.name}"
+                )
+
+        # Replace original load list
+        self.member_loads = converted_loads
+
     # FIXED END FORCES 
-    # --------------------------
     def compute_fixed_end_forces(self):
 
         L = self.L
 
         self.F_Fixed_local = np.zeros((12,1))
+
+        def add_axial_load(Fx1, Fx2):
+
+            self.F_Fixed_local[0, 0] += Fx1
+            self.F_Fixed_local[6, 0] += Fx2
+
+        def add_torsional_load(Mx1, Mx2):
+
+            self.F_Fixed_local[3, 0] += Mx1
+            self.F_Fixed_local[9, 0] += Mx2
 
         def add_bending_load(F_plane, direction):
 
@@ -402,104 +666,257 @@ class Member:
 
 
             else:
-                raise ValueError(f"Invalid load direction: {direction}. ""Use 'y' or 'z'.")
+                raise ValueError(f"Invalid bending direction: {direction}")
 
-        
+        # MEMBER LOAD LOOP
         for load in self.member_loads:
-            direction =  load["direction"]
 
             # POINT LOAD
             if load["type"] == "point":
-                P = -load["P"]
+
                 a = load["a"]
                 b = L - a
 
-                F = np.array([
-                    [P*b**2*(3*a+b)/L**3],
-                    [P*a*b**2/L**2],
-                    [P*a**2*(a+3*b)/L**3],
-                    [-P*a**2*b/L**2]
-                ])
+                Fx = -load.get("Fx", 0.0)
+                Fy = -load.get("Fy", 0.0)
+                Fz = -load.get("Fz", 0.0)
 
-                add_bending_load(F, direction)
+                Mx = load.get("Mx", 0.0)
+                My = load.get("My", 0.0)
+                Mz = load.get("Mz", 0.0)
+
+                # AXIAL COMPONENT
+                Fx1 = Fx * b / L
+                Fx2 = Fx * a / L
+
+                add_axial_load(Fx1, Fx2)
+
+                # LOCAL Y FORCE
+                if abs(Fy) > 0.0:
+
+                    F_y = np.array([
+                        [Fy*b**2*(3*a+b)/L**3],
+                        [Fy*a*b**2/L**2],
+                        [Fy*a**2*(a+3*b)/L**3],
+                        [-Fy*a**2*b/L**2]
+                    ])
+
+                    add_bending_load(F_y, "y")
+
+                # LOCAL Z FORCE
+                if abs(Fz) > 0.0:
+
+                    F_z = np.array([
+                        [Fz*b**2*(3*a+b)/L**3],
+                        [Fz*a*b**2/L**2],
+                        [Fz*a**2*(a+3*b)/L**3],
+                        [-Fz*a**2*b/L**2]
+                    ])
+
+                    add_bending_load(F_z, "z")
+
+                # Torsion about local x
+                if abs(Mx) > 0.0:
+
+                    Mx1 = -Mx * b / L
+                    Mx2 = -Mx * a / L
+
+                    add_torsional_load(Mx1, Mx2)
+
+                # Bending moment about local y
+                if abs(My) > 0.0:
+
+                    M = My
+
+                    F = np.array([
+                        [-6*M*a*b/L**3],
+                        [M*b*(2*a-b)/L**2],
+                        [6*M*a*b/L**3],
+                        [M*a*(2*b-a)/L**2]])
+
+                    add_bending_load(F, "z")
+
+                # Bending moment about local z
+                if abs(Mz) > 0.0:
+
+                    M = Mz
+
+                    F = np.array([
+                        [-6*M*a*b/L**3],
+                        [M*b*(2*a-b)/L**2],
+                        [6*M*a*b/L**3],
+                        [M*a*(2*b-a)/L**2]])
+
+                    add_bending_load(F, "y")
 
             # UDL
             elif load["type"] == "udl":
 
-                w = -load["w"]
+                wx = -load.get("wx", 0.0)
+                wy = -load.get("wy", 0.0)
+                wz = -load.get("wz", 0.0)
 
-                F = np.array([
-                    [w*L/2],
-                    [w*L**2/12],
-                    [w*L/2],
-                    [-w*L**2/12]
-                ])
+                # AXIAL UDL
+                if abs(wx) > 0.0:
 
-                add_bending_load(F, direction)
+                    Fx1 = wx * L / 2
+                    Fx2 = wx * L / 2
+
+                    add_axial_load(Fx1, Fx2)
+
+                # LOCAL Y UDL
+                if abs(wy) > 0.0:
+
+                    F_y = np.array([
+                        [wy*L/2],
+                        [wy*L**2/12],
+                        [wy*L/2],
+                        [-wy*L**2/12]])
+
+                    add_bending_load(F_y, "y")
+
+                # LOCAL Z UDL
+                if abs(wz) > 0.0:
+
+                    F_z = np.array([
+                        [wz*L/2],
+                        [wz*L**2/12],
+                        [wz*L/2],
+                        [-wz*L**2/12]])
+
+                    add_bending_load(F_z, "z")
 
             # PARTIAL UDL
             elif load["type"] == "partial_udl":
 
-                w = -load["w"]
                 a = load["a"]
                 b = load["b"]
 
-                length = b - a
+                wx = -load.get("wx", 0.0)
+                wy = -load.get("wy", 0.0)
+                wz = -load.get("wz", 0.0)
 
-                W = w * length
+                # AXIAL PARTIAL UDL
+                if abs(wx) > 0.0:
 
-                R1 = (w / (2 * L**3)) * (2 * L**3 * (b - a) - 2 * L * (b**3 - a**3) + (b**4 - a**4))
-                R2 = W - R1
-                M1 = (w / (12 * L**2)) * (b**2 * (6 * L**2 - 8 * L * b + 3 * b**2) - 
-                                        a**2 * (6 * L**2 - 8 * L * a + 3 * a**2))
-                M2 = (-w / (12 * L**2)) * (b**3 * (4 * L - 3 * b) - a**3 * (4 * L - 3 * a))
-                F = np.array([
-                    [R1],
-                    [M1],
-                    [R2],
-                    [M2]
-                ])
+                    Fx1 = (wx * (b - a) * (2*L - a - b) / (2*L))
+                    Fx2 = (wx * (b**2 - a**2) / (2*L))
 
-                add_bending_load(F, direction)
+                    add_axial_load(Fx1, Fx2)
+
+                # BENDING Y
+                if abs(wy) > 0.0:
+
+                    W = wy * (b - a)
+
+                    R1 = (wy / (2 * L**3)) * (
+                        2 * L**3 * (b-a)
+                        - 2 * L * (b**3-a**3)
+                        + (b**4-a**4)
+                    )
+
+                    R2 = W - R1
+
+                    M1 = (wy / (12 * L**2)) * (
+                        b**2 * (6*L**2 - 8*L*b + 3*b**2)
+                        -
+                        a**2 * (6*L**2 - 8*L*a + 3*a**2)
+                    )
+
+                    M2 = (-wy / (12 * L**2)) * (
+                        b**3 * (4*L - 3*b)
+                        -
+                        a**3 * (4*L - 3*a)
+                    )
+
+                    F_y = np.array([
+                        [R1],
+                        [M1],
+                        [R2],
+                        [M2]
+                    ])
+
+                    add_bending_load(F_y, "y")
+
+                # BENDING Z
+                if abs(wz) > 0.0:
+
+                    W = wz * (b - a)
+
+                    R1 = (wz / (2 * L**3)) * (
+                        2 * L**3 * (b-a)
+                        - 2 * L * (b**3-a**3)
+                        + (b**4-a**4)
+                    )
+
+                    R2 = W - R1
+
+                    M1 = (wz / (12 * L**2)) * (
+                        b**2 * (6*L**2 - 8*L*b + 3*b**2)
+                        -
+                        a**2 * (6*L**2 - 8*L*a + 3*a**2)
+                    )
+
+                    M2 = (-wz / (12 * L**2)) * (
+                        b**3 * (4*L - 3*b)
+                        -
+                        a**3 * (4*L - 3*a)
+                    )
+
+                    F_z = np.array([
+                        [R1],
+                        [M1],
+                        [R2],
+                        [M2]
+                    ])
+
+                    add_bending_load(F_z, "z")
 
             # TRAPEZOIDAL LOAD
             elif load["type"] == "trapezoidal":
 
-                w1 = -load["w1"]
-                w2 = -load["w2"]
+                wx1 = -load.get("wx1", 0.0)
+                wy1 = -load.get("wy1", 0.0)
+                wz1 = -load.get("wz1", 0.0)
 
-                F = np.array([
-                    [(L/20)*(7*w1+3*w2)],
-                    [(L**2/60)*(3*w1+2*w2)],
-                    [(L/20)*(3*w1+7*w2)],
-                    [-(L**2/60)*(2*w1+3*w2)]
-                ])
+                wx2 = -load.get("wx2", 0.0)
+                wy2 = -load.get("wy2", 0.0)
+                wz2 = -load.get("wz2", 0.0)
 
-                add_bending_load(F, direction)
+                # AXIAL
+                if abs(wx1) > 0.0 or abs(wx2) > 0.0:
+
+                    Fx1 = L/6 * (2*wx1 + wx2)
+                    Fx2 = L/6 * (wx1 + 2*wx2)
+
+                    add_axial_load(Fx1, Fx2)
+
+                # LOCAL Y
+                if abs(wy1) > 0.0 or abs(wy2) > 0.0:
+
+                    F_y = np.array([
+                        [(L/20)*(7*wy1 + 3*wy2)],
+                        [(L**2/60)*(3*wy1 + 2*wy2)],
+                        [(L/20)*(3*wy1 + 7*wy2)],
+                        [-(L**2/60)*(2*wy1 + 3*wy2)]
+                    ])
+
+                    add_bending_load(F_y, "y")
+
+                # LOCAL Z
+                if abs(wz1) > 0.0 or abs(wz2) > 0.0:
+
+                    F_z = np.array([
+                        [(L/20)*(7*wz1 + 3*wz2)],
+                        [(L**2/60)*(3*wz1 + 2*wz2)],
+                        [(L/20)*(3*wz1 + 7*wz2)],
+                        [-(L**2/60)*(2*wz1 + 3*wz2)]
+                    ])
+
+                    add_bending_load(F_z, "z")
 
 
-            # MEMBER MOMENT
-            elif load["type"] == "moment":
-
-                M = load["M"]
-                a = load["a"]
-
-                b = L - a
-
-                F = np.array([
-                    [-6*M*a*b/L**3],
-                    [M*b*(2*a-b)/L**2],
-                    [6*M*a*b/L**3],
-                    [M*a*(2*b-a)/L**2]
-                ])
-
-                if direction == "z":
-                    add_bending_load(F, "y")
-
-                elif direction == "y":
-                    add_bending_load(F, "z")
-
-        # Fixed-end forces due to support movement
+        # SUPPORT DISPLACEMENT CONTRIBUTION
         if np.any(self.support_displacements_local):
 
             F_support_local = self.k_local @ self.support_displacements_local
@@ -511,14 +928,6 @@ class Member:
 
         self.f_memb_force_local = np.zeros((12,1))
         self.d_local = np.zeros((12,1))
-
-    def add_support_displacement_global(self,
-        ux1=0.0, uy1=0.0, uz1=0.0, rx1=0.0, ry1=0.0, rz1=0.0,
-        ux2=0.0, uy2=0.0, uz2=0.0, rx2=0.0, ry2=0.0, rz2=0.0):
-
-        self.support_displacements_global = np.array([
-        [ux1], [uy1], [uz1], [rx1], [ry1], [rz1],
-        [ux2], [uy2], [uz2], [rx2], [ry2], [rz2]], dtype=float)
 
 
     # ============================
@@ -551,42 +960,63 @@ class Member:
 
                 # UDL
                 for load in self.member_loads:
-                    if load["direction"] != direction:
+
+                    if direction == "y":
+                        force_component = "Fy"
+                        intensity_component = "wy"
+                        intensity_start = "wy1"
+                        intensity_end = "wy2"
+
+                    elif direction == "z":
+                        force_component = "Fz"
+                        intensity_component = "wz"
+                        intensity_start = "wz1"
+                        intensity_end = "wz2"
+
+                    else:
                         continue
 
+                    # UDL
                     if load["type"] == "udl":
-                        w = -load["w"]
+
+                        w = -load.get(intensity_component, 0.0)
                         v -= w*x
 
+                    # PARTIAL UDL
                     elif load["type"] == "partial_udl":
-                        w = -load["w"]
+
+                        w = -load.get(intensity_component, 0.0)
+
                         a = load["a"]
                         b = load["b"]
 
                         if x <= a:
                             pass
+
                         elif x <= b:
                             v -= w*(x-a)
+
                         else:
                             v -= w*(b-a)
 
+                    # POINT
                     elif load["type"] == "point":
-                        P = -load["P"]
+
+                        P = -load.get(force_component, 0.0)
                         a = load["a"]
 
                         if x >= a:
                             v -= P
 
+                    # TRAPEZOIDAL
                     elif load["type"] == "trapezoidal":
-                        w1 = -load["w1"]
-                        w2 = -load["w2"]
 
-                        v -= (w1*x) + ((w2-w1)*x**2/(2*L))
+                        w1 = -load.get(intensity_start, 0.0)
+                        w2 = -load.get(intensity_end, 0.0)
 
+                        v -= (w1*x + (w2-w1)*x**2/(2*L))
 
                 shear_values.append(v)
-
-            shear_values[-1] += V2[direction]
 
             V_arr = np.array(shear_values)
 
@@ -606,81 +1036,164 @@ class Member:
         L = self.L
         x_vals = np.linspace(0, L, n_points)
 
-        V1 = {
-            "y": self.f_memb_force_local[2, 0],
-            "z": self.f_memb_force_local[1, 0]}
-        M1 = {
-            "y": self.f_memb_force_local[4, 0],
-            "z": self.f_memb_force_local[5, 0]}
-        force_direction = {
-            "y": "z",       # Vz produces My
-            "z": "y"}       # Vy produces Mz
+        # Shear force which produces moment about local Y
+        V_y_axis = self.f_memb_force_local[2, 0]
+        # Shear force which produces moment about local Z
+        V_z_axis = self.f_memb_force_local[1, 0]
+        # Moment about local Y
+        M_y_axis = self.f_memb_force_local[4, 0]
+        # Moment about local Z
+        M_z_axis = self.f_memb_force_local[5, 0]
 
-        for direction in ("y", "z"):
+        My_values = []
 
-            moment_values = []
+        for x in x_vals:
 
-            for x in x_vals:
+            # Starting internal moment
+            m = M_y_axis + V_y_axis * x
 
-                m = -M1[direction] + V1[direction]*x
+            # MEMBER LOADS
+            for load in self.member_loads:
+                # UDL
+                if load["type"] == "udl":
+
+                    wz = -load.get("wz", 0.0)
+                    m -= wz * x**2 / 2
+
+                # PARTIAL UDL
+                elif load["type"] == "partial_udl":
+
+                    wz = -load.get("wz", 0.0)
+
+                    a = load["a"]
+                    b = load["b"]
+
+                    if x <= a:
+                        # Load has not started
+                        pass
+
+                    elif x <= b:
+                        # Portion of load has been passed
+                        m -= wz * (x - a)**2 / 2
+
+                    else:
+                        # Entire partial UDL has been passed
+                        m -= (wz * (b - a) * (x - (a + b) / 2))
+
+                # POINT LOAD
+                elif load["type"] == "point":
+
+                    Fz = -load.get("Fz", 0.0)
+                    a = load["a"]
+
+                    # Transverse force Fz
+                    if x >= a:
+                        m -= Fz * (x - a)
+
+                    # Concentrated moment My
+                    if abs(load.get("My", 0.0)) > 1e-12:
+
+                        if x >= a:
+                            m += load["My"]
+
+                # TRAPEZOIDAL LOAD
+                elif load["type"] == "trapezoidal":
+
+                    wz1 = -load.get("wz1", 0.0)
+                    wz2 = -load.get("wz2", 0.0)
+
+                    m -= (wz1 * x**2 / 2 +
+                        (wz2 - wz1) * x**3 / (6 * L))
+
+            My_values.append(m)
+
+        # M_z
+        Mz_values = []
+
+        for x in x_vals:
+
+            # Starting internal moment
+            m = -M_z_axis + V_z_axis * x
+
+            # MEMBER LOADS
+            for load in self.member_loads:
 
                 # UDL
-                for load in self.member_loads:
+                if load["type"] == "udl":
 
-                    if load["type"] != "moment" and load["direction"] != force_direction[direction]:
-                        continue
+                    wy = -load.get("wy", 0.0)
+                    m -= wy * x**2 / 2
 
-                    if load["type"] == "udl":
-                        w = -load["w"]
-                        m -= w*x*x/2
+                # PARTIAL UDL
+                elif load["type"] == "partial_udl":
 
-                    elif load["type"] == "partial_udl":
-                        w = -load["w"]
-                        a = load["a"]
-                        b = load["b"]
+                    wy = -load.get("wy", 0.0)
 
-                        if x <= a:
-                            pass
-                        elif x <= b:
-                            m -= w*((x-a)**2)/2
-                        else:
-                            m -= (w*(b-a)*( x - (a+b)/2))
+                    a = load["a"]
+                    b = load["b"]
 
-                    elif load["type"] == "point":
-                        P = -load["P"]
-                        a = load["a"]
+                    if x <= a:
+                        pass
+
+                    elif x <= b:
+                        m -= wy * (x - a)**2 / 2
+
+                    else:
+                        m -= (wy * (b - a) * (x - (a + b) / 2))
+
+                # POINT LOAD
+                elif load["type"] == "point":
+
+                    Fy = -load.get("Fy", 0.0)
+                    a = load["a"]
+
+                    # Transverse force Fy
+                    if x >= a:
+                        m -= Fy * (x - a)
+
+                    # Concentrated moment Mz
+                    if abs(load.get("Mz", 0.0)) > 1e-12:
+
                         if x >= a:
-                            m -= P*(x-a)
+                            m += load["Mz"]
 
-                    elif load["type"] == "moment":
-                        if load["direction"] != direction:
-                            continue
+                # TRAPEZOIDAL LOAD
+                elif load["type"] == "trapezoidal":
 
-                        Mm = load["M"]
-                        a  = load["a"]
+                    wy1 = -load.get("wy1", 0.0)
+                    wy2 = -load.get("wy2", 0.0)
 
-                        if x >= a:
-                            m += Mm
+                    m -= (wy1 * x**2 / 2 +
+                        (wy2 - wy1) * x**3 / (6 * L))
 
-                    elif load["type"] == "trapezoidal":
-                        w1 = -load["w1"]
-                        w2 = -load["w2"]
+            Mz_values.append(m)
 
-                        m -= (w1*x*x/2) + ((w2-w1)*x**3/(6*L))
-
-                moment_values.append(m)
-
-            self.moment_M[direction] = moment_values
-
-            M_arr = np.array(moment_values)
-
-            self.max_moment[direction] = np.max(M_arr)
-            self.x_max_moment[direction] = x_vals[np.argmax(M_arr)]
-
-            self.min_moment[direction] = np.min(M_arr)
-            self.x_min_moment[direction] = x_vals[np.argmin(M_arr)]
+        # STORE RESULTS
+        self.moment_M = {
+            "y": My_values,
+            "z": Mz_values}
 
         self.moment_x = x_vals.tolist()
+
+        # MAX / MIN VALUES
+        My_arr = np.array(My_values)
+        Mz_arr = np.array(Mz_values)
+
+        self.max_moment = {
+            "y": np.max(My_arr),
+            "z": np.max(Mz_arr)}
+
+        self.min_moment = {
+            "y": np.min(My_arr),
+            "z": np.min(Mz_arr)}
+
+        self.x_max_moment = {
+            "y": x_vals[np.argmax(My_arr)],
+            "z": x_vals[np.argmax(Mz_arr)]}
+
+        self.x_min_moment = {
+            "y": x_vals[np.argmin(My_arr)],
+            "z": x_vals[np.argmin(Mz_arr)]}
 
     # AXIAL FORCE DISTRIBUTION
     def compute_axial_force_distribution(self, n_points=40):
@@ -700,32 +1213,28 @@ class Member:
 
             for load in self.member_loads:
 
-                # Only loads acting along local x
-                if load.get("direction") != "x":
-                    continue
-
                 # POINT LOAD
                 if load["type"] == "point":
 
-                    P = -load["P"]
+                    Fx = -load.get("Fx", 0.0)
                     a = load["a"]
 
                     if x >= a:
-                        n -= P
+                        n -= Fx
 
 
                 # UDL
                 elif load["type"] == "udl":
 
-                    w = -load["w"]
+                    wx = -load.get("wx", 0.0)
 
-                    n -= w * x
+                    n -= wx * x
 
 
                 # PARTIAL UDL
                 elif load["type"] == "partial_udl":
 
-                    w = -load["w"]
+                    wx = -load.get("wx", 0.0)
                     a = load["a"]
                     b = load["b"]
 
@@ -733,25 +1242,26 @@ class Member:
                         pass
 
                     elif x <= b:
-                        n -= w * (x - a)
+                        n -= wx * (x - a)
 
                     else:
-                        n -= w * (b - a)
+                        n -= wx * (b - a)
 
 
                 # TRAPEZOIDAL LOAD
                 elif load["type"] == "trapezoidal":
 
-                    w1 = -load["w"]
-                    w2 = -load["w2"]
+                    wx1 = -load.get("wx1", 0.0)
+                    wx2 = -load.get("wx2", 0.0)
 
                     n -= (
-                        w1 * x
-                        + (w2 - w1) * x**2 / (2 * L)
+                        wx1 * x
+                        + (wx2 - wx1) * x**2 / (2 * L)
                     )
 
 
             axial_values.append(n)
+
         axial_values[-1] += N2
 
         self.axial_x = x_vals.tolist()
@@ -782,19 +1292,17 @@ class Member:
 
             for load in self.member_loads:
 
-                # Only moments about local x affect torsion
-                if load["type"] != "moment":
-                    continue
+                if load["type"] == "point":
 
-                if load.get("direction") != "x":
-                    continue
+                    Mx = load.get("Mx", 0.0)
 
-                M = load["M"]
-                a = load["a"]
+                    if abs(Mx) < 1e-12:
+                        continue
 
-                # Applied torque causes a jump
-                if x >= a:
-                    t += M
+                    a = load["a"]
+
+                    if x >= a:
+                        t += Mx
 
             torsion_values.append(t)
 
@@ -997,7 +1505,7 @@ def create_local_refined_member(original_member, n_divisions=30):
     # Add locations where load behaviour changes
     for load in original_member.member_loads:
 
-        if load["type"] in ["point", "moment"]:
+        if load["type"] == "point":
             x_refined_values.append(load["a"])
 
         elif load["type"] == "partial_udl":
@@ -1029,8 +1537,9 @@ def create_local_refined_member(original_member, n_divisions=30):
 
             I_yy=original_member.I_yy,
             I_zz=original_member.I_zz,
+            J=original_member.J,
 
-            J=original_member.J
+            beta=original_member.beta
         )
 
         refined_members.append(m)
@@ -1044,68 +1553,90 @@ def transfer_local_refined_loads(original_member, refined_members, refined_x):
     # Refined nodal global loads
     F_refined_node = np.zeros((6 * len(refined_x), 1))
 
-    force_dof = {
-        "x": 0,
-        "y": 1,
-        "z": 2
-    }
-
-    moment_dof = {
-        "x": 3,
-        "y": 4,
-        "z": 5
-    }
-
     for load in original_member.member_loads:
 
         load_type = load["type"]
-        direction = load["direction"]
 
         if load_type == "udl":
 
-            w = load["w"]
+            wx = load.get("wx", 0.0)
+            wy = load.get("wy", 0.0)
+            wz = load.get("wz", 0.0)
 
             for m in refined_members:
-                m.add_udl(w, direction)
+
+                m.add_udl(
+                    wx=wx,
+                    wy=wy,
+                    wz=wz,
+                    coordinate_system="local")
 
 
         elif load_type == "partial_udl":
 
-            w = load["w"]
+            wx = load.get("wx", 0.0)
+            wy = load.get("wy", 0.0)
+            wz = load.get("wz", 0.0)
+
             a = load["a"]
             b = load["b"]
 
+
             for i, m in enumerate(refined_members):
 
                 x1 = refined_x[i]
                 x2 = refined_x[i + 1]
 
-                # Element completely inside loaded region
                 if x1 >= a and x2 <= b:
-                    m.add_udl(w, direction)
+
+                    m.add_udl(
+                        wx=wx,
+                        wy=wy,
+                        wz=wz,
+                        coordinate_system="local")
 
         elif load_type == "trapezoidal":
 
-            w1 = load["w1"]
-            w2 = load["w2"]
+            wx1 = load.get("wx1", 0.0)
+            wy1 = load.get("wy1", 0.0)
+            wz1 = load.get("wz1", 0.0)
+
+            wx2 = load.get("wx2", 0.0)
+            wy2 = load.get("wy2", 0.0)
+            wz2 = load.get("wz2", 0.0)
+
 
             for i, m in enumerate(refined_members):
 
                 x1 = refined_x[i]
                 x2 = refined_x[i + 1]
 
-                # Linear interpolation
                 r1 = x1 / L
                 r2 = x2 / L
 
-                we1 = w1 + (w2 - w1) * r1
-                we2 = w1 + (w2 - w1) * r2
+                # Interpolate each component
+                we_x1 = wx1 + (wx2 - wx1) * r1
+                we_x2 = wx1 + (wx2 - wx1) * r2
 
-                m.add_trapezoidal_load(we1, we2, direction)
+                we_y1 = wy1 + (wy2 - wy1) * r1
+                we_y2 = wy1 + (wy2 - wy1) * r2
+
+                we_z1 = wz1 + (wz2 - wz1) * r1
+                we_z2 = wz1 + (wz2 - wz1) * r2
+
+                m.add_trapezoidal_load(
+                    wx1=we_x1,
+                    wy1=we_y1,
+                    wz1=we_z1,
+
+                    wx2=we_x2,
+                    wy2=we_y2,
+                    wz2=we_z2,
+
+                    coordinate_system="local")
 
         elif load_type == "point":
 
-            P = load["P"]
             a = load["a"]
 
             node_index = min(range(len(refined_x)),
@@ -1116,22 +1647,31 @@ def transfer_local_refined_loads(original_member, refined_members, refined_x):
                     f"Point load location {a} "
                     "does not match refined node.")
 
-            F_refined_node[6 * node_index + force_dof[direction], 0] += P
+            # FORCE COMPONENTS
+            F_refined_node[
+                6 * node_index + 0, 0
+            ] += load.get("Fx", 0.0)
 
-        elif load_type == "moment":
+            F_refined_node[
+                6 * node_index + 1, 0
+            ] += load.get("Fy", 0.0)
 
-            M = load["M"]
-            a = load["a"]
+            F_refined_node[
+                6 * node_index + 2, 0
+            ] += load.get("Fz", 0.0)
 
-            node_index = min(range(len(refined_x)),
-                key=lambda i: abs(refined_x[i] - a))
+            # MOMENT COMPONENTS
+            F_refined_node[
+                6 * node_index + 3, 0
+            ] += load.get("Mx", 0.0)
 
-            if abs(refined_x[node_index] - a) > 1e-8:
-                raise ValueError(
-                    f"Moment location {a} "
-                    "does not match refined node.")
+            F_refined_node[
+                6 * node_index + 4, 0
+            ] += load.get("My", 0.0)
 
-            F_refined_node[6 * node_index + moment_dof[direction], 0] += M
+            F_refined_node[
+                6 * node_index + 5, 0
+            ] += load.get("Mz", 0.0)
 
     return F_refined_node
 
@@ -1352,7 +1892,11 @@ if __name__ == "__main__":
     m3=Member(3, 2, 3, E, G, A, I_yy, I_zz, J)
     m4=Member(4, 3, 4, E, G, A, I_yy, I_zz, J)
     
-    m4.add_udl(w=-6, direction = "y")
+    m4.add_udl(
+        wx=0.0,
+        wy=-6.0,
+        wz=0.0
+    )
 
     members = [m1, m2, m3, m4]
 

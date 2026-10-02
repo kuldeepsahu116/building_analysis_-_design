@@ -141,26 +141,24 @@ def analyze():
         for load in data["loads"]:
 
             category = load["category"]
-            direction = load["direction"]
 
             # NODAL LOADS 
 
             if category == "nodal":
 
-                value = load["value1"]
+                Fx = float(load.get("Fx", 0.0))
+                Fy = float(load.get("Fy", 0.0))
+                Fz = float(load.get("Fz", 0.0))
 
-                force_dof = {
-                "X": 0,
-                "Y": 1,
-                "Z": 2,
-                "MX": 3,
-                "MY": 4,
-                "MZ": 5
-            }
+                Mx = float(load.get("Mx", 0.0))
+                My = float(load.get("My", 0.0))
+                Mz = float(load.get("Mz", 0.0))
 
-                for node_label in load["assignedNodes"]:
+                for node_label in load.get(
+                    "assignedNodes", []
+                ):
 
-                    #VALIDATION: NODE EXISTS
+                    # VALIDATE NODE
                     if str(node_label) not in node_map:
 
                         raise ValueError(
@@ -169,69 +167,122 @@ def analyze():
 
                     node_index = node_map[str(node_label)]
 
-                    F_node[6*node_index + force_dof[direction], 0] += value
+                    # GLOBAL FORCE
+                    F_node[6 * node_index + 0, 0] += Fx
+                    F_node[6 * node_index + 1, 0] += Fy
+                    F_node[6 * node_index + 2, 0] += Fz
+
+                    # GLOBAL MOMENT
+                    F_node[6 * node_index + 3, 0] += Mx
+                    F_node[6 * node_index + 4, 0] += My
+                    F_node[6 * node_index + 5, 0] += Mz
 
         # MEMBER LOADS
 
             # Only member loads
             elif category == "member":
 
-                load_type = load["type"]
+                load_type = load.get("type")
 
-                for member_label in load["assignedMembers"]:
+                coordinate_system = (
+                    load.get("coordinate_system", "local").lower())
 
-                    #VALIDATION: MEMBER EXISTS
+                # VALIDATE COORDINATE SYSTEM
+                if coordinate_system not in (
+                    "local",
+                    "global"
+                ):
+
+                    raise ValueError(
+                        f"Invalid coordinate system "
+                        f"'{coordinate_system}'"
+                    )
+
+                # ASSIGNED MEMBERS
+
+                for member_label in load.get(
+                    "assignedMembers", []):
+
+                    member_label = str(member_label)
+
+                    # VALIDATE MEMBER
                     if member_label not in member_map:
 
                         raise ValueError(
-                            f"Load member '{member_label}' does not exist"
+                            f"Load member "
+                            f"'{member_label}' does not exist"
                         )
 
-                    member = members[member_map[member_label]]
+                    member = members[
+                        member_map[member_label]
+                    ]
 
                     # POINT LOAD
                     if load_type == "point":
 
                         member.add_point_load(
-                            load["value1"],
-                            load["a"],
-                            direction
+
+                            Fx=float(load.get("Fx", 0.0)),
+                            Fy=float(load.get("Fy", 0.0)),
+                            Fz=float(load.get("Fz", 0.0)),
+
+                            a=float(load.get("a", 0.0)),
+
+                            Mx=float(load.get("Mx", 0.0)),
+                            My=float(load.get("My", 0.0)),
+                            Mz=float(load.get("Mz", 0.0)),
+
+                            coordinate_system=coordinate_system
                         )
-                        
+
                     # UDL
                     elif load_type == "udl":
 
                         member.add_udl(
-                            load["value1"],
-                            direction
+
+                            wx=float(load.get("wx", 0.0)),
+                            wy=float(load.get("wy", 0.0)),
+                            wz=float(load.get("wz", 0.0)),
+
+                            coordinate_system=coordinate_system
                         )
 
                     # PARTIAL UDL
                     elif load_type == "partial_udl":
 
                         member.add_partial_udl(
-                            load["value1"],
-                            load["a"],
-                            load["b"],
-                            direction
+
+                            wx=float(load.get("wx", 0.0)),
+                            wy=float(load.get("wy", 0.0)),
+                            wz=float(load.get("wz", 0.0)),
+
+                            a=float(load.get("a", 0.0)),
+                            b=float(load.get("b", 0.0)),
+
+                            coordinate_system=coordinate_system
                         )
 
                     # TRAPEZOIDAL
                     elif load_type == "trapezoidal":
 
                         member.add_trapezoidal_load(
-                            load["value1"],
-                            load["value2"],
-                            direction
+
+                            wx1=float(load.get("wx1", 0.0)),
+                            wy1=float(load.get("wy1", 0.0)),
+                            wz1=float(load.get("wz1", 0.0)),
+
+                            wx2=float(load.get("wx2", 0.0)),
+                            wy2=float(load.get("wy2", 0.0)),
+                            wz2=float(load.get("wz2", 0.0)),
+
+                            coordinate_system=coordinate_system
                         )
 
-                    # MOMENT
-                    elif load_type == "moment":
-
-                        member.add_moment_load(
-                            load["value1"],
-                            load["a"],
-                            direction
+                    # UNKNOWN LOAD
+                    else:
+                        raise ValueError(
+                            f"Unknown member load type "
+                            f"'{load_type}'"
                         )
 
         result = run_analysis(nodes, members, F_node, fixed_dofs, support_settlements)

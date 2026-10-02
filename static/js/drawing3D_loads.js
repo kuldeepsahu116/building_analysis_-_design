@@ -5,15 +5,172 @@
 
 
 // =============================================
-// LOAD MATERIAL
+// LOAD LABEL
 // =============================================
 
-function createLoadMaterial() {
+function createThreeLoadLabel(
+    text,
+    position,
+    color = "#e74c3c"
+) {
 
-    return new THREE.MeshBasicMaterial({
-        color: 0xe74c3c
-    });
+    if (!window.viewOptions.loadLabels) {
+        return;
+    }
 
+    const label = createThreeLabel(text, color);
+
+    if (!label) {
+        return;
+    }
+
+    label.position.copy(position);
+
+    label.scale.multiplyScalar(0.75);
+
+    label.userData = {
+        type: "loadLabel"
+    };
+
+    window.threeLoadGroup.add(label);
+
+    return label;
+}
+
+// =====================================================
+// LOAD DIRECTION HELPERS
+// =====================================================
+
+function getGlobalLoadDirection(axis, value = 1) {
+
+    let direction;
+
+    switch (String(axis).toLowerCase()) {
+
+        case "x":
+            direction =
+                new THREE.Vector3(1, 0, 0);
+            break;
+
+        case "y":
+            direction =
+                new THREE.Vector3(0, 1, 0);
+            break;
+
+        case "z":
+            direction =
+                new THREE.Vector3(0, 0, 1);
+            break;
+
+        default:
+            return null;
+    }
+
+    if (value < 0) {
+        direction.negate();
+    }
+
+    return direction;
+}
+
+
+// =====================================================
+// GET MEMBER LOAD DIRECTION
+// =====================================================
+
+function getMemberLoadDirection(
+    member,
+    nodes,
+    coordinateSystem,
+    axis,
+    value
+) {
+
+    const startCoordinate =
+        nodes[member.start];
+
+    const endCoordinate =
+        nodes[member.end];
+
+    if (
+        !startCoordinate ||
+        !endCoordinate
+    ) {
+        return null;
+    }
+
+
+    // ---------------------------------------------
+    // GLOBAL
+    // ---------------------------------------------
+
+    if (
+        String(coordinateSystem)
+            .toLowerCase() === "global"
+    ) {
+
+        return getGlobalLoadDirection(
+            axis,
+            value
+        );
+    }
+
+
+    // ---------------------------------------------
+    // LOCAL
+    // ---------------------------------------------
+
+    const start =
+        toThreeVector(startCoordinate);
+
+    const end =
+        toThreeVector(endCoordinate);
+
+
+    const axes =
+        getMemberLocalAxes(
+            start,
+            end,
+            Number(member.beta) || 0
+        );
+
+
+    if (!axes) {
+        return null;
+    }
+
+
+    let direction;
+
+
+    switch (String(axis).toLowerCase()) {
+
+        case "x":
+            direction =
+                axes.localX.clone();
+            break;
+
+        case "y":
+            direction =
+                axes.localY.clone();
+            break;
+
+        case "z":
+            direction =
+                axes.localZ.clone();
+            break;
+
+        default:
+            return null;
+    }
+
+
+    if (value < 0) {
+        direction.negate();
+    }
+
+
+    return direction;
 }
 
 
@@ -45,603 +202,143 @@ function createThreeLoadArrow(
     return arrow;
 }
 
-// =============================================
-// DRAW 3D NODAL FORCE
-// =============================================
 
-function drawThreeNodalForce(
-    nodeId,
-    coordinate,
-    load
+// =====================================================
+// DRAW ONE MOMENT COMPONENT
+// =====================================================
+
+function drawThreeMomentArrow(
+    origin,
+    axisName,
+    value,
+    userData = {}
 ) {
 
-    const position =
-        toThreeVector(coordinate);
-
-
-    let direction;
-
-
-    // -----------------------------------------
-    // GLOBAL X
-    // -----------------------------------------
-
-    if (load.direction === "X") {
-
-        direction =
-            new THREE.Vector3(
-                load.value1 >= 0 ? 1 : -1,
-                0,
-                0
-            );
-
-    }
-
-
-    // -----------------------------------------
-    // GLOBAL Y
-    // -----------------------------------------
-
-    else if (load.direction === "Y") {
-
-        direction =
-            new THREE.Vector3(
-                0,
-                load.value1 >= 0 ? 1 : -1,
-                0
-            );
-
-    }
-
-
-    // -----------------------------------------
-    // GLOBAL Z
-    // -----------------------------------------
-
-    else if (load.direction === "Z") {
-
-        direction =
-            new THREE.Vector3(
-                0,
-                0,
-                load.value1 >= 0 ? 1 : -1
-            );
-
-    }
-
-
-    else {
-
-        return;
-
-    }
-
-
-    // -----------------------------------------
-    // ARROW
-    // -----------------------------------------
-
-    const arrow =
-        createThreeLoadArrow(
-            position,
-            direction
+    const axis =
+        getGlobalLoadDirection(
+            axisName.replace("M", ""),
+            value
         );
 
 
-    // -----------------------------------------
-    // USER DATA
-    // -----------------------------------------
-
-    arrow.userData = {
-
-        type: "nodalLoad",
-
-        loadType: "point",
-
-        node: String(nodeId),
-
-        direction: load.direction,
-
-        value: load.value1
-
-    };
-
-
-    // -----------------------------------------
-    // ADD TO LOAD GROUP
-    // -----------------------------------------
-
-    window.threeLoadGroup.add(
-        arrow
-    );
-}
-
-function drawThreeNodalMoment(nodeId, coordinate, load) {
-    const origin = toThreeVector(coordinate);
-
-    const value = Number(load.value1) || 0;
-    if (value === 0) return;
-
-    let axis;
-
-    switch (load.direction) {
-        case "MX":
-            axis = new THREE.Vector3(1, 0, 0);
-            break;
-
-        case "MY":
-            axis = new THREE.Vector3(0, 1, 0);
-            break;
-
-        case "MZ":
-            axis = new THREE.Vector3(0, 0, 1);
-            break;
-
-        default:
-            return;
-    }
-
-    // Negative moment reverses the rotation direction
-    if (value < 0) {
-        axis.negate();
-    }
-
-    const radius = 0.18;
-
-    // Create circular arc representing the moment
-    const points = [];
-
-    const segments = 32;
-
-    for (let i = 0; i <= segments; i++) {
-        const theta = (Math.PI * 1.5) * (i / segments);
-
-        let point;
-
-        if (load.direction === "MX") {
-            point = new THREE.Vector3(
-                0,
-                radius * Math.cos(theta),
-                radius * Math.sin(theta)
-            );
-        }
-        else if (load.direction === "MY") {
-            point = new THREE.Vector3(
-                radius * Math.cos(theta),
-                0,
-                radius * Math.sin(theta)
-            );
-        }
-        else {
-            point = new THREE.Vector3(
-                radius * Math.cos(theta),
-                radius * Math.sin(theta),
-                0
-            );
-        }
-
-        points.push(point);
-    }
-
-    const curveGeometry = new THREE.BufferGeometry().setFromPoints(points);
-
-    const curveMaterial = new THREE.LineBasicMaterial({
-        color: 0xff6600
-    });
-
-    const curve = new THREE.Line(curveGeometry, curveMaterial);
-
-    curve.position.copy(origin);
-
-    threeLoadGroup.add(curve);
-
-    // -------------------------------------------------
-    // Arrow head at end of circular moment arrow
-    // -------------------------------------------------
-
-    const endPoint = points[points.length - 1];
-
-    let tangent;
-
-    if (load.direction === "MX") {
-        tangent = new THREE.Vector3(
-            0,
-            -Math.sin(Math.PI * 1.5),
-            Math.cos(Math.PI * 1.5)
-        );
-    }
-    else if (load.direction === "MY") {
-        tangent = new THREE.Vector3(
-            -Math.sin(Math.PI * 1.5),
-            0,
-            Math.cos(Math.PI * 1.5)
-        );
-    }
-    else {
-        tangent = new THREE.Vector3(
-            -Math.sin(Math.PI * 1.5),
-            Math.cos(Math.PI * 1.5),
-            0
-        );
-    }
-
-    tangent.normalize();
-
-    if (value < 0) {
-        tangent.negate();
-    }
-
-    const arrowLength = 0.10;
-    const arrowHeadLength = 0.08;
-    const arrowHeadWidth = 0.06;
-
-    const arrowOrigin = endPoint.clone().add(
-        tangent.clone().multiplyScalar(-arrowLength)
-    );
-
-    const arrowDirection = tangent.clone();
-
-    const arrowHelper = new THREE.ArrowHelper(
-        arrowDirection,
-        origin.clone().add(arrowOrigin),
-        arrowLength,
-        0xff6600,
-        arrowHeadLength,
-        arrowHeadWidth
-    );
-
-    threeLoadGroup.add(arrowHelper);
-
-    // -------------------------------------------------
-    // Moment label
-    // -------------------------------------------------
-
-    const label = createThreeLabel(
-        `${load.direction}: ${value}`,
-        "#ff6600"
-    );
-
-    label.position.copy(origin);
-
-    if (load.direction === "MX") {
-        label.position.y += 0.28;
-        label.position.z += 0.28;
-    }
-    else if (load.direction === "MY") {
-        label.position.x += 0.28;
-        label.position.z += 0.28;
-    }
-    else {
-        label.position.x += 0.28;
-        label.position.y += 0.28;
-    }
-
-    threeLoadGroup.add(label);
-}
-
-
-// =============================================
-// DRAW 3D MEMBER POINT LOAD
-// =============================================
-
-function drawThreeMemberPointLoad(
-    member,
-    nodes,
-    load
-) {
-
-    // -----------------------------------------
-    // GET MEMBER NODES
-    // -----------------------------------------
-
-    const startCoordinate = nodes[member.start];
-    const endCoordinate = nodes[member.end];
-
-    if (!startCoordinate || !endCoordinate) {
+    if (!axis) {
         return;
     }
 
-    const start = toThreeVector(startCoordinate);
-    const end = toThreeVector(endCoordinate);
-
-    // -----------------------------------------
-    // MEMBER LOCAL AXES
-    // -----------------------------------------
-
-    const axes = getMemberLocalAxes(
-        start,
-        end,
-        Number(member.beta) || 0
-    );
-
-    if (!axes) {
-        return;
-    }
-
-    const {
-        localX,
-        localY,
-        localZ,
-        length: memberLength
-    } = axes;
-
-    // -----------------------------------------
-    // LOAD DIRECTION
-    // -----------------------------------------
-
-    let direction;
-
-    if (load.direction === "x") {
-
-        direction = localX.clone();
-
-    }
-    else if (load.direction === "y") {
-
-        direction = localY.clone();
-
-    }
-    else if (load.direction === "z") {
-
-        direction = localZ.clone();
-
-    }
-    else {
-
-        return;
-    }
-
-    // -----------------------------------------
-    // LOAD SIGN
-    // -----------------------------------------
-
-    const value = Number(load.value1) || 0;
-
-    if (value === 0) {
-        return;
-    }
-
-    if (value < 0) {
-        direction.negate();
-    }
-
-    // -----------------------------------------
-    // LOAD POSITION
-    //
-    // a = distance from member start
-    // -----------------------------------------
-
-    let a = Number(load.a) || 0;
-
-    // Keep load inside the member
-    a = Math.max(
-        0,
-        Math.min(a, memberLength)
-    );
-
-    const loadPosition = start.clone()
-        .add(
-            localX.clone().multiplyScalar(a)
-        );
-
-    // -----------------------------------------
-    // ARROW
-    // -----------------------------------------
-
-    const arrowLength = 0.45;
-
-    const arrow = createThreeLoadArrow(
-        loadPosition,
-        direction,
-        arrowLength
-    );
-
-    arrow.userData = {
-        type: "memberLoad",
-        loadType: "point",
-        member: member.name,
-        direction: load.direction,
-        value: value,
-        a: a
-    };
-
-    window.threeLoadGroup.add(arrow);
-
-    // -----------------------------------------
-    // LOAD LABEL
-    // -----------------------------------------
-
-    const label = createThreeLabel(
-        `${load.direction}: ${value}`,
-        "#e74c3c"
-    );
-
-    label.position.copy(loadPosition);
-
-    label.position.add(
-        direction.clone().multiplyScalar(0.55)
-    );
-
-    window.threeLoadGroup.add(label);
-}
-
-// =============================================
-// DRAW 3D MEMBER MOMENT LOAD
-// =============================================
-
-function drawThreeMemberMomentLoad(
-    member,
-    nodes,
-    load
-) {
-
-    // -----------------------------------------
-    // GET MEMBER NODES
-    // -----------------------------------------
-
-    const startCoordinate = nodes[member.start];
-    const endCoordinate = nodes[member.end];
-
-    if (!startCoordinate || !endCoordinate) {
-        return;
-    }
-
-    const start = toThreeVector(startCoordinate);
-    const end = toThreeVector(endCoordinate);
-
-    // -----------------------------------------
-    // MEMBER LOCAL AXES
-    // -----------------------------------------
-
-    const axes = getMemberLocalAxes(
-        start,
-        end,
-        Number(member.beta) || 0
-    );
-
-    if (!axes) {
-        return;
-    }
-
-    const {
-        localX,
-        localY,
-        localZ,
-        length: memberLength
-    } = axes;
-
-    // -----------------------------------------
-    // MOMENT AXIS
-    // -----------------------------------------
-
-    let axis;
-
-    if (load.direction === "x") {
-        axis = localX.clone();
-    }
-    else if (load.direction === "y") {
-        axis = localY.clone();
-    }
-    else if (load.direction === "z") {
-        axis = localZ.clone();
-    }
-    else {
-        return;
-    }
-
-    // -----------------------------------------
-    // VALUE
-    // -----------------------------------------
-
-    const value = Number(load.value1) || 0;
-
-    if (value === 0) {
-        return;
-    }
-
-    // Negative moment reverses rotation
-    if (value < 0) {
-        axis.negate();
-    }
-
-    // -----------------------------------------
-    // LOAD POSITION
-    // a = distance from member start
-    // -----------------------------------------
-
-    let a = Number(load.a) || 0;
-
-    a = Math.max(
-        0,
-        Math.min(a, memberLength)
-    );
-
-    const position = start.clone()
-        .add(
-            localX.clone().multiplyScalar(a)
-        );
-
-    // -----------------------------------------
-    // MOMENT CIRCLE
-    // -----------------------------------------
 
     const radius = 0.20;
-    const segments = 32;
+    const segments = 24;
 
-    const points = [];
-
-    // We need two vectors perpendicular
-    // to the moment axis.
 
     let radial1;
 
-    if (Math.abs(axis.dot(new THREE.Vector3(0, 0, 1))) < 0.9) {
-        radial1 = new THREE.Vector3(0, 0, 1);
+
+    if (
+        Math.abs(
+            axis.dot(
+                new THREE.Vector3(0, 0, 1)
+            )
+        ) < 0.9
+    ) {
+
+        radial1 =
+            new THREE.Vector3(0, 0, 1);
+
     }
     else {
-        radial1 = new THREE.Vector3(0, 1, 0);
+
+        radial1 =
+            new THREE.Vector3(0, 1, 0);
+
     }
 
-    radial1 = new THREE.Vector3()
-        .crossVectors(axis, radial1)
-        .normalize();
 
-    const radial2 = new THREE.Vector3()
-        .crossVectors(axis, radial1)
-        .normalize();
+    radial1 =
+        new THREE.Vector3()
+            .crossVectors(
+                axis,
+                radial1
+            )
+            .normalize();
 
-    // -----------------------------------------
-    // CREATE ARC
-    // -----------------------------------------
 
-    for (let i = 0; i <= segments; i++) {
+    const radial2 =
+        new THREE.Vector3()
+            .crossVectors(
+                axis,
+                radial1
+            )
+            .normalize();
+
+
+    const points = [];
+
+
+    for(let i = 0; i <= segments; i++){
 
         const theta =
-            Math.PI * 1.5 * (i / segments);
+            Math.PI * 1.5 *
+            i / segments;
 
-        const point = position.clone()
-            .add(
-                radial1.clone()
-                    .multiplyScalar(
-                        radius * Math.cos(theta)
-                    )
-            )
-            .add(
-                radial2.clone()
-                    .multiplyScalar(
-                        radius * Math.sin(theta)
-                    )
-            );
 
-        points.push(point);
+        points.push(
+
+            origin.clone()
+
+                .add(
+                    radial1.clone()
+                        .multiplyScalar(
+                            radius *
+                            Math.cos(theta)
+                        )
+                )
+
+                .add(
+                    radial2.clone()
+                        .multiplyScalar(
+                            radius *
+                            Math.sin(theta)
+                        )
+                )
+
+        );
+
     }
+
 
     const geometry =
         new THREE.BufferGeometry()
             .setFromPoints(points);
+
 
     const material =
         new THREE.LineBasicMaterial({
             color: 0xff6600
         });
 
-    const arc =
+
+    const curve =
         new THREE.Line(
             geometry,
             material
         );
 
-    window.threeLoadGroup.add(arc);
 
-    // -----------------------------------------
+    window.threeLoadGroup.add(
+        curve
+    );
+
+
+    // ---------------------------------------------
     // ARROW HEAD
-    // -----------------------------------------
+    // ---------------------------------------------
 
     const endPoint =
         points[points.length - 1];
 
     const previousPoint =
         points[points.length - 2];
+
 
     const tangent =
         new THREE.Vector3()
@@ -650,6 +347,7 @@ function drawThreeMemberMomentLoad(
                 previousPoint
             )
             .normalize();
+
 
     const arrow =
         new THREE.ArrowHelper(
@@ -665,733 +363,1027 @@ function drawThreeMemberMomentLoad(
             0.06
         );
 
-    window.threeLoadGroup.add(arrow);
 
-    // -----------------------------------------
-    // LABEL
-    // -----------------------------------------
+    arrow.userData =
+        userData;
 
-    const label =
-        createThreeLabel(
-            `${load.direction}: ${value}`,
-            "#ff6600"
-        );
 
-    label.position.copy(position);
-
-    label.position.add(
-        radial1.clone()
-            .multiplyScalar(0.30)
+    window.threeLoadGroup.add(
+        arrow
     );
-
-    window.threeLoadGroup.add(label);
 }
 
-// =============================================
-// DRAW 3D MEMBER UDL
-// =============================================
 
-function drawThreeMemberUDL(
-    member,
-    nodes,
-    load
+// =====================================================
+// DRAW MEMBER MOMENT ABOUT ARBITRARY AXIS
+// =====================================================
+
+function drawThreeMemberMomentAxis(
+    origin,
+    axis,
+    value,
+    memberName,
+    axisName
 ) {
 
-    const startCoordinate = nodes[member.start];
-    const endCoordinate = nodes[member.end];
-
-    if (!startCoordinate || !endCoordinate) {
+    if(!axis || value === 0){
         return;
     }
 
-    const start = toThreeVector(startCoordinate);
-    const end = toThreeVector(endCoordinate);
 
-    // -----------------------------------------
-    // MEMBER LOCAL AXES
-    // -----------------------------------------
+    const radius = 0.20;
+    const segments = 24;
 
-    const axes = getMemberLocalAxes(
-        start,
-        end,
-        Number(member.beta) || 0
+
+    let radial1;
+
+
+    if(
+        Math.abs(
+            axis.dot(
+                new THREE.Vector3(0,0,1)
+            )
+        ) < 0.9
+    ){
+
+        radial1 =
+            new THREE.Vector3(0,0,1);
+
+    }
+    else{
+
+        radial1 =
+            new THREE.Vector3(0,1,0);
+
+    }
+
+
+    radial1 =
+        new THREE.Vector3()
+            .crossVectors(
+                axis,
+                radial1
+            )
+            .normalize();
+
+
+    const radial2 =
+        new THREE.Vector3()
+            .crossVectors(
+                axis,
+                radial1
+            )
+            .normalize();
+
+
+    const points = [];
+
+
+    for(
+        let i = 0;
+        i <= segments;
+        i++
+    ){
+
+        const theta =
+            Math.PI * 1.5 *
+            i / segments;
+
+
+        points.push(
+
+            origin.clone()
+
+                .add(
+                    radial1.clone()
+                        .multiplyScalar(
+                            radius *
+                            Math.cos(theta)
+                        )
+                )
+
+                .add(
+                    radial2.clone()
+                        .multiplyScalar(
+                            radius *
+                            Math.sin(theta)
+                        )
+                )
+
+        );
+
+    }
+
+
+    const geometry =
+        new THREE.BufferGeometry()
+            .setFromPoints(points);
+
+
+    const material =
+        new THREE.LineBasicMaterial({
+            color: 0xff6600
+        });
+
+
+    const arc =
+        new THREE.Line(
+            geometry,
+            material
+        );
+
+
+    window.threeLoadGroup.add(
+        arc
     );
 
-    if (!axes) {
-        return;
-    }
 
-    const {
-        localX,
-        localY,
-        localZ,
-        length: memberLength
-    } = axes;
+    const endPoint =
+        points[points.length - 1];
 
-    // -----------------------------------------
-    // LOAD DIRECTION
-    // -----------------------------------------
+    const previousPoint =
+        points[points.length - 2];
 
-    let direction;
 
-    if (load.direction === "y") {
-        direction = localY.clone();
-    }
-    else if (load.direction === "z") {
-        direction = localZ.clone();
-    }
-    else {
-        return;
-    }
+    let tangent =
+        new THREE.Vector3()
+            .subVectors(
+                endPoint,
+                previousPoint
+            )
+            .normalize();
 
-    // -----------------------------------------
-    // LOAD VALUE
-    // -----------------------------------------
 
-    const value = Number(load.value1) || 0;
+    const arrow =
+        new THREE.ArrowHelper(
+            tangent,
+            endPoint.clone()
+                .add(
+                    tangent.clone()
+                        .multiplyScalar(-0.10)
+                ),
+            0.10,
+            0xff6600,
+            0.08,
+            0.06
+        );
 
-    if (value === 0) {
-        return;
-    }
 
-    if (value < 0) {
-        direction.negate();
-    }
-
-    // -----------------------------------------
-    // NUMBER OF LOAD ARROWS
-    // -----------------------------------------
-
-    const arrowCount = Math.max(
-        2,
-        Math.ceil(memberLength / 0.5)
+    window.threeLoadGroup.add(
+        arrow
     );
 
-    const arrowLength = 0.35;
+}
 
-    // -----------------------------------------
-    // DISTRIBUTED LOAD ARROWS
-    // -----------------------------------------
 
-    for (let i = 0; i <= arrowCount; i++) {
 
-        const ratio = i / arrowCount;
+// =====================================================
+// DRAW ONE LOAD COMPONENT
+// =====================================================
 
-        const position = start.clone()
-            .add(
-                localX.clone()
-                    .multiplyScalar(
-                        memberLength * ratio
-                    )
-            );
+function drawThreeLoadComponent(
+    position,
+    direction,
+    magnitude,
+    arrowLength = 0.45,
+    userData = {}
+) {
 
-        const arrow = createThreeLoadArrow(
+    if (
+        !direction ||
+        !Number.isFinite(magnitude) ||
+        magnitude === 0
+    ) {
+        return;
+    }
+
+
+    const arrow =
+        createThreeLoadArrow(
             position,
             direction,
             arrowLength
         );
 
-        arrow.userData = {
-            type: "memberLoad",
-            loadType: "udl",
-            member: member.name,
-            direction: load.direction,
-            value: value
-        };
 
-        window.threeLoadGroup.add(arrow);
-    }
-
-    // -----------------------------------------
-    // LOAD LINE
-    // -----------------------------------------
-
-    const lineOffset = direction.clone()
-        .multiplyScalar(arrowLength);
-
-    const lineStart = start.clone()
-        .add(lineOffset);
-
-    const lineEnd = end.clone()
-        .add(lineOffset);
-
-    const lineGeometry =
-        new THREE.BufferGeometry()
-            .setFromPoints([
-                lineStart,
-                lineEnd
-            ]);
-
-    const lineMaterial =
-        new THREE.LineBasicMaterial({
-            color: 0xe74c3c
-        });
-
-    const loadLine =
-        new THREE.Line(
-            lineGeometry,
-            lineMaterial
-        );
-
-    loadLine.userData = {
-        type: "memberLoad",
-        loadType: "udl",
-        member: member.name,
-        direction: load.direction,
-        value: value
+    arrow.userData = {
+        ...userData,
+        magnitude: magnitude
     };
 
-    window.threeLoadGroup.add(loadLine);
 
-    // -----------------------------------------
-    // LABEL
-    // -----------------------------------------
-
-    const midpoint = start.clone()
-        .add(end)
-        .multiplyScalar(0.5);
-
-    const label = createThreeLabel(
-        `${load.direction}: ${value}`,
-        "#e74c3c"
+    window.threeLoadGroup.add(
+        arrow
     );
 
-    label.position.copy(midpoint);
 
-    label.position.add(
-        direction.clone()
-            .multiplyScalar(arrowLength + 0.18)
-    );
-
-    window.threeLoadGroup.add(label);
+    return arrow;
 }
 
 // =============================================
-// DRAW 3D MEMBER PARTIAL UDL
+// DRAW 3D NODAL FORCE
 // =============================================
 
-function drawThreeMemberPartialUDL(
-    member,
-    nodes,
+function drawThreeNodalForce(
+    nodeId,
+    coordinate,
     load
 ) {
 
-    const startCoordinate = nodes[member.start];
-    const endCoordinate = nodes[member.end];
+    const position =
+        toThreeVector(coordinate);
 
-    if (!startCoordinate || !endCoordinate) {
-        return;
-    }
 
-    const start = toThreeVector(startCoordinate);
-    const end = toThreeVector(endCoordinate);
+    const components = [
 
-    // -----------------------------------------
-    // MEMBER LOCAL AXES
-    // -----------------------------------------
+        {
+            axis: "X",
+            value: Number(load.Fx) || 0
+        },
 
-    const axes = getMemberLocalAxes(
-        start,
-        end,
-        Number(member.beta) || 0
-    );
+        {
+            axis: "Y",
+            value: Number(load.Fy) || 0
+        },
 
-    if (!axes) {
-        return;
-    }
+        {
+            axis: "Z",
+            value: Number(load.Fz) || 0
+        }
 
-    const {
-        localX,
-        localY,
-        localZ,
-        length: memberLength
-    } = axes;
+    ];
 
-    // -----------------------------------------
-    // LOAD DIRECTION
-    // -----------------------------------------
 
-    let direction;
+const arrowLength = 0.45;
 
-    if (load.direction === "y") {
-        direction = localY.clone();
-    }
-    else if (load.direction === "z") {
-        direction = localZ.clone();
-    }
-    else {
-        return;
-    }
 
-    // -----------------------------------------
-    // LOAD VALUE
-    // -----------------------------------------
+    components.forEach(component => {
 
-    const value = Number(load.value1) || 0;
+        if (component.value === 0) {
+            return;
+        }
 
-    if (value === 0) {
-        return;
-    }
 
-    if (value < 0) {
-        direction.negate();
-    }
-
-    // -----------------------------------------
-    // LOAD LIMITS
-    //
-    // a = distance from start
-    // b = distance from end
-    // -----------------------------------------
-
-    let a = Number(load.a) || 0;
-    let b = Number(load.b) || 0;
-
-    a = Math.max(
-        0,
-        Math.min(a, memberLength)
-    );
-
-    b = Math.max(
-        0,
-        Math.min(b, memberLength)
-    );
-
-    // Loaded region
-    const loadStart = a;
-    const loadEnd = b;
-
-    // Invalid / zero-length loaded region
-    if (loadEnd <= loadStart) {
-        return;
-    }
-
-    // -----------------------------------------
-    // NUMBER OF ARROWS
-    // -----------------------------------------
-
-    const loadedLength = loadEnd - loadStart;
-
-    const arrowCount = Math.max(
-        2,
-        Math.ceil(loadedLength / 0.5)
-    );
-
-    const arrowLength = 0.35;
-
-    // -----------------------------------------
-    // DISTRIBUTED LOAD ARROWS
-    // -----------------------------------------
-
-    for (let i = 0; i <= arrowCount; i++) {
-
-        const ratio = i / arrowCount;
-
-        const distance =
-            loadStart +
-            loadedLength * ratio;
-
-        const position = start.clone()
-            .add(
-                localX.clone()
-                    .multiplyScalar(distance)
+        const direction =
+            getGlobalLoadDirection(
+                component.axis,
+                component.value
             );
 
-        const arrow = createThreeLoadArrow(
+
+        drawThreeLoadComponent(
             position,
             direction,
-            arrowLength
+            Math.abs(component.value),
+            arrowLength,
+            {
+                type: "nodalLoad",
+                loadType: "point",
+                node: String(nodeId),
+                coordinate_system: "global",
+                direction: component.axis,
+                value: component.value
+            }
         );
 
-        arrow.userData = {
-            type: "memberLoad",
-            loadType: "partial_udl",
-            member: member.name,
-            direction: load.direction,
-            value: value,
-            a: a,
-            b: b
-        };
-
-        window.threeLoadGroup.add(arrow);
-    }
-
-    // -----------------------------------------
-    // LOAD LINE
-    // -----------------------------------------
-
-    const lineOffset = direction.clone()
-        .multiplyScalar(arrowLength);
-
-    const lineStart = start.clone()
-        .add(
-            localX.clone()
-                .multiplyScalar(loadStart)
-        )
-        .add(lineOffset);
-
-    const lineEnd = start.clone()
-        .add(
-            localX.clone()
-                .multiplyScalar(loadEnd)
-        )
-        .add(lineOffset);
-
-    const lineGeometry =
-        new THREE.BufferGeometry()
-            .setFromPoints([
-                lineStart,
-                lineEnd
-            ]);
-
-    const lineMaterial =
-        new THREE.LineBasicMaterial({
-            color: 0xe74c3c
-        });
-
-    const loadLine =
-        new THREE.Line(
-            lineGeometry,
-            lineMaterial
-        );
-
-    loadLine.userData = {
-        type: "memberLoad",
-        loadType: "partial_udl",
-        member: member.name,
-        direction: load.direction,
-        value: value,
-        a: a,
-        b: b
-    };
-
-    window.threeLoadGroup.add(loadLine);
-
-    // -----------------------------------------
-    // LABEL
-    // -----------------------------------------
-
-    const midpoint = start.clone()
-        .add(
-            localX.clone()
-                .multiplyScalar(
-                    (loadStart + loadEnd) / 2
+        createThreeLoadLabel(
+            `G ${component.axis}: ${component.value} kN`,
+            position.clone()
+                .add(
+                    direction.clone()
+                        .normalize()
+                        .multiplyScalar(0.60)
                 )
         );
 
-    const label = createThreeLabel(
-        `${load.direction}: ${value}`,
-        "#e74c3c"
-    );
-
-    label.position.copy(midpoint);
-
-    label.position.add(
-        direction.clone()
-            .multiplyScalar(arrowLength + 0.18)
-    );
-
-    window.threeLoadGroup.add(label);
+    });
 }
 
-// =============================================
-// DRAW 3D MEMBER TRAPEZOIDAL LOAD
-// =============================================
+// =====================================================
+// DRAW 3D NODAL MOMENTS
+// =====================================================
 
-function drawThreeMemberTrapezoidalLoad(
+function drawThreeNodalMoments(
+    nodeId,
+    coordinate,
+    load
+) {
+
+    const origin =
+        toThreeVector(coordinate);
+
+
+    const moments = [
+
+        {
+            axis: "MX",
+            value: Number(load.Mx) || 0
+        },
+
+        {
+            axis: "MY",
+            value: Number(load.My) || 0
+        },
+
+        {
+            axis: "MZ",
+            value: Number(load.Mz) || 0
+        }
+
+    ];
+
+
+    moments.forEach(moment => {
+
+        if (moment.value === 0) {
+            return;
+        }
+
+
+        drawThreeMomentArrow(
+            origin,
+            moment.axis,
+            moment.value,
+            {
+                type: "nodalLoad",
+                loadType: "moment",
+                node: String(nodeId),
+                coordinate_system: "global",
+                direction: moment.axis,
+                value: moment.value
+            }
+        );
+
+        createThreeLoadLabel(
+            `G ${moment.axis}: ${moment.value} kN-m`,
+            origin.clone()
+                .add(
+                    getGlobalLoadDirection(
+                        moment.axis.replace("M", ""),
+                        moment.value
+                    )
+                    .multiplyScalar(0.40)
+                )
+        );
+
+    });
+}
+
+// =====================================================
+// DRAW 3D MEMBER POINT LOAD
+// =====================================================
+
+function drawThreeMemberPointLoad(
     member,
     nodes,
     load
 ) {
 
-    const startCoordinate = nodes[member.start];
-    const endCoordinate = nodes[member.end];
+    const startCoordinate =
+        nodes[member.start];
 
-    if (!startCoordinate || !endCoordinate) {
+    const endCoordinate =
+        nodes[member.end];
+
+
+    if (
+        !startCoordinate ||
+        !endCoordinate
+    ) {
         return;
     }
 
-    const start = toThreeVector(startCoordinate);
-    const end = toThreeVector(endCoordinate);
 
-    // -----------------------------------------
-    // MEMBER LOCAL AXES
-    // -----------------------------------------
+    const start =
+        toThreeVector(startCoordinate);
 
-    const axes = getMemberLocalAxes(
-        start,
-        end,
-        Number(member.beta) || 0
-    );
+    const end =
+        toThreeVector(endCoordinate);
+
+
+    const axes =
+        getMemberLocalAxes(
+            start,
+            end,
+            Number(member.beta) || 0
+        );
+
 
     if (!axes) {
         return;
     }
 
+
     const {
         localX,
-        localY,
-        localZ,
         length: memberLength
     } = axes;
 
-    
-    // -----------------------------------------
-    // LOAD DIRECTION
-    // -----------------------------------------
 
-    let direction;
+    let a =
+        Number(load.a) || 0;
 
-    if (load.direction === "y") {
 
-        direction = localY.clone();
+    a =
+        Math.max(
+            0,
+            Math.min(
+                a,
+                memberLength
+            )
+        );
 
-    }
-    else if (load.direction === "z") {
 
-        direction = localZ.clone();
+    const position =
+        start.clone()
+            .add(
+                localX.clone()
+                    .multiplyScalar(a)
+            );
 
-    }
-    else {
 
+    const coordinateSystem =
+        String(
+            load.coordinate_system ||
+            "local"
+        ).toLowerCase();
+
+
+    const forceComponents = [
+
+        {
+            axis: "x",
+            value: Number(load.Fx) || 0
+        },
+
+        {
+            axis: "y",
+            value: Number(load.Fy) || 0
+        },
+
+        {
+            axis: "z",
+            value: Number(load.Fz) || 0
+        }
+
+    ];
+
+
+    forceComponents.forEach(component => {
+
+        if(component.value === 0){
+            return;
+        }
+
+
+        const direction =
+            getMemberLoadDirection(
+                member,
+                nodes,
+                coordinateSystem,
+                component.axis,
+                component.value
+            );
+
+
+        if(!direction){
+            return;
+        }
+
+
+        drawThreeLoadComponent(
+            position,
+            direction,
+            Math.abs(component.value),
+            0.45,
+            {
+                type: "memberLoad",
+                loadType: "point",
+                member: member.name,
+                coordinate_system:
+                    coordinateSystem,
+                direction:
+                    component.axis,
+                value:
+                    component.value,
+                a: a
+            }
+        );
+
+        createThreeLoadLabel(
+            `${coordinateSystem.charAt(0).toUpperCase()} ${component.axis.toUpperCase()}: ${component.value} kN`,
+            position.clone()
+                .add(
+                    direction.clone()
+                        .normalize()
+                        .multiplyScalar(0.60)
+                )
+        );
+
+    });
+
+
+    // ---------------------------------------------
+    // MOMENT COMPONENTS
+    // ---------------------------------------------
+
+    const momentComponents = [
+
+        {
+            axis: "x",
+            value: Number(load.Mx) || 0
+        },
+
+        {
+            axis: "y",
+            value: Number(load.My) || 0
+        },
+
+        {
+            axis: "z",
+            value: Number(load.Mz) || 0
+        }
+
+    ];
+
+
+    momentComponents.forEach(component => {
+
+        if(component.value === 0){
+            return;
+        }
+
+
+        const axis =
+            getMemberLoadDirection(
+                member,
+                nodes,
+                coordinateSystem,
+                component.axis,
+                component.value
+            );
+
+
+        if(!axis){
+            return;
+        }
+
+
+        drawThreeMemberMomentAxis(
+            position,
+            axis,
+            component.value,
+            member.name,
+            component.axis
+        );
+
+    });
+
+}
+
+// =============================================
+// DRAW 3D MEMBER DISTRIBUTED LOAD
+// =============================================
+
+function drawThreeDistributedComponent(
+    start,
+    localX,
+    member,
+    nodes,
+    coordinateSystem,
+    axis,
+    value1,
+    value2,
+    loadStart,
+    loadEnd
+) {
+
+    if(
+        value1 === 0 &&
+        value2 === 0
+    ){
         return;
     }
-
-    // -----------------------------------------
-    // LOAD VALUES
-    // -----------------------------------------
-
-    const value1 = Number(load.value1) || 0;
-    const value2 = Number(load.value2) || 0;
-
-    if (value1 === 0 && value2 === 0) {
-        return;
-    }
-
-    // -----------------------------------------
-    // COMMON LOAD DIRECTION
-    //
-    // Positive load -> local direction
-    // Negative load -> opposite direction
-    //
-    // We use the first non-zero value to
-    // determine the direction of the load line.
-    // -----------------------------------------
-
-    const directionSign =
-        value1 !== 0
-            ? Math.sign(value1)
-            : Math.sign(value2);
-
-    const loadDirection =
-        direction.clone();
-
-    if (directionSign < 0) {
-        loadDirection.negate();
-    }
-
-    // -----------------------------------------
-    // LOAD LIMITS
-    // -----------------------------------------
-
-    const loadStart = 0;
-    const loadEnd = memberLength;
 
     const loadedLength =
-        memberLength;
+        loadEnd - loadStart;
 
-    // -----------------------------------------
-    // MAX LOAD MAGNITUDE
-    // -----------------------------------------
 
-    const maxValue = Math.max(
-        Math.abs(value1),
-        Math.abs(value2)
-    );
+    const arrowCount =
+        Math.max(
+            2,
+            Math.ceil(
+                loadedLength / 0.5
+            )
+        );
 
-    if (maxValue <= 0) {
+
+    const maxValue =
+        Math.max(
+            Math.abs(value1),
+            Math.abs(value2)
+        );
+
+
+    if(maxValue === 0){
         return;
     }
 
-    // -----------------------------------------
-    // ARROW PARAMETERS
-    // -----------------------------------------
 
-    const arrowCount = Math.max(
-        2,
-        Math.ceil(loadedLength / 0.5)
-    );
+    for(
+        let i = 0;
+        i <= arrowCount;
+        i++
+    ){
 
-    const maxArrowLength = 0.55;
+        const ratio =
+            i / arrowCount;
 
-    // -----------------------------------------
-    // DRAW ARROWS
-    // -----------------------------------------
-
-    for (let i = 0; i <= arrowCount; i++) {
-
-        const ratio = i / arrowCount;
 
         const distance =
             loadStart +
-            loadedLength * ratio;
+            loadedLength *
+            ratio;
 
-        // Linear interpolation of intensity
+
         const value =
             value1 +
-            (value2 - value1) * ratio;
+            (
+                value2 - value1
+            ) *
+            ratio;
 
-        const magnitude =
-            Math.abs(value);
 
-        if (magnitude <= 0) {
+        if(value === 0){
             continue;
         }
 
-        // -------------------------------------
-        // POSITION
-        // -------------------------------------
 
         const position =
             start.clone()
                 .add(
                     localX.clone()
-                        .multiplyScalar(distance)
+                        .multiplyScalar(
+                            distance
+                        )
                 );
 
-        // -------------------------------------
-        // ARROW LENGTH
-        // -------------------------------------
+
+        const direction =
+            getMemberLoadDirection(
+                member,
+                nodes,
+                coordinateSystem,
+                axis,
+                value
+            );
+
+
+        if(!direction){
+            continue;
+        }
+
 
         const arrowLength =
-            maxArrowLength *
-            magnitude /
+            0.55 *
+            Math.abs(value) /
             maxValue;
 
-        // -------------------------------------
-        // ARROW
-        //
-        // IMPORTANT:
-        // All arrows use the same direction
-        // as the load line.
-        // -------------------------------------
 
-        const arrow =
-            createThreeLoadArrow(
-                position,
-                loadDirection,
-                arrowLength
-            );
+        drawThreeLoadComponent(
+            position,
+            direction,
+            Math.abs(value),
+            arrowLength,
+            {
+                type: "memberLoad",
+                loadType:
+                    "distributed",
+                member:
+                    member.name,
+                coordinate_system:
+                    coordinateSystem,
+                direction:
+                    axis,
+                value1,
+                value2
+            }
+        );
 
-        arrow.userData = {
-            type: "memberLoad",
-            loadType: "trapezoidal",
-            member: member.name,
-            direction: load.direction,
-            value1: value1,
-            value2: value2,
-            a: 0,
-            b: 0
-        };
-
-        window.threeLoadGroup.add(arrow);
     }
+}
 
-    // -----------------------------------------
-    // LOAD LINE
-    // -----------------------------------------
 
-    const startArrowLength =
-        maxArrowLength *
-        Math.abs(value1) /
-        maxValue;
+function drawThreeLoadEndLine(
+    memberPoint,
+    loadPoint
+) {
 
-    const endArrowLength =
-        maxArrowLength *
-        Math.abs(value2) /
-        maxValue;
-
-    const lineStart =
-        start.clone()
-            .add(
-                localX.clone()
-                    .multiplyScalar(loadStart)
-            )
-            .add(
-                loadDirection.clone()
-                    .multiplyScalar(startArrowLength)
-            );
-
-    const lineEnd =
-        start.clone()
-            .add(
-                localX.clone()
-                    .multiplyScalar(loadEnd)
-            )
-            .add(
-                loadDirection.clone()
-                    .multiplyScalar(endArrowLength)
-            );
-
-    const lineGeometry =
+    const geometry =
         new THREE.BufferGeometry()
             .setFromPoints([
-                lineStart,
-                lineEnd
+                memberPoint,
+                loadPoint
             ]);
 
-    const lineMaterial =
+    const material =
         new THREE.LineBasicMaterial({
             color: 0xe74c3c
         });
 
-    const loadLine =
+    const line =
         new THREE.Line(
-            lineGeometry,
-            lineMaterial
+            geometry,
+            material
         );
 
-    loadLine.userData = {
-        type: "memberLoad",
-        loadType: "trapezoidal",
-        member: member.name,
-        direction: load.direction,
-        value1: value1,
-        value2: value2,
-        a: 0,
-        b: 0
-    };
+    window.threeLoadGroup.add(line);
 
-    window.threeLoadGroup.add(loadLine);
-
-    // -----------------------------------------
-    // LABEL
-    // -----------------------------------------
-
-    const midpoint =
-        start.clone()
-            .add(
-                localX.clone()
-                    .multiplyScalar(
-                        (loadStart + loadEnd) / 2
-                    )
-            );
-
-    const label =
-        createThreeLabel(
-            `${load.direction}: ${value1} → ${value2}`,
-            "#e74c3c"
-        );
-
-    label.position.copy(midpoint);
-
-    label.position.add(
-        loadDirection.clone()
-            .multiplyScalar(
-                maxArrowLength + 0.18
-            )
-    );
-
-    window.threeLoadGroup.add(label);
+    return line;
 }
 
+
+function drawThreeDistributedLoadLine(
+    start,
+    end,
+    loadDirection,
+    value1,
+    value2,
+    maxDisplayLength = 0.7
+) {
+
+    if (!loadDirection) {
+        return;
+    }
+
+
+    const maxValue =
+        Math.max(
+            Math.abs(value1),
+            Math.abs(value2)
+        );
+
+
+    if (maxValue === 0) {
+        return;
+    }
+
+
+    const offset1 =
+        (value1 / maxValue) *
+        maxDisplayLength;
+
+
+    const offset2 =
+        (value2 / maxValue) *
+        maxDisplayLength;
+
+
+    const p1 =
+        start.clone().add(
+            loadDirection.clone()
+                .multiplyScalar(offset1)
+        );
+
+
+    const p2 =
+        end.clone().add(
+            loadDirection.clone()
+                .multiplyScalar(offset2)
+        );
+
+
+    const geometry =
+        new THREE.BufferGeometry()
+            .setFromPoints([
+                p1,
+                p2
+            ]);
+
+
+    const material =
+        new THREE.LineBasicMaterial({
+            color: 0xe74c3c
+        });
+
+
+    const line =
+        new THREE.Line(
+            geometry,
+            material
+        );
+
+
+    window.threeLoadGroup.add(line);
+
+    drawThreeLoadEndLine(start, p1);
+
+    drawThreeLoadEndLine(end, p2);
+
+    return line;
+}
+
+
+function drawThreeMemberDistributedLoad(member, nodes, load) {
+
+    const startCoordinate = nodes[member.start];
+    const endCoordinate   = nodes[member.end];
+
+    if (!startCoordinate || !endCoordinate) return;
+
+    const start = toThreeVector(startCoordinate);
+    const end   = toThreeVector(endCoordinate);
+
+    const axes = getMemberLocalAxes(
+        start,
+        end,
+        Number(member.beta) || 0
+    );
+
+    if (!axes) return;
+
+    const {
+        localX,
+        length: memberLength
+    } = axes;
+
+    const coordinateSystem = String(
+        load.coordinate_system || "local"
+    ).toLowerCase();
+
+    let startPosition = 0;
+    let endPosition   = memberLength;
+
+    if (load.type === "partial_udl") {
+
+        startPosition = Math.max(
+            0,
+            Math.min(Number(load.a) || 0, memberLength)
+        );
+
+        endPosition = Math.max(
+            0,
+            Math.min(Number(load.b) || 0, memberLength)
+        );
+
+        if (endPosition <= startPosition) return;
+    }
+
+     // COMPONENTS
+    let components;
+
+    if (load.type === "trapezoidal") {
+
+        components = [
+            {
+                axis: "x",
+                value1: Number(load.wx1) || 0,
+                value2: Number(load.wx2) || 0
+            },
+            {
+                axis: "y",
+                value1: Number(load.wy1) || 0,
+                value2: Number(load.wy2) || 0
+            },
+            {
+                axis: "z",
+                value1: Number(load.wz1) || 0,
+                value2: Number(load.wz2) || 0
+            }
+        ];
+
+    } else {
+
+        const valueX = Number(load.wx) || 0;
+        const valueY = Number(load.wy) || 0;
+        const valueZ = Number(load.wz) || 0;
+
+        components = [
+            {
+                axis: "x",
+                value1: valueX,
+                value2: valueX
+            },
+            {
+                axis: "y",
+                value1: valueY,
+                value2: valueY
+            },
+            {
+                axis: "z",
+                value1: valueZ,
+                value2: valueZ
+            }
+        ];
+    }
+
+    // DRAW EACH COMPONENT
+    components.forEach(component => {
+
+        const {
+            axis,
+            value1,
+            value2
+        } = component;
+
+        if (value1 === 0 && value2 === 0) return;
+
+
+        const baseDirection = getMemberLoadDirection(
+            member,
+            nodes,
+            coordinateSystem,
+            axis,
+            1
+        );
+
+        if (!baseDirection) return;
+
+    
+        // DISTRIBUTED LOAD ARROWS
+        drawThreeDistributedComponent(
+            start,
+            localX,
+            member,
+            nodes,
+            coordinateSystem,
+            axis,
+            value1,
+            value2,
+            startPosition,
+            endPosition
+        );
+
+        // LOAD ENVELOPE
+        const loadStartPoint = start.clone().add(
+            localX.clone().multiplyScalar(startPosition)
+        );
+
+        const loadEndPoint = start.clone().add(
+            localX.clone().multiplyScalar(endPosition)
+        );
+
+        drawThreeDistributedLoadLine(
+            loadStartPoint,
+            loadEndPoint,
+            baseDirection,
+            value1,
+            value2,
+            0.55
+        );
+
+        // LABEL
+        const midpoint = loadStartPoint
+            .clone()
+            .add(loadEndPoint)
+            .multiplyScalar(0.5);
+
+        const midpointValue =
+            (value1 + value2) * 0.5;
+
+        let labelPosition = midpoint.clone();
+
+        if (midpointValue !== 0) {
+
+            const labelDirection =
+                getMemberLoadDirection(
+                    member,
+                    nodes,
+                    coordinateSystem,
+                    axis,
+                    midpointValue
+                );
+
+            if (labelDirection) {
+
+                labelPosition.add(
+                    labelDirection
+                        .normalize()
+                        .multiplyScalar(0.70)
+                );
+            }
+        }
+
+        let labelText;
+
+        if (value1 === value2) {
+
+            labelText =
+                `${coordinateSystem.charAt(0).toUpperCase()} ` +
+                `${axis.toUpperCase()}: ` +
+                `${value1} kN/m`;
+
+        } else {
+
+            labelText =
+                `${coordinateSystem.charAt(0).toUpperCase()} ` +
+                `${axis.toUpperCase()}: ` +
+                `${value1} → ${value2} kN/m`;
+        }
+
+        createThreeLoadLabel(
+            labelText,
+            labelPosition
+        );
+    });
+}

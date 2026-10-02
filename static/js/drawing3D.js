@@ -6,7 +6,8 @@ window.viewScale = 1;
 window.viewOptions = {
     loads: true,
     supports: true,
-    labels: true
+    labels: true,
+    loadLabels: true    
 };
 
 window.threeScene = null;
@@ -1352,7 +1353,7 @@ function drawStructure() {
                     }
 
                     // -------------------------------------
-                    // NODAL POINT FORCE
+                    // NODAL LOAD
                     // -------------------------------------
 
                     if (load.type === "point") {
@@ -1362,15 +1363,8 @@ function drawStructure() {
                             coordinate,
                             load
                         );
-                    }
 
-                    // -------------------------------------
-                    // NODAL MOMENT
-                    // -------------------------------------
-
-                    else if (load.type === "moment") {
-
-                        drawThreeNodalMoment(
+                        drawThreeNodalMoments(
                             id,
                             coordinate,
                             load
@@ -1417,39 +1411,18 @@ function drawStructure() {
                         );
                     }
 
-                    else if (load.type === "moment") {
+                    else if (
+                        load.type === "udl" ||
+                        load.type === "partial_udl" ||
+                        load.type === "trapezoidal"
+                    ) {
 
-                        drawThreeMemberMomentLoad(
+                        drawThreeMemberDistributedLoad(
                             member,
                             nodes,
                             load
                         );
-                    }
 
-                    else if (load.type === "udl") {
-
-                        drawThreeMemberUDL(
-                            member,
-                            nodes,
-                            load
-                        );
-                    }
-
-                    else if (load.type === "partial_udl") {
-
-                        drawThreeMemberPartialUDL(
-                            member,
-                            nodes,
-                            load
-                        );
-                    }
-                    else if (load.type === "trapezoidal") {
-
-                        drawThreeMemberTrapezoidalLoad(
-                            member,
-                            nodes,
-                            load
-                        );
                     }
                 });
             }

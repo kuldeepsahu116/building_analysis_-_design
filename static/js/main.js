@@ -91,113 +91,214 @@ window.onload = function(){
 
     loadDatabase.push({
 
-        category : "member",
-        type : "udl",
-        direction : "y",
-        value1 : -6,
-        value2 : 0,
-        a : 0,
-        b : 0,
-        assignedNodes : [],
-        assignedMembers : ["D"]
+        category: "member",
+        type: "udl",
+        coordinate_system: "local",
+
+        Fx: 0,
+        Fy: 0,
+        Fz: 0,
+
+        Mx: 0,
+        My: 0,
+        Mz: 0,
+
+        wx: 0,
+        wy: -6,
+        wz: 0,
+
+        wx1: 0,
+        wy1: 0,
+        wz1: 0,
+
+        wx2: 0,
+        wy2: 0,
+        wz2: 0,
+
+        a: 0,
+        b: 0,
+
+        assignedNodes: [],
+        assignedMembers: ["D"]
+
+    });
+
+
+    loadDatabase.push({
+
+        category: "nodal",
+        type: "point",
+        coordinate_system: "global",
+
+        Fx: 6,
+        Fy: 6,
+        Fz: 6,
+
+        Mx: 0,
+        My: 0,
+        Mz: 0,
+
+        wx: 0,
+        wy: 0,
+        wz: 0,
+
+        wx1: 0,
+        wy1: 0,
+        wz1: 0,
+
+        wx2: 0,
+        wy2: 0,
+        wz2: 0,
+
+        a: 0,
+        b: 0,
+
+        assignedNodes: ["3"],
+        assignedMembers: []
+
     });
 
     loadDatabase.push({
 
-        category : "member",
-        type : "trapezoidal",
-        direction : "y",
-        value1 : -6,
-        value2 : -12,
-        a : 0,
-        b : 0,
-        assignedNodes : [],
-        assignedMembers : ["B"]
+        category: "nodal",
+        type: "point",
+        coordinate_system: "global",
+
+        Fx: 0,
+        Fy: 0,
+        Fz: 0,
+
+        Mx: 0,
+        My: 10,
+        Mz: 0,
+
+        wx: 0,
+        wy: 0,
+        wz: 0,
+
+        wx1: 0,
+        wy1: 0,
+        wz1: 0,
+
+        wx2: 0,
+        wy2: 0,
+        wz2: 0,
+
+        a: 0,
+        b: 0,
+
+        assignedNodes: ["5"],
+        assignedMembers: []
+
     });
 
     loadDatabase.push({
 
-        category : "nodal",
-        type : "point",
-        direction : "X",
-        value1 : 6,
-        value2 : 0,
-        a : 0,
-        b : 0,
-        assignedNodes : ["3"],
-        assignedMembers : []
+        category: "member",
+        type: "partial_udl",
+        coordinate_system: "local",
+
+        Fx: 0,
+        Fy: 0,
+        Fz: 0,
+
+        Mx: 0,
+        My: 0,
+        Mz: 0,
+
+        wx: 0,
+        wy: 0,
+        wz: 10,
+
+        wx1: 0,
+        wy1: 0,
+        wz1: 0,
+
+        wx2: 0,
+        wy2: 0,
+        wz2: 0,
+
+        a: 1,
+        b: 1.5,
+
+        assignedNodes: [],
+        assignedMembers: ["I", "F"]
+
     });
 
     loadDatabase.push({
 
-        category : "nodal",
-        type : "point",
-        direction : "Y",
-        value1 : 6,
-        value2 : 0,
-        a : 0,
-        b : 0,
-        assignedNodes : ["3"],
-        assignedMembers : []
+        category: "member",
+        type: "trapezoidal",
+        coordinate_system: "local",
+
+        Fx: 0,
+        Fy: 0,
+        Fz: 0,
+
+        Mx: 0,
+        My: 0,
+        Mz: 0,
+
+        wx: 0,
+        wy: 0,
+        wz: 0,
+
+        wx1: 0,
+        wy1: 0,
+        wz1: 5,
+
+        wx2: 0,
+        wy2: 0,
+        wz2: 15,
+
+        a: 0,
+        b: 0,
+
+        assignedNodes: [],
+        assignedMembers: ["E"]
+
     });
 
     loadDatabase.push({
 
-        category : "nodal",
-        type : "point",
-        direction : "Z",
-        value1 : 6,
-        value2 : 0,
-        a : 0,
-        b : 0,
-        assignedNodes : ["3"],
-        assignedMembers : []
-    });
+        category: "member",
+        type: "udl",
+        coordinate_system: "global",
 
-    loadDatabase.push({
+        Fx: 0,
+        Fy: 0,
+        Fz: 0,
 
-        category : "nodal",
-        type : "moment",
-        direction : "MY",
-        value1 : 10,
-        value2 : 0,
-        a : 0,
-        b : 0,
-        assignedNodes : ["5"],
-        assignedMembers : []
-    });
+        Mx: 0,
+        My: 0,
+        Mz: 0,
 
-    loadDatabase.push({
+        wx: 0,
+        wy: -10,
+        wz: 0,
 
-        category : "member",
-        type : "partial_udl",
-        direction : "z",
-        value1 : 10,
-        value2 : 0,
-        a : 1,
-        b : 1.5,
-        assignedNodes : [],
-        assignedMembers : ["I", "F"]
-    });
+        wx1: 0,
+        wy1: 0,
+        wz1: 0,
 
-    loadDatabase.push({
+        wx2: 0,
+        wy2: 0,
+        wz2: 0,
 
-        category : "member",
-        type : "trapezoidal",
-        direction : "z",
-        value1 : 5,
-        value2 : 15,
-        a : 0,
-        b : 0,
-        assignedNodes : [],
-        assignedMembers : ["E"]
+        a: 0,
+        b: 0,
+
+        assignedNodes: [],
+        assignedMembers: ["C", "E", "F", "G"]
+
     });
 
     renderLoadCards();
 
     drawStructure();
 
-    setTimeout(resetView,20);
+    setTimeout(resetView,1);
 };
 
 // #endregion

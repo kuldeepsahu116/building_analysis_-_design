@@ -312,18 +312,16 @@ function createSectionGroup(
     const material =
         new THREE.MeshBasicMaterial({
 
-            color: 0x0066ff,
+            color: 0x4DD0E1,
 
             side:
                 THREE.DoubleSide,
 
-            shininess: 35,
+            transparent: false,
 
-            transparent: true,
+            opacity: 1.0,
 
-            opacity: 0.45,
-
-            depthWrite: false
+            depthWrite: true
         });
 
 
@@ -351,6 +349,24 @@ function createSectionGroup(
 
 
     group.add(mesh);
+
+    const edgesGeometry =
+        new THREE.EdgesGeometry(
+            geometry
+        );
+
+    const edgesMaterial =
+        new THREE.LineBasicMaterial({
+            color: 0x007777
+        });
+
+    const edges =
+        new THREE.LineSegments(
+            edgesGeometry,
+            edgesMaterial
+        );
+
+    group.add(edges);
 
 
     return group;

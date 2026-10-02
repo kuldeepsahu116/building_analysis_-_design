@@ -755,6 +755,11 @@ function toggleViewOptions() {
             "showLabelsToggle"
         );
 
+    const loadLabelsToggle =
+        document.getElementById(
+            "showLoadLabelsToggle"
+        );
+        
     if (loadsToggle) {
 
         window.viewOptions.loads =
@@ -771,6 +776,12 @@ function toggleViewOptions() {
 
         window.viewOptions.labels =
             labelsToggle.checked;
+    }
+
+    if (loadLabelsToggle) {
+
+        window.viewOptions.loadLabels =
+            loadLabelsToggle.checked;
     }
 
     drawStructure();
@@ -922,6 +933,20 @@ function syncDiagramMenu(){
 
         labelsToggle.checked =
             window.viewOptions.labels;
+    }
+
+    // -----------------------------------------
+    // LOAD LABELS
+    // -----------------------------------------
+
+    const loadLabelsToggle =
+        document.getElementById(
+            "showLoadLabelsToggle"
+        );
+
+    if (loadLabelsToggle) {
+        loadLabelsToggle.checked =
+            window.viewOptions.loadLabels;
     }
 }
 
@@ -1225,7 +1250,7 @@ function drawThreeAFD(nodes, members) {
 // SFD
 // =============================================
 
-function drawThreeSFD(nodes, members) {
+function drawThreeSFD(nodes, members, direction) {
 
     if (
         !window.analysisResults ||
@@ -1244,32 +1269,14 @@ function drawThreeSFD(nodes, members) {
             return;
         }
 
-        // -----------------------------------------
-        // SFD - LOCAL Y DIRECTION
-        // -----------------------------------------
-
         drawThreeMemberDiagram(
             member,
             nodes,
             diagram,
             "sfd",
-            "y",
+            direction,
             true
         );
-
-        // -----------------------------------------
-        // SFD - LOCAL Z DIRECTION
-        // -----------------------------------------
-
-        drawThreeMemberDiagram(
-            member,
-            nodes,
-            diagram,
-            "sfd",
-            "z",
-            false
-        );
-
     });
 }
 
@@ -1277,7 +1284,7 @@ function drawThreeSFD(nodes, members) {
 // BMD
 // =============================================
 
-function drawThreeBMD(nodes, members) {
+function drawThreeBMD(nodes, members, direction) {
 
     if (
         !window.analysisResults ||
@@ -1296,32 +1303,14 @@ function drawThreeBMD(nodes, members) {
             return;
         }
 
-        // -----------------------------------------
-        // BMD - My
-        // -----------------------------------------
-
         drawThreeMemberDiagram(
             member,
             nodes,
             diagram,
             "bmd",
-            "y",
+            direction,
             true
         );
-
-        // -----------------------------------------
-        // BMD - Mz
-        // -----------------------------------------
-
-        drawThreeMemberDiagram(
-            member,
-            nodes,
-            diagram,
-            "bmd",
-            "z",
-            false
-        );
-
     });
 }
 
@@ -1503,12 +1492,20 @@ function drawThreeResults(nodes, members) {
             drawThreeAFD(nodes, members);
             break;
 
-        case "sfd":
-            drawThreeSFD(nodes, members);
+        case "sfd_y":
+            drawThreeSFD(nodes, members, "y");
             break;
 
-        case "bmd":
-            drawThreeBMD(nodes, members);
+        case "sfd_z":
+            drawThreeSFD(nodes, members, "z");
+            break;
+
+        case "bmd_y":
+            drawThreeBMD(nodes, members, "y");
+            break;
+
+        case "bmd_z":
+            drawThreeBMD(nodes, members, "z");
             break;
 
         case "tmd":

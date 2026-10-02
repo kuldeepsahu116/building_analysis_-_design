@@ -1312,24 +1312,19 @@
                         </select>
 
 
+                        <!-- COORDINATE SYSTEM -->
+                        <div id="coordinateSystemGroup">
 
-                        <!-- DIRECTION -->
-                        <div id="directionGroup">
+                            <label>Coordinate System</label>
 
-                            <label>Direction</label>
+                            <select id="loadCoordinateSystem">
 
-                            <select id="loadDirection">
-
-                                <option value="X">
-                                    Global-X
+                                <option value="local">
+                                    Local
                                 </option>
 
-                                <option value="Y">
-                                    Global-Y
-                                </option>
-
-                                <option value="Z">
-                                    Global-Z
+                                <option value="global">
+                                    Global
                                 </option>
 
                             </select>
@@ -1337,36 +1332,171 @@
                         </div>
 
 
+                        <!-- FORCE COMPONENTS -->
+                        <div id="forceComponentsGroup">
 
-                        <!-- VALUE 1 -->
-                        <div id="value1Group">
+                            <label>Force Components</label>
 
-                            <label id="value1Label">
-                                Value
-                            </label>
+                            <div class="load-axis-grid">
 
-                            <input 
-                            id="loadValue1"
-                            type="text">
+                                <div>
+                                    <label for="loadFx">Fx</label>
 
+                                    <input
+                                        id="loadFx"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadFy">Fy</label>
+
+                                    <input
+                                        id="loadFy"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadFz">Fz</label>
+
+                                    <input
+                                        id="loadFz"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- MOMENT COMPONENTS -->
+                        <div id="momentComponentsGroup">
 
+                            <label>Moment Components</label>
 
-                        <!-- VALUE 2 -->
-                        <div id="value2Group">
+                            <div class="load-axis-grid">
 
-                            <label id="value2Label">
-                                Value 2
-                            </label>
+                                <div>
+                                    <label for="loadMx">Mx</label>
 
-                            <input 
-                            id="loadValue2"
-                            type="text">
+                                    <input
+                                        id="loadMx"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadMy">My</label>
 
+                                    <input
+                                        id="loadMy"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadMz">Mz</label>
+
+                                    <input
+                                        id="loadMz"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- TRAPEZOIDAL LOAD -->
+                        <div id="trapezoidalComponentsGroup">
 
+                            <label>Start Load</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadWx1">wx₁</label>
+
+                                    <input
+                                        id="loadWx1"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWy1">wy₁</label>
+
+                                    <input
+                                        id="loadWy1"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWz1">wz₁</label>
+
+                                    <input
+                                        id="loadWz1"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+
+                            <label>End Load</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadWx2">wx₂</label>
+
+                                    <input
+                                        id="loadWx2"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWy2">wy₂</label>
+
+                                    <input
+                                        id="loadWy2"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWz2">wz₂</label>
+
+                                    <input
+                                        id="loadWz2"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DISTRIBUTED LOAD -->
+                        <div id="distributedLoadComponentsGroup">
+
+                            <label>Load Intensity</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadWx">wx</label>
+
+                                    <input
+                                        id="loadWx"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWy">wy</label>
+
+                                    <input
+                                        id="loadWy"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWz">wz</label>
+
+                                    <input
+                                        id="loadWz"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- a -->
                         <div id="aGroup">
@@ -1378,8 +1508,6 @@
                             type="text">
 
                         </div>
-
-
 
                         <!-- b -->
                         <div id="bGroup">
@@ -1513,14 +1641,26 @@
 
                         <button
                             class="results-nav-btn"
-                            onclick="showResultTab('sfdTab',this); setDiagram('sfd');">
-                            SFD
+                            onclick="showResultTab('sfdYTab',this); setDiagram('sfd_y');">
+                            SFD - Vy
                         </button>
 
                         <button
                             class="results-nav-btn"
-                            onclick="showResultTab('bmdTab',this); setDiagram('bmd');">
-                            BMD
+                            onclick="showResultTab('sfdZTab',this); setDiagram('sfd_z');">
+                            SFD - Vz
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('bmdYTab',this); setDiagram('bmd_y');">
+                            BMD - My
+                        </button>
+
+                        <button
+                            class="results-nav-btn"
+                            onclick="showResultTab('bmdZTab',this); setDiagram('bmd_z');">
+                            BMD - Mz
                         </button>
 
                         <button
@@ -1568,18 +1708,32 @@
                             <div id="afdTable"></div>
                         </div>
 
-                        <!-- SFD -->
+                        <!-- SFD - Vy -->
                         <div
-                            id="sfdTab"
+                            id="sfdYTab"
                             class="result-tab">
-                            <div id="sfdTable"></div>
+                            <div id="sfdYTable"></div>
                         </div>
 
-                        <!-- BMD -->
+                        <!-- SFD - Vz -->
                         <div
-                            id="bmdTab"
+                            id="sfdZTab"
                             class="result-tab">
-                            <div id="bmdTable"></div>
+                            <div id="sfdZTable"></div>
+                        </div>
+
+                        <!-- BMD - My -->
+                        <div
+                            id="bmdYTab"
+                            class="result-tab">
+                            <div id="bmdYTable"></div>
+                        </div>
+
+                        <!-- BMD - Mz -->
+                        <div
+                            id="bmdZTab"
+                            class="result-tab">
+                            <div id="bmdZTable"></div>
                         </div>
 
                         <!-- TORSIONAL MOMENT DIAGRAM -->
@@ -1707,6 +1861,12 @@
 
                                 <button
                                     class="report-nav-btn"
+                                    onclick="showReportSection('tmd',this)">
+                                    TMD
+                                </button>
+
+                                <button
+                                    class="report-nav-btn"
                                     onclick="showReportSection('deflection',this)">
                                     Deflection
                                 </button>
@@ -1750,20 +1910,17 @@
                                 </label>
 
                                 <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkSFD"
-                                    onchange="updateMemberContentSelectAll()">
-                                    SFD
+                                    <input type="checkbox" disabled>
+                                    SFD Graphical Diagrams
                                 </label>
 
                                 <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkBMD"
-                                    onchange="updateMemberContentSelectAll()">
-                                    BMD
+                                    <input type="checkbox" disabled>
+                                    BMD Graphical Diagrams
                                 </label>
 
                                 <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkDeflection"
-                                    onchange="updateMemberContentSelectAll()">
+                                    <input type="checkbox" disabled>
                                     Deflection Diagram
                                 </label>
 
@@ -1945,12 +2102,13 @@
                         <div class="diagramVisibilityHeader">
                             View Options
                         </div>
+
                         <div class="diagramToggleRow">
                             <label>
-                                <span>Show Loads</span>
+                                <span>Show Labels</span>
                                 <input
                                     type="checkbox"
-                                    id="showLoadsToggle"
+                                    id="showLabelsToggle"
                                     checked
                                     onchange="toggleViewOptions()"
                                 >
@@ -1971,10 +2129,22 @@
 
                         <div class="diagramToggleRow">
                             <label>
-                                <span>Show Labels</span>
+                                <span>Show Loads</span>
                                 <input
                                     type="checkbox"
-                                    id="showLabelsToggle"
+                                    id="showLoadsToggle"
+                                    checked
+                                    onchange="toggleViewOptions()"
+                                >
+                            </label>
+                        </div>
+
+                        <div class="diagramToggleRow">
+                            <label>
+                                <span>Show Load Labels</span>
+                                <input
+                                    type="checkbox"
+                                    id="showLoadLabelsToggle"
                                     checked
                                     onchange="toggleViewOptions()"
                                 >

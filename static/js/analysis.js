@@ -195,21 +195,33 @@ function analyzeFrame(){
                 data.afd
             );
 
+        // SFD TABLES
         document.getElementById(
-            "sfdTable"
+            "sfdYTable"
         ).innerHTML =
-
-            formatSFDTable(
+            formatSFDYTable(
                 data.sfd
             );
 
+        document.getElementById(
+            "sfdZTable"
+        ).innerHTML =
+            formatSFDZTable(
+                data.sfd
+            );
 
+        // BMD TABLES
+        document.getElementById(
+            "bmdYTable"
+        ).innerHTML =
+            formatBMDYTable(
+                data.bmd
+            );
 
         document.getElementById(
-            "bmdTable"
+            "bmdZTable"
         ).innerHTML =
-
-            formatBMDTable(
+            formatBMDZTable(
                 data.bmd
             );
 
@@ -336,6 +348,11 @@ function formatDisplacements(D){
 
     let html = `
 
+        <div class="result-card-heading">
+            <h3>Nodal Displacements</h3>
+            <p>Global translational and rotational displacements</p>
+        </div>
+
         <table class="result-table">
 
             <tr>
@@ -375,8 +392,6 @@ function formatDisplacements(D){
 // #endregion
 
 
-
-
 // #region =====================================================
 // REACTION TABLE
 // =====================================================
@@ -384,6 +399,11 @@ function formatDisplacements(D){
 function formatReactions(R){
 
     let html = `
+
+        <div class="result-card-heading">
+            <h3>Support Reactions</h3>
+            <p>Global reaction forces and moments at restrained nodes</p>
+        </div>
 
         <table class="result-table">
 
@@ -460,6 +480,11 @@ function formatReactions(R){
 function formatMemberForces(memberForces, members){
 
     let html = `
+
+        <div class="result-card-heading">
+            <h3>Local Member End Forces</h3>
+            <p>End forces and moments in the member local coordinate system</p>
+        </div>
 
         <table class="result-table">
 
@@ -539,6 +564,11 @@ function formatMemberForces(memberForces, members){
 function formatAFDTable(data){
 
     let html = `
+
+        <div class="result-card-heading">
+            <h3>Axial Force Diagram</h3>
+            <p>Local axial force along each member</p>
+        </div>
 
         <table class="result-table">
 
@@ -643,6 +673,112 @@ function formatSFDTable(data){
     return html;
 }
 
+
+function formatSFDYTable(data){
+
+    let html = `
+        <div class="result-card-heading">
+            <h3>Shear Force Diagram — Vy</h3>
+            <p>Local Y-direction shear force</p>
+        </div>
+
+        <table class="result-table">
+
+            <tr>
+                <th>Member</th>
+                <th>Maximum Vy</th>
+                <th>x @ Maximum</th>
+                <th>Minimum Vy</th>
+                <th>x @ Minimum</th>
+            </tr>
+    `;
+
+    data.forEach(d => {
+
+        html += `
+            <tr>
+
+                <td>${d.member}</td>
+
+                <td>
+                    ${Number(d.max_V.y).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_max_V.y).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.min_V.y).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_min_V.y).toFixed(3)}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+    html += "</table>";
+
+    return html;
+}
+
+function formatSFDZTable(data){
+
+    let html = `
+        <div class="result-card-heading">
+            <h3>Shear Force Diagram — Vz</h3>
+            <p>Local Z-direction shear force</p>
+        </div>
+
+        <table class="result-table">
+
+            <tr>
+                <th>Member</th>
+                <th>Maximum Vz</th>
+                <th>x @ Maximum</th>
+                <th>Minimum Vz</th>
+                <th>x @ Minimum</th>
+            </tr>
+    `;
+
+    data.forEach(d => {
+
+        html += `
+            <tr>
+
+                <td>${d.member}</td>
+
+                <td>
+                    ${Number(d.max_V.z).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_max_V.z).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.min_V.z).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_min_V.z).toFixed(3)}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+    html += "</table>";
+
+    return html;
+}
+
+
 // #endregion
 
 // #region =====================================================
@@ -708,6 +844,110 @@ function formatBMDTable(data){
     return html;
 }
 
+function formatBMDYTable(data){
+
+    let html = `
+        <div class="result-card-heading">
+            <h3>Bending Moment Diagram — My</h3>
+            <p>Bending moment about the local Y-axis</p>
+        </div>
+
+        <table class="result-table">
+
+            <tr>
+                <th>Member</th>
+                <th>Maximum My</th>
+                <th>x @ Maximum</th>
+                <th>Minimum My</th>
+                <th>x @ Minimum</th>
+            </tr>
+    `;
+
+    data.forEach(d => {
+
+        html += `
+            <tr>
+
+                <td>${d.member}</td>
+
+                <td>
+                    ${Number(d.max_M.y).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_max_M.y).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.min_M.y).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_min_M.y).toFixed(3)}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+    html += "</table>";
+
+    return html;
+}
+
+function formatBMDZTable(data){
+
+    let html = `
+        <div class="result-card-heading">
+            <h3>Bending Moment Diagram — Mz</h3>
+            <p>Bending moment about the local Z-axis</p>
+        </div>
+
+        <table class="result-table">
+
+            <tr>
+                <th>Member</th>
+                <th>Maximum Mz</th>
+                <th>x @ Maximum</th>
+                <th>Minimum Mz</th>
+                <th>x @ Minimum</th>
+            </tr>
+    `;
+
+    data.forEach(d => {
+
+        html += `
+            <tr>
+
+                <td>${d.member}</td>
+
+                <td>
+                    ${Number(d.max_M.z).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_max_M.z).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.min_M.z).toFixed(3)}
+                </td>
+
+                <td>
+                    ${Number(d.x_min_M.z).toFixed(3)}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+    html += "</table>";
+
+    return html;
+}
+
 // #endregion
 
 // #region =====================================================
@@ -717,6 +957,11 @@ function formatBMDTable(data){
 function formatTMDTable(data){
 
     let html = `
+
+        <div class="result-card-heading">
+            <h3>Torsional Moment Diagram — T</h3>
+            <p>Torque about the local X-axis</p>
+        </div>
 
         <table class="result-table">
 
@@ -762,6 +1007,12 @@ function formatTMDTable(data){
 // =====================================================
 function formatDeflectionTable(data){
     let html = `
+
+        <div class="result-card-heading">
+            <h3>Member Deflection</h3>
+            <p>Local Y and Z transverse deflections</p>
+        </div>
+
         <table class="result-table">
             <tr>
                 <th rowspan="2">Member</th>

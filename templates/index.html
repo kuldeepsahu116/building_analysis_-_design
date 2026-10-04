@@ -26,14 +26,24 @@
     </div>
 
     <div class="header-right">
+
+        <!-- HELP BUTTON -->
+        <button
+            id="helpBtn"
+            class="help-btn"
+            onclick="openHelpPopup()"
+            title="Help"
+            aria-label="Help">
+            ?
+        </button>
+
+        <!-- INFORMATION BUTTON -->
         <button
             id="infoBtn"
             class="info-btn"
             onclick="openInfoPopup()"
             title="About">
-
             ⓘ
-
         </button>
     </div>
 
@@ -87,13 +97,33 @@
 
 </div>
 
+<!-- HELP POPUP -->
+<div id="helpPopupOverlay" class="help-popup-overlay">
+
+    <div class="helpPopup">
+        <div class="helpPopupHeader">
+            <h3>Help & Instructions</h3>
+            <button
+                class="help-popup-close-btn"
+                onclick="closeHelpPopup()">
+                &times;
+            </button>
+        </div>
+
+        <div class="helpPopupContent">
+            {% include 'instructions.html' %}
+        </div>
+    </div>
+</div>
+
 <!-- NAVIGATION -->
 <div class="nav-bar">
     <button onclick="showPage(1)">Model</button>
     <button onclick="showPage(2)">Properties</button>
-    <button onclick="showPage(3)">Supports & Loads</button>
-    <button onclick="showPage(4)">Results</button>
-    <button onclick="showPage(5)">Report</button>
+    <button onclick="showPage(3)">Supports</button>
+    <button onclick="showPage(4)">Loads</button>
+    <button onclick="showPage(5)">Results</button>
+    <button onclick="showPage(6)">Report</button>
 </div>
 
 <div class="main-container">
@@ -105,19 +135,6 @@
         <div class="page" id="page1">
 
             <div class="page1-layout">
-
-                <!-- INSTRUCTION -->
-                <div class="card instruction-card">
-
-                    <h4>Instructions</h4>
-
-                    <div class="instruction-scroll">
-
-                        {% include 'instructions.html' %}
-
-                    </div>
-
-                </div>
 
                 <div class="page1-input-column">
 
@@ -885,7 +902,7 @@
         <div class="page" id="page3" style="display:none;">
 
             <!-- SUPPORTS -->
-            <div class="card page3-half">
+            <div class="card page3-full">
 
                 <h4>Supports</h4>
 
@@ -966,75 +983,6 @@
 
             </div>
 
-            <!-- LOADS -->
-            <div class="card page3-half">
-
-                <h4>Loads</h4>
-
-                <!-- LOAD CARD AREA -->
-                <div
-                    class="load-card-container"
-                    id="loadCardContainer">
-
-                </div>
-
-                <!-- LOAD CARD TEMPLATE -->
-                <div
-                    id="loadCardTemplate"
-                    style="display:none;">
-
-                    <div class="load-item">
-                        <div class="load-card-layout">
-
-                            <!-- LEFT -->
-                            <div class="load-left">
-                                <div class="load-title"></div>
-                                <div class="load-description"></div>
-                            </div>
-
-                            <!-- RIGHT -->
-                            <div class="load-right">
-
-                                <!-- ASSIGN -->
-                                <div class="load-assignment-section">
-                                    <input
-                                        class="load-assignment-input"
-                                        placeholder="Assign nodes/members">
-                                    <button class="assign-load-btn">
-                                        Assign
-                                    </button>
-
-                                    <button
-                                        class="assign-all-btn"
-                                        type="button">
-                                        Assign All
-                                    </button>
-
-                                </div>
-
-                                <!-- CURRENT ASSIGNMENT -->
-                                <div class="load-assignment"></div>
-
-                                <!-- ACTION BUTTONS -->
-                                <div class="load-buttons">
-                                    <button class="edit-load-btn">
-                                        Edit
-                                    </button>
-                                    <button class="delete-btn">
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ADD LOAD -->
-                <button onclick="openLoadPopup()">
-                    + Add Load
-                </button>
-
-            </div>
 
             <!-- ================================================= -->
             <!-- SUPPORT POPUP -->
@@ -1251,7 +1199,81 @@
 
             </div>
 
+        </div>
 
+
+        <!-- ================= PAGE 4 ================= -->
+        <div class="page" id="page4" style="display:none;">
+
+            <!-- LOADS -->
+            <div class="card page3-full">
+
+                <h4>Loads</h4>
+
+                <!-- LOAD CARD AREA -->
+                <div
+                    class="load-card-container"
+                    id="loadCardContainer">
+
+                </div>
+
+                <!-- LOAD CARD TEMPLATE -->
+                <div
+                    id="loadCardTemplate"
+                    style="display:none;">
+
+                    <div class="load-item">
+                        <div class="load-card-layout">
+
+                            <!-- LEFT -->
+                            <div class="load-left">
+                                <div class="load-title"></div>
+                                <div class="load-description"></div>
+                            </div>
+
+                            <!-- RIGHT -->
+                            <div class="load-right">
+
+                                <!-- ASSIGN -->
+                                <div class="load-assignment-section">
+                                    <input
+                                        class="load-assignment-input"
+                                        placeholder="Assign nodes/members">
+                                    <button class="assign-load-btn">
+                                        Assign
+                                    </button>
+
+                                    <button
+                                        class="assign-all-btn"
+                                        type="button">
+                                        Assign All
+                                    </button>
+
+                                </div>
+
+                                <!-- CURRENT ASSIGNMENT -->
+                                <div class="load-assignment"></div>
+
+                                <!-- ACTION BUTTONS -->
+                                <div class="load-buttons">
+                                    <button class="edit-load-btn">
+                                        Edit
+                                    </button>
+                                    <button class="delete-btn">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD LOAD -->
+                <button onclick="openLoadPopup()">
+                    + Add Load
+                </button>
+
+            </div>
 
             <!-- ================================================= -->
             <!-- LOAD POPUP -->
@@ -1550,9 +1572,7 @@
         <!-- ASSIGN ALL CONFIRMATION POPUP -->
         <!-- ============================================== -->
 
-        <div
-            class="popup-overlay"
-            id="assignAllConfirmPopup">
+        <div class="popup-overlay" id="assignAllConfirmPopup">
 
             <div class="popup-card assign-confirm-popup">
 
@@ -1591,8 +1611,8 @@
         </div>
 
 
-        <!-- ================= PAGE 4 ================= -->
-        <div class="page" id="page4" style="display:none;">
+        <!-- ================= PAGE 5 ================= -->
+        <div class="page" id="page5" style="display:none;">
 
             <div class="results-column">
 
@@ -1763,219 +1783,697 @@
             </div>
         </div>
 
-        <div class="page" id="page5" style="display:none;">
-
-            <div class="report-layout">
-
-                <div class="report-left">
-
-                    <div class="report-style">
-                        <label>
-                            <input
-                                type="radio"
-                                name="reportStyle"
-                                value="tabular"
-                                checked
-                                onchange="changeReportStyle()">
-                            Tabular Report
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="reportStyle"
-                                value="member"
-                                onchange="changeReportStyle()">
-                            Member-Wise Report
-                        </label>
-                    </div>
-
-                    <div class="report-bottom">
-                    
-                        <!-- LEFT SIDEBAR -->
-                        <div class="report-sidebar card" id="reportSidebar">
-
-                            <!-- TABULAR REPORT SIDEBAR -->
-                            <div id="tabularSidebar">
-
-                                <label class="report-select-all">
-                                    <input
-                                        type="checkbox"
-                                        id="reportSelectAll"
-                                        onchange="toggleSelectAllReport()">
-                                    <span>Select All Sections</span>
-                                </label>                   
-
-                                <button
-                                    class="report-nav-btn active-report-tab"
-                                    onclick="showReportSection('nodes',this)">
-                                    Nodes
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('members',this)">
-                                    Members
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('supports',this)">
-                                    Supports
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('loads',this)">
-                                    Loads
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('reactions',this)">
-                                    Reactions
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('displacements',this)">
-                                    Displacements
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('forces',this)">
-                                    Member Forces
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('sfd',this)">
-                                    SFD
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('bmd',this)">
-                                    BMD
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('tmd',this)">
-                                    TMD
-                                </button>
-
-                                <button
-                                    class="report-nav-btn"
-                                    onclick="showReportSection('deflection',this)">
-                                    Deflection
-                                </button>
-
-                            </div>
-
-                            <!-- MEMBER WISE REPORT SIDEBAR -->
-                            <div id="memberSidebar">
-
-                                <label class="report-select-all">
-                                    <input
-                                        type="checkbox" checked
-                                        id="memberContentSelectAll"
-                                        onchange="toggleReportMemberContentSelection()">
-
-                                    <span>Select All Contents</span>
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkGeometry"
-                                    onchange="updateMemberContentSelectAll()">
-                                    Geometry
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkLoads"
-                                    onchange="updateMemberContentSelectAll()">
-                                    Applied Loads
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkForces"
-                                    onchange="updateMemberContentSelectAll()">
-                                    End Forces
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" checked id="chkMaximum"
-                                    onchange="updateMemberContentSelectAll()">
-                                    Maximum Values
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" disabled>
-                                    SFD Graphical Diagrams
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" disabled>
-                                    BMD Graphical Diagrams
-                                </label>
-
-                                <label class="member-report-chkbox">
-                                    <input type="checkbox" disabled>
-                                    Deflection Diagram
-                                </label>
-
-                            </div>
-
-                        </div>
-
-                        <!-- SELECTION AREA -->
-                        <div class="report-selection-panel card">
-
-                            <div class="report-selection-header">
-
-                                <h4 id="reportSelectionTitle">
-                                    Nodes
-                                </h4>
-
-                                <button
-                                    id="reportSelectionButton"
-                                    onclick="toggleCurrentSectionSelection()">
-                                    Select All
-
-                                </button>
-
-                            </div>
-
-                            <div
-                                id="reportSelectionContent"
-                                class="report-selection-content">
-
-                            </div>
-
-
-                            <div class="report-actions">
-                                <button onclick="generateReportPreview()">
-                                    Generate Preview
-                                </button>
-
-                                <button onclick="exportReportPDF()">
-                                    Export PDF
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
 
     </div>
 
+    <!-- ===================================================== -->
+    <!-- 2D BUILDING MODELING PANEL -->
+    <!-- ===================================================== -->
+    <div class="drawing2d-panel">
 
-    <!-- RIGHT PANEL (ALWAYS VISIBLE) -->
-    <div class="right-panel">
+        <div class="card drawing2d-card">
+
+            <!-- HEADER -->
+            <div class="drawing2d-header">
+
+                <div class="drawing2d-title">
+                    <h4>Plan View</h4>
+                </div>
+
+                <div class="drawing2d-header-controls">
+
+                    <!-- GRID SETTINGS -->
+
+                    <button
+                        id="drawing2DGridSettingsBtn"
+                        class="drawing2d-header-btn"
+                        onclick="openDrawing2DGridPopup()"
+                        title="Grid Settings">
+                        Grid
+                    </button>
+
+                    <div class="drawing2d-floor-control">
+
+                        <label for="drawing2DFloor">
+                            Floor
+                        </label>
+
+                        <select id="drawing2DFloor">
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2D TOOLBAR -->
+            <div class="drawing2d-toolbar">
+
+                <button
+                    id="drawing2DSelectBtn"
+                    class="drawing2d-tool active"
+                    onclick="setDrawing2DTool('select')">
+                    Select
+                </button>
+
+                <button
+                    id="drawing2DNodeBtn"
+                    class="drawing2d-tool"
+                    onclick="setDrawing2DTool('node')">
+                    Node
+                </button>
+
+                <button
+                    id="drawing2DMemberBtn"
+                    class="drawing2d-tool"
+                    onclick="setDrawing2DTool('member')">
+                    Member
+                </button>
+
+                <button
+                    id="drawing2DGridBtn"
+                    class="drawing2d-tool active"
+                    onclick="toggleDrawing2DGrid()">
+                    Grid
+                </button>
+
+                <button
+                    class="drawing2d-tool"
+                    onclick="fitDrawing2DView()">
+                    Fit
+                </button>
+
+            </div>
+
+
+            <!-- THREE.JS 2D VIEWPORT -->
+            <div id="drawing2DViewport" class="drawing2d-viewport">
+
+                <canvas
+                    id="drawing2DCanvas">
+                </canvas>
+
+            </div>
+
+            <!-- STATUS BAR -->
+            <div class="drawing2d-status">
+
+                <span id="drawing2DToolStatus">
+                    Tool: Select
+                </span>
+
+                <span id="drawing2DCoordinateStatus">
+                    X: 0.00 m &nbsp;&nbsp; Z: 0.00 m
+                </span>
+
+                <span id="drawing2DGridStatus">
+                    Grid: 5.00 × 4.00 m
+                </span>
+
+            </div>
+        </div>
+
+        <!-- GRID SETTINGS POPUP -->
+        <div id="drawing2DGridPopup"
+            class="drawing2d-grid-popup-overlay">
+
+            <div class="drawing2d-grid-popup">
+
+                <!-- HEADER -->
+                <div class="drawing2d-grid-popup-header">
+                    <h3>
+                        Grid Settings
+                    </h3>
+                </div>
+
+                <!-- CONTENT -->
+                <div class="drawing2d-grid-popup-content">
+
+
+                    <!-- TOP SYSTEM DATA -->
+                    <div class="grid-system-top">
+
+                        <!-- GRID SYSTEM -->
+                        <section class="grid-settings-section">
+
+                            <div class="grid-section-title">
+                                Grid System
+                            </div>
+
+                            <div class="grid-form-row">
+
+                                <label
+                                    for="gridSystemName">
+                                    Grid System Name
+                                </label>
+
+                                <input
+                                    id="gridSystemName"
+                                    type="text"
+                                    value="G1"
+                                    maxlength="30">
+
+                            </div>
+
+                            <div class="grid-section-title">
+                                System Origin
+                            </div>
+
+                            <div class="grid-origin-row">
+                                <div class="grid-origin-field">
+
+                                    <label
+                                        for="gridOriginX">
+                                        Global X
+                                    </label>
+                                    <div class="grid-input-unit">
+                                        <input
+                                            id="gridOriginX"
+                                            type="number"
+                                            step="0.01"
+                                            value="0">
+                                        <span>m</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid-origin-field">
+                                    <label
+                                        for="gridOriginZ">
+                                        Global Z
+                                    </label>
+                                    <div class="grid-input-unit">
+                                        <input
+                                            id="gridOriginZ"
+                                            type="number"
+                                            step="0.01"
+                                            value="0">
+                                        <span>m</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid-origin-field">
+
+                                    <label
+                                        for="gridRotation">
+                                        Rotation
+                                    </label>
+
+                                    <div class="grid-input-unit">
+
+                                        <input
+                                            id="gridRotation"
+                                            type="number"
+                                            step="0.1"
+                                            value="0">
+
+                                        <span>deg</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid-form-row">
+                                <label
+                                    for="gridColor">
+                                    Grid Color
+                                </label>
+                                <input
+                                    id="gridColor"
+                                    class="grid-color-input"
+                                    type="color"
+                                    value="#9BA7B5">
+                            </div>
+
+                        </section>
+
+                        <!-- STORY SETTINGS -->
+                        <section class="grid-settings-section story-settings-section">
+
+                            <div class="grid-section-title">
+                                Story Data
+                            </div>
+
+                            <div class="story-mode-tabs">
+                                <button
+                                    type="button"
+                                    id="storySpacingModeBtn"
+                                    class="story-mode-btn active"
+                                    onclick="switchStoryMode('spacing')">
+                                    Add by Spacing
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="storyOrdinateModeBtn"
+                                    class="story-mode-btn"
+                                    onclick="switchStoryMode('ordinate')">
+                                    Add by Ordinate
+                                </button>
+                            </div>
+
+                            <div id="storySpacingSection"
+                                class="story-add-section">
+
+                                <div class="story-add-grid">
+                                    <div class="story-input-field">
+                                        <label for="storySpacing">
+                                            Spacing
+                                        </label>
+                                        <div class="grid-input-unit">
+                                            <input
+                                                id="storySpacing"
+                                                type="number"
+                                                min="0.01"
+                                                step="0.01"
+                                                value="3">
+                                            <span>m</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="story-input-field">
+                                        <label for="storySpacingCount">
+                                            Number to Add
+                                        </label>
+                                        <input
+                                            id="storySpacingCount"
+                                            type="number"
+                                            min="1"
+                                            max="100"
+                                            step="1"
+                                            value="1">
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="grid-add-main-btn story-add-btn"
+                                    onclick="addStoriesBySpacing()">
+                                    + Add Stories
+                                </button>
+                            </div>
+
+                            <div id="storyOrdinateSection"
+                                class="story-add-section"
+                                style="display:none;">
+
+                                <div class="story-add-grid">
+                                    <div class="story-input-field">
+                                        <label for="storyNameInput">
+                                            Story Name
+                                        </label>
+                                        <input
+                                            id="storyNameInput"
+                                            type="text"
+                                            placeholder="e.g. Second Floor">
+                                    </div>
+
+                                    <div class="story-input-field">
+
+                                        <label for="storyYInput">
+                                            Y Ordinate
+                                        </label>
+
+                                        <div class="grid-input-unit">
+                                            <input
+                                                id="storyYInput"
+                                                type="number"
+                                                min="0.01"
+                                                step="0.01"
+                                                placeholder="e.g. 6.00">
+                                            <span>m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="grid-add-main-btn story-add-btn"
+                                    onclick="addStoryByOrdinate()">
+                                    + Add Story
+                                </button>
+                            </div>
+
+                             <div class="story-table-card">
+                                <div class="story-table-scroll">
+                                    <table class="story-data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Story Name</th>
+                                                <th>Y Ordinate (m)</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="storyLineList"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- RECTANGULAR GRIDS -->
+                    <section class="grid-rectangular-section">
+
+                        <div class="grid-rectangular-header">
+
+                            <div>
+
+                                <div class="grid-section-title">
+                                    Rectangular Grids
+                                </div>
+
+                                <div class="grid-subtitle">
+                                    Define plan grid lines and spacing
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- GRID ADD MODE -->
+                        <div class="grid-mode-tabs">
+
+                            <button
+                                type="button"
+                                class="grid-mode-btn active"
+                                id="btnUniformMode"
+                                onclick="switchGridMode('spacing')">
+                                Add as Spacing
+                            </button>
+
+                            <button
+                                type="button"
+                                class="grid-mode-btn"
+                                id="btnCustomMode"
+                                onclick="switchGridMode('ordinate')">
+                                Add as Ordinate
+                            </button>
+
+                        </div>
+
+                        <!-- ADD BY SPACING -->
+                        <div id="gridUniformSection"
+                            class="grid-uniform-section">
+
+                            <div class="grid-uniform-grid">
+
+                                <!-- X -->
+
+                                <div class="grid-axis-card">
+
+                                    <div class="grid-axis-card-header">
+                                        Add X Grids by Spacing
+                                    </div>
+
+                                    <div class="grid-form-row">
+
+                                        <label
+                                            for="gridXSpacing">
+                                            Spacing
+                                        </label>
+
+                                        <div class="grid-input-unit">
+
+                                            <input
+                                                id="gridXSpacing"
+                                                type="number"
+                                                min="0.01"
+                                                step="0.01"
+                                                value="5">
+
+                                            <span>m</span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="grid-form-row">
+
+                                        <label
+                                            for="gridXCount">
+                                            Number to Add
+                                        </label>
+
+                                        <input
+                                            id="gridXCount"
+                                            type="number"
+                                            min="1"
+                                            max="100"
+                                            step="1"
+                                            value="4">
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        class="grid-add-main-btn"
+                                        onclick="addGridBySpacing('X')">
+                                        + Add X Grids
+                                    </button>
+
+                                </div>
+
+
+                                <!-- Y -->
+
+                                <div class="grid-axis-card">
+
+                                    <div class="grid-axis-card-header">
+                                        Add Z Grids by Spacing
+                                    </div>
+
+                                    <div class="grid-form-row">
+
+                                        <label
+                                            for="gridZSpacing">
+                                            Spacing
+                                        </label>
+
+                                        <div class="grid-input-unit">
+
+                                            <input
+                                                id="gridZSpacing"
+                                                type="number"
+                                                min="0.01"
+                                                step="0.01"
+                                                value="4">
+
+                                            <span>m</span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="grid-form-row">
+
+                                        <label
+                                            for="gridZCount">
+                                            Number to Add
+                                        </label>
+
+                                        <input
+                                            id="gridZCount"
+                                            type="number"
+                                            min="1"
+                                            max="100"
+                                            step="1"
+                                            value="5">
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        class="grid-add-main-btn"
+                                        onclick="addGridBySpacing('Z')">
+                                        + Add Z Grids
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ADD BY ORDINATE -->
+                        <div id="gridCustomSection"
+                            class="grid-custom-section"
+                            style="display: none;">
+
+                            <div class="grid-custom-input-grid">
+
+                                <!-- X -->
+
+                                <div class="grid-axis-card">
+
+                                    <div class="grid-axis-card-header">
+                                        Add X Grid by Coordinate
+                                    </div>
+
+                                    <div class="grid-add-row">
+
+                                        <input
+                                            id="customXPos"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="X ordinate (m)">
+
+                                        <button
+                                            type="button"
+                                            onclick="addCustomGridCoord('X')">
+                                            + Add
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Y -->
+
+                                <div class="grid-axis-card">
+
+                                    <div class="grid-axis-card-header">
+                                        Add Z Grid by Coordinate
+                                    </div>
+
+                                    <div class="grid-add-row">
+
+                                        <input
+                                            id="customZPos"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            placeholder="Z ordinate (m)">
+
+                                        <button
+                                            type="button"
+                                            onclick="addCustomGridCoord('Z')">
+                                            + Add
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- GRID DATA TABLES -->
+                        <div class="grid-data-tables">
+
+
+                            <!-- X TABLE -->
+
+                            <div class="grid-data-table-card">
+
+                                <div class="grid-data-table-title">
+                                    X Grid Data
+                                </div>
+
+
+                                <div class="grid-data-table-scroll">
+
+                                    <table class="grid-data-table">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>
+                                                    Grid ID
+                                                </th>
+
+                                                <th id="gridXValueHeader">
+                                                    X Spacing (m)
+                                                </th>
+
+                                            </tr>
+
+                                        </thead>
+
+
+                                        <tbody
+                                            id="gridXLineList">
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- Z TABLE -->
+
+                            <div class="grid-data-table-card">
+
+                                <div class="grid-data-table-title">
+                                    Z Grid Data
+                                </div>
+
+
+                                <div class="grid-data-table-scroll">
+
+                                    <table class="grid-data-table">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <th>
+                                                    Grid ID
+                                                </th>
+
+                                                <th id="gridZValueHeader">
+                                                    Z Spacing (m)
+                                                </th>
+
+                                            </tr>
+
+                                        </thead>
+
+
+                                        <tbody
+                                            id="gridZLineList">
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </section>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="drawing2d-grid-popup-footer">
+                    <button
+                        class="drawing2d-popup-cancel-btn"
+                        onclick="closeDrawing2DGridPopup()">
+                        Cancel
+                    </button>
+
+                    <button
+                        class="drawing2d-popup-apply-btn"
+                        onclick="applyDrawing2DGridSettings()">
+                        Apply Grid
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- 3D VISUALIZATION PANEL -->
+    <!-- ===================================================== -->
+    <div class="visualization-panel">
 
         <!-- STRUCTURE VIEW -->
         <div class="card structure-card">
@@ -1992,6 +2490,14 @@
                     onclick="toggleSection3DRendering()"
                     style="display:none;">
                     3D RENDERING
+                </button>
+
+                <button
+                    id="threeDGridBtn"
+                    class="drawing2d-tool active"
+                    onclick="toggleThreeDGrid()"
+                    title="Show / Hide Grid">
+                    GRID
                 </button>
 
                 <button id="resetBtn" onclick="resetView()">
@@ -2161,24 +2667,6 @@
 
         </div>
 
-        <div
-            class="card report-preview-card"
-            id="reportPreviewCard">
-
-            <h4>Report Preview</h4>
-
-            <div id="reportPreview">
-                <div class="report-preview-placeholder">
-                    <div class="placeholder-icon">📄</div>
-                    <h3>Report Preview</h3>
-                    <p>
-                        Select the desired report contents from the left panel and
-                        click <strong>Generate Preview</strong> to view the report.
-                    </p>
-                </div>
-            </div>
-        </div>
-
         <!-- ACTION BUTTONS -->
         <div id="actionButtonArea">
 
@@ -2188,6 +2676,231 @@
 
         </div>
 
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- REPORT WORKSPACE — PAGE 6 -->
+<!-- ===================================================== -->
+
+<div class="report-workspace" id="page6">
+
+    <div class="report-left">
+
+        <div class="report-style">
+            <label>
+                <input
+                    type="radio"
+                    name="reportStyle"
+                    value="tabular"
+                    checked
+                    onchange="changeReportStyle()">
+                Tabular Report
+            </label>
+            <label>
+                <input
+                    type="radio"
+                    name="reportStyle"
+                    value="member"
+                    onchange="changeReportStyle()">
+                Member-Wise Report
+            </label>
+        </div>
+
+        <div class="report-bottom">
+        
+            <!-- LEFT SIDEBAR -->
+            <div class="report-sidebar card" id="reportSidebar">
+
+                <!-- TABULAR REPORT SIDEBAR -->
+                <div id="tabularSidebar">
+
+                    <label class="report-select-all">
+                        <input
+                            type="checkbox"
+                            id="reportSelectAll"
+                            onchange="toggleSelectAllReport()">
+                        <span>Select All Sections</span>
+                    </label>                   
+
+                    <button
+                        class="report-nav-btn active-report-tab"
+                        onclick="showReportSection('nodes',this)">
+                        Nodes
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('members',this)">
+                        Members
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('supports',this)">
+                        Supports
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('loads',this)">
+                        Loads
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('reactions',this)">
+                        Reactions
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('displacements',this)">
+                        Displacements
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('forces',this)">
+                        Member Forces
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('sfd',this)">
+                        SFD
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('bmd',this)">
+                        BMD
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('tmd',this)">
+                        TMD
+                    </button>
+
+                    <button
+                        class="report-nav-btn"
+                        onclick="showReportSection('deflection',this)">
+                        Deflection
+                    </button>
+
+                </div>
+
+                <!-- MEMBER WISE REPORT SIDEBAR -->
+                <div id="memberSidebar">
+
+                    <label class="report-select-all">
+                        <input
+                            type="checkbox" checked
+                            id="memberContentSelectAll"
+                            onchange="toggleReportMemberContentSelection()">
+
+                        <span>Select All Contents</span>
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" checked id="chkGeometry"
+                        onchange="updateMemberContentSelectAll()">
+                        Geometry
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" checked id="chkLoads"
+                        onchange="updateMemberContentSelectAll()">
+                        Applied Loads
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" checked id="chkForces"
+                        onchange="updateMemberContentSelectAll()">
+                        End Forces
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" checked id="chkMaximum"
+                        onchange="updateMemberContentSelectAll()">
+                        Maximum Values
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" disabled>
+                        SFD Graphical Diagrams
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" disabled>
+                        BMD Graphical Diagrams
+                    </label>
+
+                    <label class="member-report-chkbox">
+                        <input type="checkbox" disabled>
+                        Deflection Diagram
+                    </label>
+
+                </div>
+
+            </div>
+
+            <!-- SELECTION AREA -->
+            <div class="report-selection-panel card">
+
+                <div class="report-selection-header">
+
+                    <h4 id="reportSelectionTitle">
+                        Nodes
+                    </h4>
+
+                    <button
+                        id="reportSelectionButton"
+                        onclick="toggleCurrentSectionSelection()">
+                        Select All
+
+                    </button>
+
+                </div>
+
+                <div
+                    id="reportSelectionContent"
+                    class="report-selection-content">
+
+                </div>
+
+
+                <div class="report-actions">
+                    <button onclick="generateReportPreview()">
+                        Generate Preview
+                    </button>
+
+                    <button onclick="exportReportPDF()">
+                        Export PDF
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card report-preview-card" id="reportPreviewCard">
+
+        <h4>Report Preview</h4>
+
+        <div id="reportPreview">
+            <div class="report-preview-placeholder">
+                <div class="placeholder-icon">📄</div>
+                <h3>Report Preview</h3>
+                <p>
+                    Select the desired report contents from the left panel and
+                    click <strong>Generate Preview</strong> to view the report.
+                </p>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -2202,8 +2915,16 @@
 <!-- ORBIT CONTROLS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
+<!-- 2D DRAWING -->
 
-<!-- NEW 3D DRAWING -->
+<script src="{{ url_for('static', filename='js/drawing2D.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing2D_ui.js') }}"></script>
+
+<!-- 3D DRAWING -->
+
+<script src="{{ url_for('static', filename='js/drawing3D_grids.js') }}"></script>
+
 <script src="{{ url_for('static', filename='js/drawing3D.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/drawing3D_rendering.js') }}"></script>

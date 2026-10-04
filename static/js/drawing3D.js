@@ -52,6 +52,16 @@ function updateViewForPage(page) {
         // Supports & Loads page
         window.viewOptions.labels = true;
         window.viewOptions.supports = true;
+        window.viewOptions.loads = false;
+        window.showResultDiagrams = false;
+
+    }
+
+    else if (page === 4) {
+
+        // Supports & Loads page
+        window.viewOptions.labels = true;
+        window.viewOptions.supports = true;
         window.viewOptions.loads = true;
         window.showResultDiagrams = false;
 
@@ -146,9 +156,9 @@ function initThreeJS() {
     // to the structure in a later step.
 
     window.threeCamera.position.set(
+        -10,
         10,
-        10,
-        10
+        -10
     );
 
 
@@ -1216,6 +1226,12 @@ function drawStructure() {
 
     clearThreeModel();
 
+    // -----------------------------------------
+    // DRAW STRUCTURAL GRID
+    // -----------------------------------------
+
+    drawThreeGrid();
+
 
     // -----------------------------------------
     // NO NODES
@@ -1502,9 +1518,9 @@ function fitThreeCamera(nodes) {
     // -----------------------------------------
 
     window.threeCamera.position.set(
-        center.x + distance,
+        center.x - distance,
         center.y + distance,
-        center.z + distance
+        center.z - distance
     );
 
 
@@ -1564,9 +1580,9 @@ function resetView() {
 
 
     window.threeCamera.position.set(
-        center.x + distance,
+        center.x - distance,
         center.y + distance,
-        center.z + distance
+        center.z - distance
     );
 
 

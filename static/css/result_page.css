@@ -15,6 +15,7 @@
     gap:10px;
     flex:1;
     min-height:0;
+    min-width:0;
 }
 
 
@@ -23,13 +24,12 @@
    ========================================================== */
 
 .results-sidebar{
-    width:17%;
+    width:19%;
     background:white;
     border-radius:10px;
-    padding:15px;
+    padding:8px;
     display:flex;
     flex-direction:column;
-    gap:8px;
     box-shadow:0 2px 8px rgba(0,0,0,0.08);
     box-sizing:border-box;
 }
@@ -53,12 +53,16 @@
     padding:8px 10px;
     border-radius:8px;
     cursor:pointer;
-    text-align:left;
+    text-align:center;
     font-weight:600;
     display: flex;
     align-items: center;
     box-sizing: border-box;
     transition:0.2s;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 
 .results-nav-btn:hover{
@@ -77,11 +81,18 @@
 
 .results-content{
     flex:1;
+    min-width:0;
+    min-height:0;
     background:white;
     border-radius:10px;
     padding:10px;
-    overflow:auto;
+
+    overflow-x:auto;
+    overflow-y:scroll;
+
     box-shadow:0 2px 8px rgba(0,0,0,0.08);
+
+    scrollbar-gutter: stable;
 }
 
 .results-content:hover{
@@ -99,6 +110,10 @@
     flex-direction:column;
     height:100%;
     gap:10px;
+
+    min-width:0;
+    min-height: 0;
+    flex: 1;
 }
 
 

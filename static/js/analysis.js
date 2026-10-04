@@ -244,7 +244,7 @@ function analyzeFrame(){
                 data.deflection_shapes
             );
 
-        showPage(4);
+        showPage(5);
 
         drawStructure();
         

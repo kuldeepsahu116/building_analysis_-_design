@@ -110,7 +110,6 @@ function updateSection3DRenderingButton(page){
 
         button.style.display =
             "inline-block";
-
     }
     else{
 

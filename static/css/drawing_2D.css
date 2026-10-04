@@ -1,0 +1,907 @@
+/* =========================================================
+   2D DRAWING WORKSPACE
+   ========================================================= */
+
+.drawing2d-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.drawing2d-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.drawing2d-title h4 {
+    margin: 0;
+}
+
+
+/* =========================================================
+   FLOOR CONTROL
+   ========================================================= */
+
+.drawing2d-floor-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.drawing2d-floor-control label {
+    font-size: 12px;
+    color: #000;
+}
+
+.drawing2d-floor-control select {
+    height: 28px;
+    padding: 2px 8px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.drawing2d-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafafa;
+}
+
+.drawing2d-tool {
+    padding: 5px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.drawing2d-tool:hover {
+    background: #f3f4f6;
+    border-color: #2952cc;
+}
+
+.drawing2d-tool.active {
+    background: #2952cc;
+    border-color: #2952cc;
+    color: #fff;
+}
+
+
+/* =========================================================
+   HEADER CONTROLS
+   ========================================================= */
+
+.drawing2d-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drawing2d-header-btn {
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.drawing2d-header-btn:hover {
+    background: #f3f4f6;
+    border-color: #2952cc;
+}
+
+
+/* =========================================================
+   GRID SYSTEM POPUP
+   ========================================================= */
+
+.drawing2d-grid-popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.28);
+}
+
+.drawing2d-grid-popup {
+    width: min(1040px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #cfd4da;
+    border-radius: 6px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.22);
+}
+
+
+/* =========================================================
+   POPUP HEADER
+   ========================================================= */
+
+.drawing2d-grid-popup-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.drawing2d-grid-popup-header h3 {
+    margin: 0;
+    color: #1f3c88;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.grid-popup-subtitle {
+    justify-self: center;
+    margin: 0;
+    color: #6b7280;
+    font-size: 11px;
+}
+
+.drawing2d-grid-popup-close {
+    border: 0;
+    background: transparent;
+    color: #555;
+    font-size: 22px;
+    line-height: 1;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+.drawing2d-grid-popup-close:hover {
+    color: #111;
+}
+
+
+/* =========================================================
+   POPUP CONTENT
+   ========================================================= */
+
+.drawing2d-grid-popup-content {
+    min-height: 0;
+    overflow-y: auto;
+    padding: 10px 14px;
+}
+
+
+/* =========================================================
+   TOP SETTINGS
+   ========================================================= */
+
+.grid-system-top {
+    display: grid;
+    grid-template-columns: 0.9fr 1.35fr;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.grid-settings-section,
+.grid-rectangular-section {
+    background: #fff;
+    border: 1px solid #dfe3e8;
+    border-radius: 5px;
+}
+
+.grid-settings-section {
+    padding: 8px 10px;
+}
+
+
+
+/* =========================================================
+   TITLES / SUBTITLES
+   ========================================================= */
+
+.grid-section-title {
+    margin: 0 0 6px;
+    color: #1f3c88;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.grid-subtitle {
+    margin: 4px 0;
+    color: #1f3c88;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   FORM ROWS
+   ========================================================= */
+
+.grid-form-row {
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) auto;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 5px;
+}
+
+.grid-form-row label {
+    color: #333;
+    font-size: 11px;
+}
+
+.grid-form-row input,
+.grid-form-row select {
+    width: 125px;
+    height: 28px;
+    box-sizing: border-box;
+    padding: 4px 7px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 11px;
+}
+
+.grid-form-row input:focus,
+.grid-form-row select:focus {
+    outline: none;
+    border-color: #2952cc;
+    box-shadow: 0 0 0 2px rgba(41, 82, 204, 0.10);
+}
+
+
+.grid-origin-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 0 0 7px;
+}
+
+.grid-origin-field {
+    min-width: 0;
+}
+
+.grid-origin-field > label {
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+    font-size: 11px;
+}
+
+.grid-origin-field .grid-input-unit {
+    width: 100%;
+}
+
+.grid-origin-field input {
+    width: 100%;
+    min-width: 0;
+}
+
+.grid-input-unit {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.grid-input-unit span {
+    color: #666;
+    font-size: 11px;
+}
+
+.grid-color-input {
+    width: 52px !important;
+    height: 28px !important;
+    padding: 2px !important;
+}
+
+
+/* =========================================================
+   RADIO CONTROLS
+   ========================================================= */
+
+.grid-radio-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: max-content;
+    gap: 6px;
+    margin: 0;
+    color: #333;
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.grid-radio-row input {
+    margin: 0;
+}
+
+.grid-radio-group {
+    margin: 2px 0 5px;
+}
+
+
+/* =========================================================
+   RECTANGULAR GRIDS
+   ========================================================= */
+
+.grid-rectangular-section {
+    padding: 10px 12px;
+}
+
+.grid-rectangular-header {
+    margin-bottom: 6px;
+}
+
+
+/* =========================================================
+   ADD MODE
+   ========================================================= */
+
+.grid-mode-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.grid-mode-btn {
+    padding: 6px 11px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.grid-mode-btn:hover {
+    border-color: #2952cc;
+}
+
+.grid-mode-btn.active {
+    background: #2952cc;
+    border-color: #2952cc;
+    color: #fff;
+}
+
+
+/* =========================================================
+   STORY SETTINGS
+   ========================================================= */
+
+.story-settings-section {
+    min-width: 0;
+}
+
+.story-mode-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 7px;
+}
+
+.story-mode-btn {
+    padding: 5px 10px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.story-mode-btn:hover {
+    border-color: #2952cc;
+}
+
+.story-mode-btn.active {
+    background: #2952cc;
+    border-color: #2952cc;
+    color: #fff;
+}
+
+.story-add-section {
+    padding: 7px;
+    margin-bottom: 7px;
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+}
+
+.story-add-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.story-input-field {
+    min-width: 0;
+}
+
+.story-input-field label {
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+    font-size: 11px;
+}
+
+.story-input-field input {
+    width: 100%;
+    height: 28px;
+    box-sizing: border-box;
+    padding: 4px 7px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 11px;
+}
+
+.story-input-field input:focus {
+    outline: none;
+    border-color: #2952cc;
+    box-shadow: 0 0 0 2px rgba(41, 82, 204, 0.10);
+}
+
+.story-input-field .grid-input-unit input {
+    flex: 1;
+}
+
+.story-add-btn {
+    margin-top: 6px;
+}
+
+
+/* =========================================================
+   STORY TABLE
+   ========================================================= */
+
+.story-table-card {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #dfe3e8;
+    border-radius: 4px;
+}
+
+.story-table-scroll {
+    max-height: 135px;
+    overflow-y: auto;
+}
+
+.story-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 10px;
+}
+
+.story-data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 5px 6px;
+    background: #f2f4f7;
+    border-bottom: 1px solid #dfe3e8;
+    color: #444;
+    font-weight: 600;
+}
+
+.story-data-table td {
+    padding: 3px 5px;
+    border-bottom: 1px solid #eeeeee;
+    text-align: center;
+}
+
+.story-data-table th:first-child,
+.story-data-table td:first-child {
+    width: 48%;
+}
+
+.story-data-table th:nth-child(2),
+.story-data-table td:nth-child(2) {
+    width: 42%;
+}
+
+.story-data-table th:last-child,
+.story-data-table td:last-child {
+    width: 10%;
+}
+
+.story-table-name,
+.story-table-z {
+    width: 100%;
+    height: 24px;
+    box-sizing: border-box;
+    padding: 3px 6px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #111;
+    font-size: 10px;
+    text-align: center;
+}
+
+.story-table-name:focus,
+.story-table-z:focus {
+    outline: none;
+    border-color: #2952cc;
+    box-shadow: 0 0 0 2px rgba(41, 82, 204, 0.10);
+}
+
+.story-table-z:disabled {
+    background: #f5f6f7;
+    color: #444;
+    cursor: not-allowed;
+}
+
+.story-table-delete {
+    padding: 1px 3px;
+    border: 0;
+    background: transparent;
+    color: #d32f2f;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.story-table-delete:hover {
+    color: #b71c1c;
+}
+
+/* =========================================================
+   GRID INPUT PANELS
+   ========================================================= */
+
+.grid-uniform-grid,
+.grid-custom-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.grid-axis-card {
+    padding: 8px;
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+}
+
+.grid-axis-card-header {
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.grid-axis-card .grid-form-row {
+    margin-bottom: 4px;
+}
+
+.grid-add-row {
+    display: flex;
+    gap: 6px;
+}
+
+.grid-add-row input {
+    flex: 1;
+    min-width: 0;
+    height: 28px;
+    box-sizing: border-box;
+    padding: 4px 7px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.grid-add-row input:focus {
+    outline: none;
+    border-color: #2952cc;
+    box-shadow: 0 0 0 2px rgba(41, 82, 204, 0.10);
+}
+
+.grid-add-row button,
+.grid-add-main-btn {
+    border: 1px solid #2952cc;
+    border-radius: 4px;
+    background: #2952cc;
+    color: #fff;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.grid-add-row button {
+    padding: 0 10px;
+}
+
+.grid-add-main-btn {
+    width: 100%;
+    height: 28px;
+    margin-top: 3px;
+}
+
+.grid-add-row button:hover,
+.grid-add-main-btn:hover {
+    background: #1f3c88;
+    border-color: #1f3c88;
+}
+
+
+/* =========================================================
+   GRID DATA TABLES
+   ========================================================= */
+
+.grid-data-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.grid-data-table-card {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #dfe3e8;
+    border-radius: 4px;
+}
+
+.grid-data-table-title {
+    padding: 6px 10px;
+    background: #f7f8fa;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f3c88;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.grid-data-table-scroll {
+    max-height: 175px;
+    overflow-y: auto;
+}
+
+.grid-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 10px;
+}
+
+.grid-data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 5px 6px;
+    background: #f2f4f7;
+    border-bottom: 1px solid #dfe3e8;
+    color: #444;
+    font-weight: 600;
+}
+
+.grid-data-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #eeeeee;
+    text-align: center;
+    color: #333;
+}
+
+.grid-table-id {
+    width: 32%;
+    color: #222;
+    font-weight: 600;
+}
+
+.grid-table-value-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.grid-table-value {
+    width: 90px;
+    height: 25px;
+    box-sizing: border-box;
+    padding: 3px 6px;
+    border: 1px solid #cfd4da;
+    border-radius: 4px;
+    background: #fff;
+    color: #111;
+    text-align: center;
+    font-size: 10px;
+}
+
+.grid-table-value:hover {
+    border-color: #9ca3af;
+}
+
+.grid-table-value:focus {
+    outline: none;
+    border-color: #2952cc;
+    box-shadow: 0 0 0 2px rgba(41, 82, 204, 0.10);
+}
+
+.grid-table-value:disabled {
+    background: #f5f6f7;
+    color: #444;
+    cursor: not-allowed;
+}
+
+.grid-table-origin {
+    color: #777;
+    font-size: 11px;
+}
+
+.grid-table-delete {
+    padding: 1px 3px;
+    border: 0;
+    background: transparent;
+    color: #d32f2f;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.grid-table-delete:hover {
+    color: #b71c1c;
+}
+
+
+/* =========================================================
+   POPUP FOOTER
+   ========================================================= */
+
+.drawing2d-grid-popup-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #fafafa;
+    border-top: 1px solid #e5e7eb;
+}
+
+.drawing2d-popup-cancel-btn,
+.drawing2d-popup-apply-btn {
+    min-width: 82px;
+    height: 30px;
+    padding: 0 13px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.drawing2d-popup-cancel-btn {
+    border: 1px solid #cfd4da;
+    background: #fff;
+    color: #333;
+}
+
+.drawing2d-popup-cancel-btn:hover {
+    background: #f3f4f6;
+    border-color: #2952cc;
+}
+
+.drawing2d-popup-apply-btn {
+    border: 1px solid #2952cc;
+    background: #2952cc;
+    color: #fff;
+}
+
+.drawing2d-popup-apply-btn:hover {
+    background: #1f3c88;
+    border-color: #1f3c88;
+}
+
+
+/* =========================================================
+   THREE.JS VIEWPORT
+   ========================================================= */
+
+.drawing2d-viewport {
+    position: relative;
+    flex: 1;
+    min-height: 350px;
+    width: 100%;
+    overflow: hidden;
+    background: #fff;
+}
+
+#drawing2DCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
+
+
+/* =========================================================
+   STATUS BAR
+   ========================================================= */
+
+.drawing2d-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
+    color: #666;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   RESPONSIVE POPUP
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .drawing2d-grid-popup {
+        width: min(720px, calc(100vw - 24px));
+    }
+
+    .grid-system-top {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-system-top > .grid-settings-section:nth-child(2) {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+
+    .drawing2d-grid-popup-overlay {
+        padding: 8px;
+    }
+
+    .drawing2d-grid-popup {
+        width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+    }
+
+    .drawing2d-grid-popup-header {
+        grid-template-columns: 1fr auto;
+    }
+
+    .grid-popup-subtitle {
+        display: none;
+    }
+
+    .grid-system-top > .grid-settings-section:nth-child(2),
+    .grid-uniform-grid,
+    .grid-custom-input-grid,
+    .grid-data-tables {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-system-top > .grid-settings-section:nth-child(2) > .grid-section-title,
+    .grid-system-top > .grid-settings-section:nth-child(2) > .grid-subtitle,
+    .grid-system-top > .grid-settings-section:nth-child(2) > .grid-radio-row {
+        grid-column: auto;
+    }
+}

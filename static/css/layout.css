@@ -9,12 +9,16 @@
    ========================================================== */
 
 .main-container{
-    display:flex;
+    display:grid;
+    grid-template-columns: 30fr 35fr 35fr;
     gap:10px;
     padding:10px;
     /* Full screen height minus header + navigation */
     height:calc(100vh - 120px);
     box-sizing:border-box;
+    min-width:0;
+    min-height:0;
+
 }
 
 
@@ -23,8 +27,9 @@
    ========================================================== */
 
 .left-panel{
-    width:50%;
     height:100%;
+    min-width:0;
+    min-height:0;
     display:flex;
     flex-direction:column;
     gap:10px;
@@ -32,11 +37,96 @@
 
 
 /* ==========================================================
+   3. VISUALIZATION PANEL
+   ========================================================== */
+
+.visualization-panel{
+    height:100%;
+    min-width:0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+
+/* ==========================================================
+   4. 2D DRAWING PANEL
+   ========================================================== */
+
+.drawing2d-panel{
+    height:100%;
+    min-width:0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+/* ==========================================================
+   REPORT WORKSPACE
+   ========================================================== */
+
+.report-workspace{
+    width:100%;
+    height:calc(100vh - 120px);
+    padding:10px;
+    box-sizing:border-box;
+
+    display:none;
+
+    flex-direction:row;
+    gap:10px;
+
+    min-height:0;
+}
+
+
+/* ==========================================================
+   5. VISUALIZATION CARDS
+   ========================================================== */
+
+.visualization-panel .card,
+.drawing2d-panel .card{
+    width:100%;
+    height:100%;
+    min-height:0;
+    box-sizing:border-box;
+}
+
+/* ==========================================================
+   2D DRAWING CARD
+   ========================================================== */
+
+.drawing2d-card{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+}
+
+.drawing2d-placeholder{
+    flex:1;
+    min-height:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border:1px dashed #bbb;
+    border-radius:6px;
+
+    background:#f8f9fb;
+
+    color:#777;
+    font-size:13px;
+}
+
+/* ==========================================================
    3. RIGHT PANEL
    ========================================================== */
 
 .right-panel{
-    width:50%;
+    width:35%;
     display:flex;
     flex-direction:column;
     height:100%;
@@ -90,8 +180,8 @@
    8. PAGE 3 LAYOUT
    ========================================================== */
 
-.page3-half{
-    height:calc(50% - 20px);
+.page3-full{
+    height:100%;
     display:flex;
     flex-direction:column;
     min-height:0;

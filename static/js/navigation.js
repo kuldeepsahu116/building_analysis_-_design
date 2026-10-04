@@ -7,42 +7,51 @@ let currentPage = 1;
 function showPage(n){
     currentPage=n;
 
-    let structureCard =
-        document.querySelector(".structure-card");
+    const mainContainer =
+        document.querySelector(".main-container");
 
-    let reportCard =
-        document.getElementById(
-            "reportPreviewCard"
-        );
 
-    let actionArea =
-        document.getElementById(
-            "actionButtonArea"
-        );
+    const reportWorkspace =
+        document.querySelector(".report-workspace");
 
-    if(n === 4){
+
+
+    if(n === 6){
+
+        // Hide the entire normal application workspace
+        mainContainer.style.display = "none";
+
+        // Show independent report workspace
+        reportWorkspace.style.display = "flex";
+
+        changeReportStyle();
+
+        // Update navigation buttons
+        updateButtons();
+
+        return;
+    }
+    
+
+    // Show normal application workspace
+    mainContainer.style.display = "grid";
+
+    // Hide report workspace
+    reportWorkspace.style.display = "none";
+
+    // Switch between pages 1–5
+    document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+
+    document.getElementById("page"+n).style.display="flex";
+
+    
+
+    if(n === 5){
         checkAnalysisInputChanges();
     }
 
 
-    if(n === 5){
 
-        structureCard.style.display = "none";
-
-        reportCard.style.display = "block";
-
-        changeReportStyle();
-    }
-    else{
-
-        reportCard.style.display = "none";
-
-        structureCard.style.display = "flex";
-    }
-
-    document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-
-    document.getElementById("page"+n).style.display="flex";
     updateButtons();
 
     updateSection3DRenderingButton(n);
@@ -52,7 +61,7 @@ function showPage(n){
     }
 
 function nextPage(){
-    if(currentPage<5) showPage(currentPage+1);
+    if(currentPage<6) showPage(currentPage+1);
 }
 
 function previousPage(){
@@ -70,9 +79,9 @@ function updateButtons(){
     previousBtn.style.cursor = (currentPage === 1) ? "not-allowed" : "pointer";
 
     // Next button
-    nextBtn.disabled = (currentPage === 5);
-    nextBtn.style.opacity = (currentPage === 5) ? "0.45" : "1";
-    nextBtn.style.cursor = (currentPage === 5) ? "not-allowed" : "pointer";
+    nextBtn.disabled = (currentPage === 6);
+    nextBtn.style.opacity = (currentPage === 6) ? "0.45" : "1";
+    nextBtn.style.cursor = (currentPage === 6) ? "not-allowed" : "pointer";
 
     // Page navigation buttons
     const navButtons = document.querySelectorAll(".nav-bar button");

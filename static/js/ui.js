@@ -10,6 +10,23 @@ function closeInfoPopup(){
 
 }
 
+// =====================================================
+// HELP POPUP
+// =====================================================
+
+function openHelpPopup(){
+
+    document.getElementById("helpPopupOverlay").style.display = "flex";
+
+}
+
+
+function closeHelpPopup(){
+
+    document.getElementById("helpPopupOverlay").style.display = "none";
+
+}
+
 
 // =====================================================
 // INSTRUCTION PANEL
@@ -1001,54 +1018,143 @@ function renderLoadCards(){
             template.firstElementChild.cloneNode(true);
 
 
+        // ---------------------------------------------
         // DESCRIPTION
-        let description = "";
+        // ---------------------------------------------
+
+        let values = {};
+        let units = {};
 
         if(load.category === "nodal"){
 
-            description = `
-                Fx: ${load.Fx}, Fy: ${load.Fy}, Fz: ${load.Fz} kN
-                Mx: ${load.Mx}, My: ${load.My}, Mz: ${load.Mz} kN·m
-            `;
+            values = {
+                Fx: load.Fx,
+                Fy: load.Fy,
+                Fz: load.Fz,
+                Mx: load.Mx,
+                My: load.My,
+                Mz: load.Mz
+            };
+
+            units = {
+                Fx: " kN",
+                Fy: " kN",
+                Fz: " kN",
+                Mx: " kN·m",
+                My: " kN·m",
+                Mz: " kN·m"
+            };
+
         }
 
-        else{
+        else if(load.type === "point"){
 
-            if(load.type === "point"){
+            values = {
+                Fx: load.Fx,
+                Fy: load.Fy,
+                Fz: load.Fz,
+                Mx: load.Mx,
+                My: load.My,
+                Mz: load.Mz
+            };
 
-                description = `
-                    Coordinate: ${load.coordinate_system}
-                    Fx: ${load.Fx}, Fy: ${load.Fy}, Fz: ${load.Fz} kN 
-                    Mx: ${load.Mx}, My: ${load.My}, Mz: ${load.Mz} kN·m
-                    a = ${load.a} m
-                `;
-            }
+            units = {
+                Fx: " kN",
+                Fy: " kN",
+                Fz: " kN",
+                Mx: " kN·m",
+                My: " kN·m",
+                Mz: " kN·m"
+            };
 
-            else if(load.type === "udl"){
+            // Always show position
+            values.a = load.a;
+            units.a = " m";
 
-                description = `
-                    Coordinate: ${load.coordinate_system}
-                    wx: ${load.wx}, wy: ${load.wy}, wz: ${load.wz} kN/m
-                `;
-            }
+        }
 
-            else if(load.type === "partial_udl"){
+        else if(load.type === "udl"){
 
-                description = `
-                    Coordinate: ${load.coordinate_system}
-                    wx: ${load.wx}, wy: ${load.wy}, wz: ${load.wz} kN/m
-                    a = ${load.a} m | b = ${load.b} m
-                `;
-            }
+            values = {
+                wx: load.wx,
+                wy: load.wy,
+                wz: load.wz
+            };
 
-            else if(load.type === "trapezoidal"){
+            units = {
+                wx: " kN/m",
+                wy: " kN/m",
+                wz: " kN/m"
+            };
 
-                description = `
-                    Coordinate: ${load.coordinate_system}
-                    Start: (${load.wx1}, ${load.wy1}, ${load.wz1}) kN/m
-                    End:   (${load.wx2}, ${load.wy2}, ${load.wz2}) kN/m
-                `;
-            }
+        }
+
+        else if(load.type === "partial_udl"){
+
+            values = {
+                wx: load.wx,
+                wy: load.wy,
+                wz: load.wz
+            };
+
+            units = {
+                wx: " kN/m",
+                wy: " kN/m",
+                wz: " kN/m"
+            };
+
+            // Always show positions
+            values.a = load.a;
+            values.b = load.b;
+
+            units.a = " m";
+            units.b = " m";
+
+        }
+
+        else if(load.type === "trapezoidal"){
+
+            values = {
+                wx1: load.wx1,
+                wy1: load.wy1,
+                wz1: load.wz1,
+                wx2: load.wx2,
+                wy2: load.wy2,
+                wz2: load.wz2
+            };
+
+            units = {
+                wx1: " kN/m",
+                wy1: " kN/m",
+                wz1: " kN/m",
+                wx2: " kN/m",
+                wy2: " kN/m",
+                wz2: " kN/m"
+            };
+
+        }
+
+        // Remove ONLY zero load components
+        description = Object.entries(values)
+            .filter(([key, value]) => {
+
+                // Always keep a and b
+                if(key === "a" || key === "b"){
+                    return true;
+                }
+
+                return Number(value) !== 0;
+            })
+            .map(([key, value]) =>
+                `${key}: ${value}${units[key] || ""}`
+            )
+            .join(", ");
+
+        // Add coordinate system for member loads
+        if(load.category !== "nodal"){
+            description =
+                `Coordinate: ${load.coordinate_system} | ` +
+                description;
         }
 
         // ---------------------------------------------
@@ -2425,8 +2531,8 @@ function renderMaterialCards(){
                 ".material-description"
             ).innerText =
 
-                `E = ${material.E} kN/m²` +
-                ` | G = ${material.G} kN/m²`;
+                `E = ${material.E} kN/m²
+                 G = ${material.G} kN/m²`;
 
 
             // -----------------------------------------

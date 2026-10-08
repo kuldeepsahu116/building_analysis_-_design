@@ -497,6 +497,9 @@ function initializeDrawing2DGrid() {
         Array.from(
             { length: xCount },
             (_, index) => ({
+                uid:
+                    generateDrawing2DGridUID("X"),
+
                 coordinate:
                     index * xSpacing
             })
@@ -511,6 +514,9 @@ function initializeDrawing2DGrid() {
         Array.from(
             { length: zCount },
             (_, index) => ({
+                uid:
+                    generateDrawing2DGridUID("Z"),
+
                 coordinate:
                     index * zSpacing
             })
@@ -520,8 +526,6 @@ function initializeDrawing2DGrid() {
     generateDrawing2DGridLines();
 }
 
-
-// =====================================================
 
 function updateDrawing2DGrid() {
 
@@ -547,6 +551,40 @@ function updateDrawing2DGrid() {
     updateDrawing2DGridStatus();
 
     fitDrawing2DView();
+}
+
+// =====================================================
+// PERMANENT GRID UID
+// =====================================================
+
+function generateDrawing2DGridUID(
+    axis
+) {
+
+    if (
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
+    ) {
+
+        return (
+            axis.toLowerCase() +
+            "_" +
+            crypto.randomUUID()
+        );
+    }
+
+
+    return (
+
+        axis.toLowerCase() +
+        "_" +
+        Date.now().toString(36) +
+        "_" +
+        Math.random()
+            .toString(36)
+            .substring(2, 9)
+
+    );
 }
 
 // =====================================================
@@ -590,6 +628,11 @@ function generateDrawing2DGridLines() {
     grid.xLines =
         grid.xLines
             .map(line => ({
+
+                uid:
+                    line.uid ||
+                    generateDrawing2DGridUID("X"),
+
                 coordinate:
                     Number(line.coordinate)
             }))
@@ -613,6 +656,10 @@ function generateDrawing2DGridLines() {
     grid.zLines =
         grid.zLines
             .map(line => ({
+                uid:
+                    line.uid ||
+                    generateDrawing2DGridUID("Z"),
+
                 coordinate:
                     Number(line.coordinate)
             }))

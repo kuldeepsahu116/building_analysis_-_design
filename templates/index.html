@@ -157,32 +157,75 @@
 
                         </div>
 
-                        <button onclick="addNode()">+ Add</button>
-
                     </div>
 
-                    <!-- MEMBERS -->
-                    <div class="card members-card">
-
-                        <h4>Members</h4>
-
+                    <!-- BEAMS -->
+                    <div class="card members-card beams-card">
+                        <div class="structureHeader">
+                            <h4>Beams</h4>
+                            <div class="structureHeaderActions">
+                                <button
+                                    type="button"
+                                    class="structure-delete-btn"
+                                    onclick="setDrawing2DTool('deleteBeam')"
+                                    title="Delete Beam using mouse">
+                                    Delete
+                                </button>
+                                <button
+                                    type="button"
+                                    class="structure-draw-btn"
+                                    onclick="setDrawing2DTool('beam')"
+                                    title="Draw Beam using mouse">
+                                    Draw Beam
+                                </button>
+                            </div>
+                        </div>
                         <div class="table-wrapper">
-
-                            <table class="input-table" id="membersTable">
+                            <table
+                                class="input-table"
+                                id="beamsTable">
                                 <tr>
                                     <th>ID</th>
                                     <th>Start</th>
                                     <th>End</th>
-                                    <th></th>
                                 </tr>
                             </table>
-
                         </div>
-
-                        <button onclick="addMember()">+ Add</button>
-
                     </div>
 
+                    <!-- COLUMNS -->
+                    <div class="card members-card columns-card">
+                        <div class="structureHeader">
+                            <h4>Columns</h4>
+                            <div class="structureHeaderActions">
+                                <button
+                                    type="button"
+                                    class="structure-delete-btn"
+                                    onclick="setDrawing2DTool('deleteColumn')"
+                                    title="Delete Column using mouse">
+                                    Delete
+                                </button>
+                                <button
+                                    type="button"
+                                    class="structure-draw-btn"
+                                    onclick="setDrawing2DTool('column')"
+                                    title="Draw Column using mouse">
+                                    Draw Column
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table
+                                class="input-table"
+                                id="columnsTable">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -1809,7 +1852,7 @@
                         class="drawing2d-header-btn"
                         onclick="openDrawing2DGridPopup()"
                         title="Grid Settings">
-                        Grid
+                        Grid Setting
                     </button>
 
                     <div class="drawing2d-floor-control">
@@ -1836,17 +1879,17 @@
                 </button>
 
                 <button
-                    id="drawing2DNodeBtn"
+                    id="drawing2DBeamBtn"
                     class="drawing2d-tool"
-                    onclick="setDrawing2DTool('node')">
-                    Node
+                    onclick="setDrawing2DTool('beam')">
+                    Beam
                 </button>
 
                 <button
-                    id="drawing2DMemberBtn"
+                    id="drawing2DColumnBtn"
                     class="drawing2d-tool"
-                    onclick="setDrawing2DTool('member')">
-                    Member
+                    onclick="setDrawing2DTool('column')">
+                    Column
                 </button>
 
                 <button
@@ -2920,6 +2963,10 @@
 <script src="{{ url_for('static', filename='js/drawing2D.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/drawing2D_ui.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing2D_nodes.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing2D_members.js') }}"></script>
 
 <!-- 3D DRAWING -->
 

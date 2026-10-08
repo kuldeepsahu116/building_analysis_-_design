@@ -2,27 +2,60 @@
 // GET NODES
 // =====================================================
 
+// function getNodes(){
+
+//     let nodes = {};
+
+//     let rows = document.getElementById("nodesTable").rows;
+
+//     for(let i=1; i<rows.length; i++){
+
+//         let c = rows[i].cells;
+
+//         nodes[
+//             c[0].children[0].value
+//         ] = [
+
+//             +c[1].children[0].value,
+
+//             +c[2].children[0].value,
+
+//             +c[3].children[0].value
+//         ];
+//     }
+
+//     return nodes;
+// }
+
 function getNodes(){
 
-    let nodes = {};
+    const nodes = {};
 
-    let rows = document.getElementById("nodesTable").rows;
-
-    for(let i=1; i<rows.length; i++){
-
-        let c = rows[i].cells;
-
-        nodes[
-            c[0].children[0].value
-        ] = [
-
-            +c[1].children[0].value,
-
-            +c[2].children[0].value,
-
-            +c[3].children[0].value
-        ];
+    if (
+        !window.nodeDatabase ||
+        !Array.isArray(window.nodeDatabase)
+    ) {
+        return nodes;
     }
+
+
+    window.nodeDatabase.forEach(
+        node => {
+
+            nodes[
+                String(node.nodeId)
+            ] = [
+
+                Number(node.x),
+
+                Number(node.y),
+
+                Number(node.z)
+
+            ];
+        }
+    );
+
 
     return nodes;
 }
@@ -39,127 +72,136 @@ function getMembers(){
 
     let members = [];
 
-    let rows =
-        document.getElementById(
-            "membersTable"
-        ).rows;
+    const tables = [
+        document.getElementById("beamsTable"),
+        document.getElementById("columnsTable")
+    ];
 
 
-    for(let i=1; i<rows.length; i++){
+    tables.forEach(table => {
+        if (!table) {
+            return;
+        }
+        let rows = table.rows;
 
-        let c = rows[i].cells;
+        for(let i=1; i<rows.length; i++){
 
+            let c = rows[i].cells;
 
-        const name =
-            c[0].children[0].value;
+            if (!c || c.length < 3) {
+                continue;
+            }
 
-
-        const start =
-            c[1].children[0].value;
-
-
-        const end =
-            c[2].children[0].value;
-
-
-        // FIND ASSIGNED MATERIAL
-        const material =
-            materialDatabase.find(
-                m =>
-                    m.assignedMembers
-                        .map(String)
-                        .includes(String(name))
-            );
+            const name =
+                c[0].children[0].value;
 
 
-        // FIND ASSIGNED SECTION
-        const section =
-            sectionDatabase.find(
-                s =>
-                    s.assignedMembers
-                        .map(String)
-                        .includes(String(name))
-            );
-
-        // FIND ASSIGNED BETA ANGLE
-        const betaProperty =
-            betaDatabase.find(
-                b =>
-                    b.assignedMembers
-                        .map(String)
-                        .includes(String(name))
-            );
+            const start =
+                c[1].children[0].value;
 
 
-        members.push({
-
-            name: name,
-
-            start: start,
-
-            end: end,
+            const end =
+                c[2].children[0].value;
 
 
-            // MATERIAL
-
-            E:
-                material
-                ?
-                material.E
-                :
-                null,
-
-            G:
-                material
-                ?
-                material.G
-                :
-                null,
+            // FIND ASSIGNED MATERIAL
+            const material =
+                materialDatabase.find(
+                    m =>
+                        m.assignedMembers
+                            .map(String)
+                            .includes(String(name))
+                );
 
 
-            // SECTION
+            // FIND ASSIGNED SECTION
+            const section =
+                sectionDatabase.find(
+                    s =>
+                        s.assignedMembers
+                            .map(String)
+                            .includes(String(name))
+                );
 
-            A:
-                section
-                ?
-                section.A
-                :
-                null,
-
-            Iyy:
-                section
-                ?
-                section.Iyy
-                :
-                null,
-
-            Izz:
-                section
-                ?
-                section.Izz
-                :
-                null,
-
-            J:
-                section
-                ?
-                section.J
-                :
-                null,
-
-            // BETA ANGLE
-            beta:
-                betaProperty
-                ?
-                Number(betaProperty.beta)
-                :
-                0
+            // FIND ASSIGNED BETA ANGLE
+            const betaProperty =
+                betaDatabase.find(
+                    b =>
+                        b.assignedMembers
+                            .map(String)
+                            .includes(String(name))
+                );
 
 
-        });
+            members.push({
 
-    }
+                name: name,
 
+                start: start,
+
+                end: end,
+
+
+                // MATERIAL
+
+                E:
+                    material
+                    ?
+                    material.E
+                    :
+                    null,
+
+                G:
+                    material
+                    ?
+                    material.G
+                    :
+                    null,
+
+
+                // SECTION
+
+                A:
+                    section
+                    ?
+                    section.A
+                    :
+                    null,
+
+                Iyy:
+                    section
+                    ?
+                    section.Iyy
+                    :
+                    null,
+
+                Izz:
+                    section
+                    ?
+                    section.Izz
+                    :
+                    null,
+
+                J:
+                    section
+                    ?
+                    section.J
+                    :
+                    null,
+
+                // BETA ANGLE
+                beta:
+                    betaProperty
+                    ?
+                    Number(betaProperty.beta)
+                    :
+                    0
+
+
+            });
+
+        }
+    });
 
     return members;
 

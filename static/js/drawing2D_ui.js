@@ -476,6 +476,9 @@ function addGridBySpacing(axis) {
     if (!lines.length) {
 
         lines.push({
+            uid:
+                generateDrawing2DGridUID(axis),
+                
             coordinate: 0
         });
     }
@@ -499,6 +502,9 @@ function addGridBySpacing(axis) {
     ) {
 
         lines.push({
+            uid:
+                generateDrawing2DGridUID(axis),
+                
             coordinate:
                 lastCoordinate +
                 spacing * i
@@ -578,6 +584,10 @@ function addCustomGridCoord(axis) {
 
 
     lines.push({
+
+        uid:
+            generateDrawing2DGridUID(axis),
+
         coordinate
     });
 
@@ -655,6 +665,17 @@ function refreshGridData(
 
     if (typeof refreshThreeDGrid === "function") {
         refreshThreeDGrid();
+    }
+
+    if (
+        typeof refreshDrawing2DNodes === "function") {
+        refreshDrawing2DNodes();
+    }
+
+
+    if (
+        typeof refreshDrawing2DMembers ==="function") {
+        refreshDrawing2DMembers();
     }
 
     if (fit) {
@@ -2175,11 +2196,11 @@ function setDrawing2DTool(tool) {
         select:
             "drawing2DSelectBtn",
 
-        node:
-            "drawing2DNodeBtn",
+        beam:
+            "drawing2DBeamBtn",
 
-        member:
-            "drawing2DMemberBtn"
+        column:
+            "drawing2DColumnBtn"
     };
 
 
@@ -2206,6 +2227,18 @@ function setDrawing2DTool(tool) {
                     .toUpperCase() +
                 tool.slice(1)
             }`;
+    }
+
+    if (
+        typeof updateDrawing2DNodeToolState ==="function") {
+
+        updateDrawing2DNodeToolState(tool);
+    }
+
+    if (
+        typeof updateDrawing2DMemberToolState ==="function") {
+
+        updateDrawing2DMemberToolState(tool);
     }
 }
 
@@ -2253,6 +2286,22 @@ function changeDrawing2DFloor() {
 
         window.drawing2D.floor =
             select.value;
+    }
+
+    if (
+        typeof refreshDrawing2DNodes ===
+        "function"
+    ) {
+
+        refreshDrawing2DNodes();
+    }
+
+    if (
+        typeof refreshDrawing2DMembers ===
+        "function"
+    ) {
+
+        refreshDrawing2DMembers();
     }
 }
 

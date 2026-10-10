@@ -204,6 +204,52 @@
             </button>
 
             <div class="page-tool-separator"></div>
+            
+            <!-- MATERIAL PROPERTIES TOOL -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolMaterialProperties"
+                onclick="openMaterialPopup()"
+                title="Material Properties"
+                aria-label="Material Properties">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 5h16v14H4z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"/>
+                    <path d="M4 10h16M10 5v14"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.4"/>
+                </svg>
+
+            </button>
+
+            <!-- SECTION PROPERTIES TOOL -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolSectionProperties"
+                onclick="openSectionPopup()"
+                title="Section Properties"
+                aria-label="Section Properties">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 5h14v14H5z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"/>
+                    <path d="M5 9h14M9 5v14"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.4"/>
+                </svg>
+                
+            </button>
+
+            <div class="page-tool-separator"></div>
 
             <!-- SELECT -->
             <button
@@ -490,774 +536,339 @@
 
                     <div class="page1-input-column">
 
-                        <!-- NODES -->
-                        <div class="card nodes-card">
+                        <!-- UPPER CARD: NODES / BEAM / COLUMN -->
+                        <div class="card model-data-card">
 
-                            <h4>Nodes</h4>
+                            <div class="model-tabs" role="tablist">
+                                <button
+                                    type="button"
+                                    class="model-tab active"
+                                    role="tab"
+                                    aria-selected="true"
+                                    aria-controls="modelNodesPanel"
+                                    onclick="switchModelTab('nodes', this)">
+                                    Nodes
+                                </button>
 
-                            <div class="table-wrapper">
+                                <button
+                                    type="button"
+                                    class="model-tab"
+                                    role="tab"
+                                    aria-selected="false"
+                                    aria-controls="modelBeamsPanel"
+                                    onclick="switchModelTab('beams', this)">
+                                    Beam
+                                </button>
 
-                                <table class="input-table" id="nodesTable">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>X</th>
-                                        <th>Y</th>
-                                        <th>Z</th>
-                                        <th></th>
-                                    </tr>
-                                </table>
-
+                                <button
+                                    type="button"
+                                    class="model-tab"
+                                    role="tab"
+                                    aria-selected="false"
+                                    aria-controls="modelColumnsPanel"
+                                    onclick="switchModelTab('columns', this)">
+                                    Column
+                                </button>
                             </div>
 
-                        </div>
+                            <div class="model-tab-content">
 
-                        <!-- BEAMS -->
-                        <div class="card members-card beams-card">
-                            
-                            <h4>Beams</h4>
-                           
-                            <div class="table-wrapper">
-                                <table
-                                    class="input-table"
-                                    id="beamsTable">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Start</th>
-                                        <th>End</th>
-                                    </tr>
-                                </table>
+                                <div id="modelNodesPanel"
+                                    class="model-tab-panel active"
+                                    role="tabpanel">
+
+                                    <div class="table-wrapper">
+
+                                        <table class="input-table" id="nodesTable">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>X</th>
+                                                <th>Y</th>
+                                                <th>Z</th>
+                                                <th></th>
+                                            </tr>
+                                        </table>
+
+                                    </div>
+              
+                                </div>
+
+                                <div id="modelBeamsPanel"
+                                    class="model-tab-panel"
+                                    role="tabpanel"
+                                    hidden>
+                                    
+                                    <div class="table-wrapper">
+                                        <table
+                                            class="input-table"
+                                            id="beamsTable">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Start</th>
+                                                <th>End</th>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                <div id="modelColumnsPanel"
+                                    class="model-tab-panel"
+                                    role="tabpanel"
+                                    hidden>
+                                        
+                                    <div class="table-wrapper">
+                                        <table
+                                            class="input-table"
+                                            id="columnsTable">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Start</th>
+                                                <th>End</th>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
 
-                        <!-- COLUMNS -->
-                        <div class="card members-card columns-card">
-                            
-                            <h4>Columns</h4>
-                            
-                            <div class="table-wrapper">
-                                <table
-                                    class="input-table"
-                                    id="columnsTable">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Start</th>
-                                        <th>End</th>
-                                    </tr>
-                                </table>
+                        <!-- PROPERTY ASSIGNMENT PANEL -->
+                        <div class="card model-placeholder-card">
+                            <div class="member-property-panel">
+                                <h4>Member Property</h4>
+
+                                <select
+                                    id="memberSectionSelect"
+                                    onchange="setActiveMemberSection(this.value)">
+                                    <option value="">No section defined</option>
+                                </select>
+
+                                <p class="member-property-help">
+                                    The selected section will be assigned to newly
+                                    created members. Existing members will remain unchanged.
+                                </p>
                             </div>
                         </div>
+                        
                     </div>
 
                 </div>
 
             </div>
 
+            <!-- MATERIAL POPUP -->
+            <div class="popup-overlay" id="materialPopup">
 
-            <!-- ================= PAGE 2 ================= -->
-            <div class="page" id="page2" style="display:none;">
+                <div class="property-manager-popup">
 
-                <div class="properties-page">
+                    <button
+                        type="button"
+                        class="popup-close-btn"
+                        onclick="closeMaterialPopup()">
+                        &times;
+                    </button>
 
-                    <!-- ===================================-->
-                    <!-- MATERIAL PROPERTIES -->
-                    <!-- =================================== -->
+                    <!-- LEFT: MATERIAL TABLE -->
+                    <div class="property-manager-list">
+                        <h3>Defined Materials</h3>
 
-                    <div class="card properties-card">
-
-                        <h4>Material Properties</h4>
-
-                        <div
-                            class="property-card-container"
-                            id="materialCardContainer">
+                        <div class="property-manager-table-wrap">
+                            <table class="property-manager-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>E (kN/m²)</th>
+                                        <th>G (kN/m²)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="materialTableBody">
+                                    <!-- Rendered by JavaScript -->
+                                </tbody>
+                            </table>
                         </div>
-
-                        <!-- MATERIAL CARD TEMPLATE -->
-                        <div
-                            id="materialCardTemplate"
-                            style="display:none;">
-
-                            <div class="load-item">
-
-                                <div class="load-card-layout">
-
-                                    <!-- LEFT -->
-                                    <div class="load-left">
-
-                                        <div class="material-title"></div>
-
-                                        <div class="material-description"></div>
-
-                                    </div>
-
-
-                                    <!-- RIGHT -->
-                                    <div class="load-right">
-
-                                        <!-- ASSIGN -->
-                                        <div class="load-assignment-section">
-
-                                            <input
-                                                class="material-assignment-input"
-                                                placeholder="Assign members">
-
-                                            <button class="assign-material-btn">
-                                                Assign
-                                            </button>
-
-                                            <button
-                                                class="assign-all-btn"
-                                                type="button">
-                                                Assign All
-                                            </button>
-
-                                        </div>
-
-
-                                        <!-- CURRENT ASSIGNMENT -->
-                                        <div class="material-assignment"></div>
-
-
-                                        <!-- ACTION BUTTONS -->
-                                        <div class="load-buttons">
-
-                                            <button class="edit-material-btn">
-                                                Edit
-                                            </button>
-
-                                            <button class="delete-btn">
-                                                Delete
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <button onclick="openMaterialPopup()">
-                            + Add Material
-                        </button>
-
                     </div>
 
+                    <!-- RIGHT: FORM AND INSTRUCTIONS -->
+                    <div class="property-manager-form">
+                        <h3 id="materialPopupTitle">Add Material</h3>
 
+                        <div class="property-manager-instructions">
+                            <b>Material Properties</b>
+                            <p>Define the material properties used by structural members.</p>
+                            <p><b>E</b> = Young's Modulus</p>
+                            <p><b>G</b> = Shear Modulus</p>
+                            <p>Units: E and G in kN/m².</p>
+                        </div>
 
-                    <!-- ================================= -->
-                    <!-- SECTION / BETA PROPERTIES -->
-                    <!-- ================================= -->
+                        <label for="materialName">Material Name</label>
+                        <input
+                            type="text"
+                            id="materialName"
+                            placeholder="e.g. M25 Concrete">
 
-                    <div class="card properties-card">
+                        <label for="materialE">Young's Modulus (E)</label>
+                        <input
+                            type="number"
+                            id="materialE"
+                            step="any"
+                            placeholder="Enter E">
 
-                        <div class="property-tabs">
+                        <label for="materialG">Shear Modulus (G)</label>
+                        <input
+                            type="number"
+                            id="materialG"
+                            step="any"
+                            placeholder="Enter G">
 
+                        <div class="popup-buttons">
                             <button
                                 type="button"
-                                id="sectionPropertyTab"
-                                class="property-tab active"
-                                onclick="switchPropertyCardType('section')">
-                                Section
-                            </button>
-
-                            <button
-                                type="button"
-                                id="betaPropertyTab"
-                                class="property-tab"
-                                onclick="switchPropertyCardType('beta')">
-                                Beta Angle
-                            </button>
-                        </div>
-
-                        <div id="sectionPropertyContent">
-
-
-                            <div
-                                class="property-card-container"
-                                id="sectionCardContainer">
-                            </div>
-
-
-                            <!-- SECTION CARD TEMPLATE -->
-                            <div
-                                id="sectionCardTemplate"
-                                style="display:none;">
-
-                                <div class="load-item">
-
-                                    <div class="load-card-layout">
-
-                                        <!-- LEFT -->
-                                        <div class="load-left">
-
-                                            <div class="section-title"></div>
-
-                                            <div class="section-description"></div>
-
-                                        </div>
-
-
-                                        <!-- RIGHT -->
-                                        <div class="load-right">
-
-                                            <!-- ASSIGN -->
-                                            <div class="load-assignment-section">
-
-                                                <input
-                                                    class="section-assignment-input"
-                                                    placeholder="Assign members">
-
-                                                <button class="assign-section-btn">
-                                                    Assign
-                                                </button>
-
-                                                <button
-                                                    class="assign-all-btn"
-                                                    type="button">
-                                                    Assign All
-                                                </button>
-
-                                            </div>
-
-
-                                            <!-- CURRENT ASSIGNMENT -->
-                                            <div class="section-assignment"></div>
-
-
-                                            <!-- ACTION BUTTONS -->
-                                            <div class="load-buttons">
-
-                                                <button class="edit-section-btn">
-                                                    Edit
-                                                </button>
-
-                                                <button class="delete-btn">
-                                                    Delete
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <button onclick="openSectionPopup()">
-                                + Add Section
-                            </button>
-
-                        </div>
-
-                        <!-- ================================= -->
-                        <!-- BETA ANGLE PROPERTIES -->
-                        <!-- ================================= -->
-
-                        <div id="betaPropertyContent"
-                            style="display:none;">
-
-                            <div
-                                class="property-card-container"
-                                id="betaCardContainer">
-                            </div>
-
-
-                            <!-- BETA CARD TEMPLATE -->
-
-                            <div
-                                id="betaCardTemplate"
-                                style="display:none;">
-
-                                <div class="load-item">
-
-                                    <div class="load-card-layout">
-
-                                        <!-- LEFT -->
-
-                                        <div class="load-left">
-
-                                            <div class="beta-title"></div>
-
-                                            <div class="beta-description"></div>
-
-                                        </div>
-
-
-                                        <!-- RIGHT -->
-
-                                        <div class="load-right">
-
-                                            <!-- ASSIGN -->
-
-                                            <div class="load-assignment-section">
-
-                                                <input
-                                                    class="beta-assignment-input"
-                                                    placeholder="Assign members">
-
-                                                <button
-                                                    class="assign-beta-btn">
-                                                    Assign
-                                                </button>
-
-                                                <button
-                                                    class="assign-all-btn"
-                                                    type="button">
-                                                    Assign All
-                                                </button>
-
-                                            </div>
-
-
-                                            <!-- CURRENT ASSIGNMENT -->
-
-                                            <div class="beta-assignment"></div>
-
-
-                                            <!-- EDIT / DELETE -->
-
-                                            <div class="load-buttons">
-
-                                                <button
-                                                    class="edit-beta-btn">
-
-                                                    Edit
-
-                                                </button>
-
-                                                <button
-                                                    class="delete-btn">
-
-                                                    Delete
-
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <button onclick="openBetaPopup()">
-                                + Add Beta Angle
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- ====================================== -->
-                <!-- MATERIAL POPUP -->
-                <!-- ======================================= -->
-
-                <div
-                    class="popup-overlay"
-                    id="materialPopup">
-
-                    <div class="popup-card popup-grid">
-
-                        <button
-                            class="popup-close-btn"
-                            onclick="closeMaterialPopup()">
-                            &times;
-                        </button>
-
-
-                        <!-- LEFT -->
-                        <div class="load-instruction-panel">
-
-                            <h4>Instructions</h4>
-
-                            <div>
-
-                                <b>Material Properties</b>
-
-                                <p>
-                                    Define the material properties used by
-                                    structural members.
-                                </p>
-
-                                <p>
-                                    <b>E</b> = Young's Modulus
-                                </p>
-
-                                <p>
-                                    <b>G</b> = Shear Modulus
-                                </p>
-
-                                <p>
-                                    Units:
-                                    E, G → kN/m²
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- RIGHT -->
-                        <div class="popup-input-panel">
-
-                            <h3 id="materialPopupTitle">
+                                id="saveMaterialButton"
+                                onclick="saveMaterial()">
                                 Add Material
-                            </h3>
+                            </button>
 
-
-                            <!-- NAME -->
-                            <label>
-                                Material Name
-                            </label>
-
-                            <input
-                                type="text"
-                                id="materialName"
-                                placeholder="e.g. M25 Concrete">
-
-
-                            <!-- E -->
-                            <label>
-                                E
-                            </label>
-
-                            <input
-                                type="text"
-                                id="materialE"
-                                step="any"
-                                placeholder="Young's Modulus">
-
-
-                            <!-- G -->
-                            <label>
-                                G
-                            </label>
-
-                            <input
-                                type="text"
-                                id="materialG"
-                                step="any"
-                                placeholder="Shear Modulus">
-
-
-                            <!-- BUTTONS -->
-                            <div class="popup-buttons">
-
-                                <button onclick="saveMaterial()">
-                                    Add
-                                </button>
-
-                                <button
-                                    class="delete-btn"
-                                    onclick="closeMaterialPopup()">
-                                    Cancel
-                                </button>
-
-                            </div>
-
+                            <button
+                                type="button"
+                                class="delete-btn"
+                                onclick="closeMaterialPopup()">
+                                Cancel
+                            </button>
                         </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- SECTION POPUP -->
+            <div class="popup-overlay" id="sectionPopup">
+                <div class="property-manager-popup section-manager-popup">
+
+                    <button
+                        type="button"
+                        class="popup-close-btn"
+                        onclick="closeSectionPopup()">
+                        &times;
+                    </button>
+
+                    <!-- LEFT: SECTION TABLE -->
+                    <div class="property-manager-list">
+                        <h3>Defined Sections</h3>
+
+                        <div class="property-manager-table-wrap">
+                            <table class="property-manager-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>A</th>
+                                        <th>Iyy</th>
+                                        <th>Izz</th>
+                                        <th>J</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sectionTableBody">
+                                    <!-- Rendered by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                </div>
+                    
+                    <div class="property-manager-form section-form-panel">
 
+                        <h3 id="sectionPopupTitle">Add Section</h3>
 
+                        <div class="section-form-layout">
 
-                <!-- ======================================= -->
-                <!-- SECTION POPUP -->
-                <!-- ======================================= -->
+                            <!-- MIDDLE: INPUTS -->
+                            <div class="section-input-column">
 
-                <div
-                    class="popup-overlay"
-                    id="sectionPopup">
-
-                    <div class="popup-card popup-grid">
-
-                        <button
-                            class="popup-close-btn"
-                            onclick="closeSectionPopup()">
-                            &times;
-                        </button>
-
-
-                        <!-- LEFT -->
-                        <div class="section-shape-instruction">
-
-                            <h4>Section Geometry</h4>
-
-                            <div
-                                id="sectionShapeFigure"
-                                class="section-shape-figure">
-                            </div>
-
-                            <div
-                                id="sectionShapeInstructions"
-                                class="section-shape-instructions">
-                            </div>
-
-                        </div>
-
-
-                        <!-- RIGHT -->
-                        <div class="popup-input-panel">
-
-                            <div id="sectionPropertyPanel">
-
-                                <h3 id="sectionPopupTitle">
-                                    Add Section
-                                </h3>
-
-
-                                <!-- NAME -->
-                                <label>
-                                    Section Name
-                                </label>
-
+                                <label for="sectionName">Section Name</label>
                                 <input
                                     type="text"
                                     id="sectionName"
                                     placeholder="e.g. Beam 300x500">
 
+                                <label for="sectionMaterial">Material</label>
+                                <select id="sectionMaterial">
+                                    <option value="">Select material</option>
+                                </select>
 
-                                <!-- SECTION TYPE -->
-
-                                <label>
-                                    Cross Section Type
-                                </label>
-
+                                <label for="sectionType">Cross Section Type</label>
                                 <select
                                     id="sectionType"
                                     onchange="updateSectionShape()">
-
-                                    <option value="rectangular">
-                                        Rectangular
-                                    </option>
-
-                                    <option value="circular">
-                                        Solid Circular
-                                    </option>
-
-                                    <option value="hollow_circular">
-                                        Hollow Circular
-                                    </option>
-
-                                    <option value="i_section">
-                                        I-Section
-                                    </option>
-
-                                    <option value="box">
-                                        Rectangular Hollow
-                                    </option>
-
-                                    <option value="custom">
-                                        Custom
-                                    </option>
-
+                                    <option value="rectangular">Rectangular</option>
+                                    <!-- <option value="circular">Solid Circular</option>
+                                    <option value="hollow_circular">Hollow Circular</option>
+                                    <option value="i_section">I-Section</option>
+                                    <option value="box">Rectangular Hollow</option>
+                                    <option value="custom">Custom</option> -->
                                 </select>
 
-
-                                <!-- SECTION GEOMETRY -->
-
-                                <div id="sectionGeometryFields">
-                                </div>
-
-
-                                <!-- CALCULATED PROPERTIES -->
+                                <div id="sectionGeometryFields"></div>
 
                                 <div class="section-calculated-properties">
-
                                     <label>
                                         A
-                                        <input
-                                            type="text"
-                                            id="sectionA"
-                                            readonly>
+                                        <input type="text" id="sectionA" readonly>
                                     </label>
-
                                     <label>
                                         Iyy
-                                        <input
-                                            type="text"
-                                            id="sectionIyy"
-                                            readonly>
+                                        <input type="text" id="sectionIyy" readonly>
                                     </label>
-
                                     <label>
                                         Izz
-                                        <input
-                                            type="text"
-                                            id="sectionIzz"
-                                            readonly>
+                                        <input type="text" id="sectionIzz" readonly>
                                     </label>
-
                                     <label>
                                         J
-                                        <input
-                                            type="text"
-                                            id="sectionJ"
-                                            readonly>
+                                        <input type="text" id="sectionJ" readonly>
                                     </label>
-
                                 </div>
 
-
-                                <!-- BUTTONS -->
                                 <div class="popup-buttons">
-
-                                    <button onclick="saveSection()">
-                                        Add
+                                    <button
+                                        type="button"
+                                        id="saveSectionButton"
+                                        onclick="saveSection()">
+                                        Add Section
                                     </button>
 
                                     <button
+                                        type="button"
                                         class="delete-btn"
                                         onclick="closeSectionPopup()">
                                         Cancel
                                     </button>
+                                </div>
 
+                            </div>
+
+                            <!-- RIGHT: FIGURE AND INSTRUCTIONS -->
+                            <div class="section-visual-column">
+
+                                <h4>Section Geometry</h4>
+
+                                <div
+                                    id="sectionShapeFigure"
+                                    class="section-shape-figure">
+                                </div>
+
+                                <div
+                                    id="sectionShapeInstructions"
+                                    class="section-shape-instructions">
                                 </div>
 
                             </div>
 
                         </div>
-
                     </div>
 
                 </div>
-
-                <!-- ================================================= -->
-                <!-- BETA ANGLE POPUP -->
-                <!-- ================================================= -->
-
-                <div
-                    class="popup-overlay"
-                    id="betaPopup">
-
-                    <div class="popup-card popup-grid">
-
-                        <!-- CLOSE -->
-
-                        <button
-                            class="popup-close-btn"
-                            onclick="closeBetaPopup()">
-
-                            &times;
-
-                        </button>
-
-
-                        <!-- LEFT -->
-
-                        <div class="load-instruction-panel">
-
-                            <h4>Instructions</h4>
-
-                            <div>
-
-                                <b>Beta Angle</b>
-
-                                <p>
-                                    Beta angle defines the rotation of the
-                                    member's local Y-Z axes about the
-                                    local X-axis.
-                                </p>
-
-                                <p>
-                                    <b>β = 0°</b> means no rotation.
-                                </p>
-
-                                <p>
-                                    Positive beta follows the
-                                    right-hand rule about the local X-axis.
-                                </p>
-
-                                <p>
-                                    Negative angles are allowed.
-                                </p>
-
-                                <p>
-                                    The beta angle is assigned independently
-                                    of the section property.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- RIGHT -->
-
-                        <div class="popup-input-panel">
-
-                            <h3 id="betaPopupTitle">
-                                Add Beta Angle
-                            </h3>
-
-
-                            <!-- NAME -->
-
-                            <label>
-                                Beta Angle Name
-                            </label>
-
-                            <input
-                                type="text"
-                                id="betaName"
-                                placeholder="e.g. B30">
-
-
-                            <!-- ANGLE -->
-
-                            <label>
-                                Beta Angle (degrees)
-                            </label>
-
-                            <input
-                                type="number"
-                                id="betaAngle"
-                                step="any"
-                                placeholder="e.g. 30">
-
-
-                            <!-- BUTTONS -->
-
-                            <div class="popup-buttons">
-
-                                <button
-                                    type="button"
-                                    onclick="saveBeta()">
-
-                                    Add
-
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="delete-btn"
-                                    onclick="closeBetaPopup()">
-
-                                    Cancel
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
             </div>
 
 
@@ -3289,6 +2900,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script src="{{ url_for('static', filename='js/workspace_resize.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/selection.js') }}"></script>
 
 </body>
 </html>

@@ -106,7 +106,7 @@ function updateSection3DRenderingButton(page){
     }
 
 
-    if(page === 2){
+    if(page === 1){
 
         button.style.display =
             "inline-block";
@@ -145,42 +145,45 @@ function updateSection3DRenderingButton(page){
 // A member can have only one assigned section.
 // =====================================================
 
-function getSectionFor3DMember(member){
+function getSectionFor3DMember(member) {
+    const database = Array.isArray(window.sectionDatabase)
+        ? window.sectionDatabase
+        : (
+            typeof sectionDatabase !== "undefined"
+                ? sectionDatabase
+                : []
+        );
 
-    if(
-        !Array.isArray(window.sectionDatabase) &&
-        !Array.isArray(sectionDatabase)
-    ){
+    if (!Array.isArray(database)) {
         return null;
     }
 
-    const database =
-        Array.isArray(sectionDatabase)
-            ? sectionDatabase
-            : window.sectionDatabase;
-
-
-    if(!Array.isArray(database)){
-        return null;
-    }
-
-
-    const memberName =
-        String(member.name);
-
-
-    return (
-        database.find(
+    // New system: section ID captured by the member row.
+    if (member.sectionId) {
+        const assignedSection = database.find(
             section =>
-                Array.isArray(
-                    section.assignedMembers
-                ) &&
-                section.assignedMembers
-                    .map(String)
-                    .includes(memberName)
-        )
-        || null
+                String(section.id) ===
+                String(member.sectionId)
+        );
+
+        if (assignedSection) {
+            return assignedSection;
+        }
+    }
+
+    // Legacy fallback for members assigned using
+    // the older assignedMembers mechanism.
+    const memberName = String(
+        member.name ?? member.id ?? ""
     );
+
+    return database.find(
+        section =>
+            Array.isArray(section.assignedMembers) &&
+            section.assignedMembers
+                .map(String)
+                .includes(memberName)
+    ) || null;
 }
 
 

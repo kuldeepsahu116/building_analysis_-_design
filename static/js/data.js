@@ -114,14 +114,28 @@ function getMembers(){
                 );
 
 
-            // FIND ASSIGNED SECTION
-            const section =
-                sectionDatabase.find(
+            // FIND THE SECTION STORED ON THIS MEMBER ROW
+            const sectionId =
+                rows[i].dataset.sectionId || null;
+
+            let section = sectionId
+                ? sectionDatabase.find(
+                    s => String(s.id) === String(sectionId)
+                )
+                : null;
+
+
+            // Backward compatibility for members created
+            // before the new section-ID system.
+            if (!section) {
+                section = sectionDatabase.find(
                     s =>
+                        Array.isArray(s.assignedMembers) &&
                         s.assignedMembers
                             .map(String)
                             .includes(String(name))
-                );
+                ) || null;
+            }
 
             // FIND ASSIGNED BETA ANGLE
             const betaProperty =
@@ -134,70 +148,27 @@ function getMembers(){
 
 
             members.push({
-
                 name: name,
-
                 start: start,
-
                 end: end,
 
+                // Section identity stored on this member.
+                sectionId: section ? String(section.id) : null,
 
-                // MATERIAL
+                // MATERIAL — existing assignment workflow
+                E: material ? material.E : null,
+                G: material ? material.G : null,
 
-                E:
-                    material
-                    ?
-                    material.E
-                    :
-                    null,
+                // SECTION — resolved from this member's section ID
+                A: section ? section.A : null,
+                Iyy: section ? section.Iyy : null,
+                Izz: section ? section.Izz : null,
+                J: section ? section.J : null,
 
-                G:
-                    material
-                    ?
-                    material.G
-                    :
-                    null,
-
-
-                // SECTION
-
-                A:
-                    section
-                    ?
-                    section.A
-                    :
-                    null,
-
-                Iyy:
-                    section
-                    ?
-                    section.Iyy
-                    :
-                    null,
-
-                Izz:
-                    section
-                    ?
-                    section.Izz
-                    :
-                    null,
-
-                J:
-                    section
-                    ?
-                    section.J
-                    :
-                    null,
-
-                // BETA ANGLE
-                beta:
-                    betaProperty
-                    ?
-                    Number(betaProperty.beta)
-                    :
-                    0
-
-
+                // Keep existing beta behavior
+                beta: betaProperty
+                    ? Number(betaProperty.beta)
+                    : 0
             });
 
         }

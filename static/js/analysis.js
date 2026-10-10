@@ -6,6 +6,38 @@ let lastAnalyzedInput = null;
 
 function analyzeFrame(){
 
+    // =====================================================
+    // VALIDATE MEMBER SECTION ASSIGNMENTS
+    // =====================================================
+
+    const membersToValidate = getMembers();
+
+    const membersWithoutSection = membersToValidate.filter(
+        member =>
+            !member.sectionId ||
+            !Number.isFinite(Number(member.A)) ||
+            Number(member.A) <= 0 ||
+            !Number.isFinite(Number(member.Iyy)) ||
+            Number(member.Iyy) <= 0 ||
+            !Number.isFinite(Number(member.Izz)) ||
+            Number(member.Izz) <= 0 ||
+            !Number.isFinite(Number(member.J)) ||
+            Number(member.J) <= 0
+    );
+
+    if (membersWithoutSection.length > 0) {
+        const memberNames = membersWithoutSection
+            .map(member => member.name)
+            .join(", ");
+
+        alert(
+            "Analysis cannot start. Assign a valid section to " +
+            "the following members: " + memberNames
+        );
+
+        return;
+    }
+
     console.log("Analyzing...");
 
     // UI RESET

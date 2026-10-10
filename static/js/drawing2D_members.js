@@ -375,8 +375,9 @@ function getDrawing2DMembersFromTable() {
 
                     end,
 
-                    type:
-                        config.type
+                    type: config.type,
+
+                    sectionId: table.rows[i].dataset.sectionId || null
                 });
 
             }
@@ -645,6 +646,11 @@ function addDrawing2DBeamToTable(
 
     `;
 
+    // Store the section selected at creation time.
+    // Changing the dropdown later will not change this member.
+    row.dataset.sectionId =
+        getActiveMemberSectionId() || "";
+
 
     // ---------------------------------------------
     // UPDATE 2D and 3D MEMBER DRAWING
@@ -755,6 +761,11 @@ function addDrawing2DColumnToTable(
         </td>
 
     `;
+
+    // Store the section selected at creation time.
+    // Changing the dropdown later will not change this member.
+    row.dataset.sectionId =
+        getActiveMemberSectionId() || "";
 
 
     

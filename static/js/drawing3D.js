@@ -832,7 +832,7 @@ function drawThreeNode(id, coordinate) {
 
     const material =
         new THREE.MeshBasicMaterial({
-            color: 0xe74c3c
+            color: 0x1565c0
         });
 
 

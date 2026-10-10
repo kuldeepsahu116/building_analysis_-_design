@@ -65,6 +65,41 @@ function toggleInstruction(button){
 
 
 
+function switchModelTab(tabName, clickedButton) {
+    const card = clickedButton.closest(".model-data-card");
+
+    if (!card) return;
+
+    const panels = {
+        nodes: card.querySelector("#modelNodesPanel"),
+        beams: card.querySelector("#modelBeamsPanel"),
+        columns: card.querySelector("#modelColumnsPanel")
+    };
+
+    const buttons = card.querySelectorAll(".model-tab");
+
+    buttons.forEach(button => {
+        const isActive = button === clickedButton;
+
+        button.classList.toggle("active", isActive);
+        button.setAttribute(
+            "aria-selected",
+            String(isActive)
+        );
+    });
+
+    Object.entries(panels).forEach(([name, panel]) => {
+        if (!panel) return;
+
+        const isActive = name === tabName;
+
+        panel.hidden = !isActive;
+        panel.classList.toggle("active", isActive);
+    });
+}
+
+
+
 // #region SUPPORT SYSTEM
 // =====================================================
 
@@ -1959,7 +1994,6 @@ function confirmAssignAll(){
             [...members];
 
 
-        renderMaterialCards();
 
         refreshView();
 
@@ -2217,15 +2251,12 @@ let editingMaterialIndex = -1;
 // OPEN POPUP
 // -----------------------------------------------------
 
-function openMaterialPopup(){
-
-    editingMaterialIndex = -1;
-
-    document.getElementById(
-        "materialPopup"
-    ).style.display = "flex";
-
+function openMaterialPopup() {
     resetMaterialPopup();
+
+    renderMaterialTable();
+
+    document.getElementById("materialPopup").style.display = "flex";
 }
 
 
@@ -2246,25 +2277,22 @@ function closeMaterialPopup(){
 // RESET POPUP
 // -----------------------------------------------------
 
-function resetMaterialPopup(){
 
-    document.getElementById(
-        "materialPopupTitle"
-    ).innerText = "Add Material";
+function resetMaterialPopup() {
 
-    document.getElementById(
-        "materialName"
-    ).value = "";
+    editingMaterialIndex = -1;
 
-    document.getElementById(
-        "materialE"
-    ).value = "";
+    document.getElementById("materialPopupTitle").innerText =
+        "Add Material";
 
-    document.getElementById(
-        "materialG"
-    ).value = "";
+    document.getElementById("saveMaterialButton").innerText =
+        "Add Material";
 
+    document.getElementById("materialName").value = "";
+    document.getElementById("materialE").value = "";
+    document.getElementById("materialG").value = "";
 }
+
 
 
 // -----------------------------------------------------
@@ -2371,12 +2399,12 @@ function saveMaterial(){
 
     }
 
-
-    renderMaterialCards();
-
-    closeMaterialPopup();
+    renderMaterialTable();
+    renderSectionMaterialDropdown();
 
     refreshView();
+
+    resetMaterialPopup();
 
 }
 
@@ -2516,6 +2544,68 @@ function renderMaterialCards(){
 
 }
 
+function renderMaterialTable() {
+    const tbody = document.getElementById("materialTableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    materialDatabase.forEach((material, index) => {
+        const row = document.createElement("tr");
+
+        const nameCell = document.createElement("td");
+        nameCell.textContent = material.name;
+
+        const eCell = document.createElement("td");
+        eCell.textContent = material.E;
+
+        const gCell = document.createElement("td");
+        gCell.textContent = material.G;
+
+        const actionsCell = document.createElement("td");
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => {
+            editMaterial(index);
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "delete-btn";
+        deleteButton.addEventListener("click", () => {
+            deleteMaterial(index);
+        });
+
+        actionsCell.append(editButton, deleteButton);
+        row.append(nameCell, eCell, gCell, actionsCell);
+        tbody.appendChild(row);
+    });
+}
+
+function renderSectionMaterialDropdown(selectedMaterialName = "") {
+    const select = document.getElementById("sectionMaterial");
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Select material";
+    select.appendChild(placeholder);
+
+    materialDatabase.forEach(material => {
+        const option = document.createElement("option");
+        option.value = material.name;
+        option.textContent = material.name;
+        select.appendChild(option);
+    });
+
+    select.value = selectedMaterialName;
+}
+
 
 // -----------------------------------------------------
 // ASSIGN MATERIAL
@@ -2616,9 +2706,6 @@ function assignMaterial(index){
     materialDatabase[index].assignedMembers =
         members;
 
-
-    renderMaterialCards();
-
     refreshView();
 
 }
@@ -2628,40 +2715,33 @@ function assignMaterial(index){
 // EDIT MATERIAL
 // -----------------------------------------------------
 
-function editMaterial(index){
 
-    const material =
-        materialDatabase[index];
-
+function editMaterial(index) {
+    const material = materialDatabase[index];
+    if (!material) return;
 
     editingMaterialIndex = index;
 
+    document.getElementById("materialPopupTitle").innerText =
+        "Edit Material";
 
-    document.getElementById(
-        "materialPopup"
-    ).style.display = "flex";
+    document.getElementById("saveMaterialButton").innerText =
+        "Edit Material";
 
+    document.getElementById("materialName").value =
+        material.name ?? "";
 
-    document.getElementById(
-        "materialPopupTitle"
-    ).innerText = "Edit Material";
+    document.getElementById("materialE").value =
+        material.E ?? "";
 
+    document.getElementById("materialG").value =
+        material.G ?? "";
 
-    document.getElementById(
-        "materialName"
-    ).value = material.name;
+    renderMaterialTable();
 
-
-    document.getElementById(
-        "materialE"
-    ).value = material.E;
-
-
-    document.getElementById(
-        "materialG"
-    ).value = material.G;
-
+    document.getElementById("materialPopup").style.display = "flex";
 }
+
 
 
 // -----------------------------------------------------
@@ -2672,7 +2752,8 @@ function deleteMaterial(index){
 
     materialDatabase.splice(index,1);
 
-    renderMaterialCards();
+    renderMaterialTable();
+    renderSectionMaterialDropdown();
 
     refreshView();
 
@@ -2696,6 +2777,122 @@ let editingBetaIndex = -1;
 
 switchPropertyCardType("section");
 
+
+// =====================================================
+// MEMBER SECTION SELECTION
+// =====================================================
+
+window.activeMemberSectionId = null;
+
+function generateSectionId() {
+    if (
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID === "function"
+    ) {
+        return "SEC_" + crypto.randomUUID();
+    }
+
+    return "SEC_" + Date.now().toString(36) +
+        "_" + Math.random().toString(36).slice(2, 9);
+}
+
+
+// Ensure sections created before this change also have IDs.
+function ensureSectionIds() {
+    if (!Array.isArray(sectionDatabase)) {
+        return;
+    }
+
+    sectionDatabase.forEach(section => {
+        if (!section.id) {
+            section.id = generateSectionId();
+        }
+
+        if (!Array.isArray(section.assignedMembers)) {
+            section.assignedMembers = [];
+        }
+    });
+}
+
+
+// Populate the member property dropdown.
+function renderMemberSectionDropdown() {
+    const select =
+        document.getElementById("memberSectionSelect");
+
+    if (!select) return;
+
+    ensureSectionIds();
+
+    const previousSelection =
+        window.activeMemberSectionId;
+
+    select.innerHTML = "";
+
+    if (!sectionDatabase.length) {
+        const option = document.createElement("option");
+
+        option.value = "";
+        option.textContent = "No section defined";
+
+        select.appendChild(option);
+
+        window.activeMemberSectionId = null;
+        select.value = "";
+
+        return;
+    }
+
+    sectionDatabase.forEach(section => {
+        const option = document.createElement("option");
+
+        option.value = String(section.id);
+        option.textContent = section.name;
+
+        select.appendChild(option);
+    });
+
+    // Keep the current choice if it still exists.
+    const selectionStillExists = sectionDatabase.some(
+        section => String(section.id) === String(previousSelection)
+    );
+
+    // Otherwise select the first section.
+    window.activeMemberSectionId = selectionStillExists
+        ? String(previousSelection)
+        : String(sectionDatabase[0].id);
+
+    select.value = window.activeMemberSectionId;
+}
+
+
+// Called when the user changes the dropdown.
+function setActiveMemberSection(sectionId) {
+    const exists = sectionDatabase.some(
+        section => String(section.id) === String(sectionId)
+    );
+
+    window.activeMemberSectionId = exists
+        ? String(sectionId)
+        : null;
+}
+
+
+// Read the section selected at the moment of member creation.
+function getActiveMemberSectionId() {
+    const select =
+        document.getElementById("memberSectionSelect");
+
+    const selectedId = select
+        ? select.value
+        : window.activeMemberSectionId;
+
+    const section = sectionDatabase.find(
+        item => String(item.id) === String(selectedId)
+    );
+
+    return section ? String(section.id) : null;
+}
 
 // -----------------------------------------------------
 // SWITCH PROPERTY CARD TYPE
@@ -2759,9 +2956,11 @@ function openSectionPopup(){
 
     editingSectionIndex = -1;
 
-    document.getElementById(
-        "sectionPopup"
-    ).style.display = "flex";
+    renderSectionMaterialDropdown();
+
+    renderSectionTable();
+
+    document.getElementById("sectionPopup").style.display = "flex";
 
     resetSectionPopup();
 }
@@ -2784,47 +2983,35 @@ function closeSectionPopup(){
 // RESET POPUP
 // -----------------------------------------------------
 
-function resetSectionPopup(){
+function resetSectionPopup() {
+    editingSectionIndex = -1;
 
-    document.getElementById(
-        "sectionPopupTitle"
-    ).innerText = "Add Section";
+    document.getElementById("sectionPopupTitle").innerText =
+        "Add Section";
 
+    document.getElementById("saveSectionButton").innerText =
+        "Add Section";
 
-    document.getElementById(
-        "sectionName"
-    ).value = "";
+    document.getElementById("sectionName").value = "";
 
+    // Reset material selection.
+    renderSectionMaterialDropdown("");
 
-    document.getElementById(
-        "sectionType"
-    ).value = "rectangular";
+    // Reset the section type to its initial default.
+    document.getElementById("sectionType").value =
+        "rectangular";
 
+    // Rebuild the geometry inputs in their initial, empty state.
+    document.getElementById("sectionGeometryFields").innerHTML = "";
 
-    document.getElementById(
-        "sectionGeometryFields"
-    ).innerHTML = "";
-
-
-    document.getElementById(
-        "sectionA"
-    ).value = "";
-
-    document.getElementById(
-        "sectionIyy"
-    ).value = "";
-
-    document.getElementById(
-        "sectionIzz"
-    ).value = "";
-
-    document.getElementById(
-        "sectionJ"
-    ).value = "";
-
+    document.getElementById("sectionA").value = "";
+    document.getElementById("sectionIyy").value = "";
+    document.getElementById("sectionIzz").value = "";
+    document.getElementById("sectionJ").value = "";
 
     updateSectionShape();
 }
+
 
 // =====================================================
 // SECTION SHAPE SYSTEM
@@ -4333,6 +4520,9 @@ function saveSection(){
         document.getElementById(
             "sectionName"
         ).value.trim();
+    
+    const materialName =
+        document.getElementById("sectionMaterial").value;
 
     const type =
         document.getElementById(
@@ -4367,6 +4557,12 @@ function saveSection(){
 
         alert("Please enter a section name.");
 
+        return;
+    }
+
+    if (!materialName ||
+        !materialDatabase.some(material => material.name === materialName)) {
+        alert("Please select a valid material for this section.");
         return;
     }
 
@@ -4426,7 +4622,16 @@ function saveSection(){
 
     const section = {
 
+        id: editingSectionIndex >= 0
+            ? (
+                sectionDatabase[editingSectionIndex].id ||
+                generateSectionId()
+            )
+            : generateSectionId(),
+
         name: name,
+
+        materialName: materialName,
 
         type: type,
 
@@ -4470,12 +4675,14 @@ function saveSection(){
 
     }
 
+    renderSectionTable();
 
-    renderSectionCards();
-
-    closeSectionPopup();
+    renderMemberSectionDropdown();
 
     refreshView();
+
+    // Return the form to Add mode after a successful save.
+    resetSectionPopup();
 
 }
 
@@ -4646,6 +4853,52 @@ function renderSectionCards(){
 }
 
 
+function renderSectionTable() {
+    const tbody = document.getElementById("sectionTableBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = "";
+
+    sectionDatabase.forEach((section, index) => {
+        const row = document.createElement("tr");
+
+        [
+            section.name,
+            section.type,
+            section.A,
+            section.Iyy,
+            section.Izz,
+            section.J
+        ].forEach(value => {
+            const cell = document.createElement("td");
+            cell.textContent = value ?? "";
+            row.appendChild(cell);
+        });
+
+        const actionsCell = document.createElement("td");
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => {
+            editSection(index);
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "delete-btn";
+        deleteButton.addEventListener("click", () => {
+            deleteSection(index);
+        });
+
+        actionsCell.append(editButton, deleteButton);
+        row.appendChild(actionsCell);
+        tbody.appendChild(row);
+    });
+}
+
+
 // -----------------------------------------------------
 // ASSIGN SECTION
 // -----------------------------------------------------
@@ -4774,11 +5027,16 @@ function editSection(index){
         "sectionPopupTitle"
     ).innerText = "Edit Section";
 
+    document.getElementById(
+        "saveSectionButton"
+    ).innerText = "Edit Section";
 
     document.getElementById(
         "sectionName"
     ).value =
         section.name;
+
+    renderSectionMaterialDropdown(section.materialName || "");
 
 
     // -------------------------------------------------
@@ -4938,7 +5196,9 @@ function deleteSection(index){
 
     sectionDatabase.splice(index,1);
 
-    renderSectionCards();
+    renderSectionTable();
+
+    renderMemberSectionDropdown();
 
     refreshView();
 
@@ -5999,3 +6259,13 @@ document.addEventListener(
 
 
 // #endregion
+
+// Initialize the member section selector.
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        renderMemberSectionDropdown
+    );
+} else {
+    renderMemberSectionDropdown();
+}

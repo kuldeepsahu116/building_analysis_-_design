@@ -14,7 +14,6 @@ def analyze():
     try:
         data = request.get_json()
 
-        # nodes = {int(k): tuple(v) for k,v in data["nodes"].items()}
         # --------------------------------
         # NODES
         # --------------------------------

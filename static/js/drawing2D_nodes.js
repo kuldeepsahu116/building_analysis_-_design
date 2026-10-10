@@ -279,16 +279,15 @@ function createDrawing2DNode(
     window.nodeDatabase.push(node);
 
 
-    renderDrawing2DNodeTable();
+    if (!window.drawing2DMemberState?.batchCreating) {
 
-    renderDrawing2DNodes();
+        renderDrawing2DNodeTable();
 
+        renderDrawing2DNodes();
 
-    if (
-        typeof refreshView ===
-        "function"
-    ) {
-        refreshView();
+        if (typeof refreshView === "function") {
+            refreshView();
+        }
     }
 
 
@@ -743,21 +742,6 @@ function renderDrawing2DNodeTable() {
 
                 </td>
 
-
-                <td>
-
-                    <button
-                        class="delete-btn"
-                        onclick="
-                            deleteDrawing2DNode(
-                                '${node.nodeId}'
-                            )
-                        "
-                    >
-                        X
-                    </button>
-
-                </td>
             `;
         }
     );

@@ -124,246 +124,456 @@
     <button onclick="showPage(4)">Loads</button>
     <button onclick="showPage(5)">Results</button>
     <button onclick="showPage(6)">Report</button>
+
+    <div class="story-scope-control">
+        <label for="storyCreationScope">Modeling Scope</label>
+        <select
+            id="storyCreationScope"
+            onchange="setDrawing2DStoryScope(this.value)"
+        >
+            <option value="one">One Story</option>
+            <option value="all">All Stories</option>
+        </select>
+    </div>
 </div>
 
 <div class="main-container">
 
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
+    <aside class="page-tool-sidebar" aria-label="Page tools">
 
-        <!-- ================= PAGE 1 ================= -->
-        <div class="page" id="page1">
+        <!-- ================= PAGE 1 TOOLS ================= -->
+        <div class="page-tool-set" data-tool-page="1">
 
-            <div class="page1-layout">
+            <!-- GRID SETTINGS -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolGrid"
+                onclick="openDrawing2DGridPopup()"
+                title="Grid Settings"
+                aria-label="Grid Settings">
 
-                <div class="page1-input-column">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
 
-                    <!-- NODES -->
-                    <div class="card nodes-card">
+                    <!-- Grid frame -->
+                    <rect
+                        x="4"
+                        y="4"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"/>
 
-                        <h4>Nodes</h4>
+                    <!-- Vertical grid lines -->
+                    <line
+                        x1="9"
+                        y1="4"
+                        x2="9"
+                        y2="20"
+                        stroke="currentColor"
+                        stroke-width="1.3"/>
 
-                        <div class="table-wrapper">
+                    <line
+                        x1="15"
+                        y1="4"
+                        x2="15"
+                        y2="20"
+                        stroke="currentColor"
+                        stroke-width="1.3"/>
 
-                            <table class="input-table" id="nodesTable">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>X</th>
-                                    <th>Y</th>
-                                    <th>Z</th>
-                                    <th></th>
-                                </tr>
-                            </table>
+                    <!-- Horizontal grid lines -->
+                    <line
+                        x1="4"
+                        y1="9"
+                        x2="20"
+                        y2="9"
+                        stroke="currentColor"
+                        stroke-width="1.3"/>
+
+                    <line
+                        x1="4"
+                        y1="15"
+                        x2="20"
+                        y2="15"
+                        stroke="currentColor"
+                        stroke-width="1.3"/>
+
+                </svg>
+
+            </button>
+
+            <div class="page-tool-separator"></div>
+
+            <!-- SELECT -->
+            <button
+                type="button"
+                class="page-tool-btn active"
+                id="pageToolSelect"
+                onclick="setDrawing2DTool('select')"
+                title="Select"
+                aria-label="Select">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M5 2 L19 13 L13 14 L16 21 L12.5 22 L9.5 15 L5 19 Z"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        stroke-width="0.7"
+                        stroke-linejoin="round"/>
+                </svg>
+
+            </button>
+
+
+            <!-- DRAW BEAM -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolBeam"
+                onclick="setDrawing2DTool('beam')"
+                title="Draw Beam"
+                aria-label="Draw Beam">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                    <circle
+                        cx="5"
+                        cy="19"
+                        r="2"
+                        fill="currentColor"/>
+
+                    <circle
+                        cx="19"
+                        cy="5"
+                        r="2"
+                        fill="currentColor"/>
+
+                    <line
+                        x1="6.5"
+                        y1="17.5"
+                        x2="17.5"
+                        y2="6.5"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"/>
+
+                </svg>
+
+            </button>
+
+            <!-- DRAW BEAM BETWEEN POINTS -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolBeamPoint"
+                onclick="setDrawing2DTool('beamBetweenPoints')"
+                title="Draw Beam Between Points"
+                aria-label="Draw Beam Between Points">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                    <!-- Start point -->
+                    <circle
+                        cx="5"
+                        cy="19"
+                        r="2.2"
+                        fill="currentColor"/>
+
+                    <!-- End point -->
+                    <circle
+                        cx="19"
+                        cy="5"
+                        r="2.2"
+                        fill="currentColor"/>
+
+                    <!-- Beam -->
+                    <line
+                        x1="6.8"
+                        y1="17.2"
+                        x2="17.2"
+                        y2="6.8"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"/>
+
+                    <!-- Small crosshair at end -->
+                    <line
+                        x1="19"
+                        y1="2.5"
+                        x2="19"
+                        y2="7.5"
+                        stroke="currentColor"
+                        stroke-width="1.2"/>
+
+                    <line
+                        x1="16.5"
+                        y1="5"
+                        x2="21.5"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="1.2"/>
+
+                </svg>
+
+            </button>
+
+
+            <!-- DELETE BEAM -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolDeleteBeam"
+                onclick="setDrawing2DTool('deleteBeam')"
+                title="Delete Beam"
+                aria-label="Delete Beam">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                    <line
+                        x1="5"
+                        y1="19"
+                        x2="19"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+
+                    <line
+                        x1="9"
+                        y1="15"
+                        x2="15"
+                        y2="9"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                        opacity="0.45"/>
+
+                    <line
+                        x1="8"
+                        y1="8"
+                        x2="16"
+                        y2="16"
+                        stroke="#d64545"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+
+                    <line
+                        x1="16"
+                        y1="8"
+                        x2="8"
+                        y2="16"
+                        stroke="#d64545"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+
+                </svg>
+
+            </button>
+
+
+            <div class="page-tool-separator"></div>
+
+
+            <!-- DRAW COLUMN -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolColumn"
+                onclick="setDrawing2DTool('column')"
+                title="Draw Column"
+                aria-label="Draw Column">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                    <rect
+                        x="7"
+                        y="3"
+                        width="10"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"/>
+
+                    <line
+                        x1="4"
+                        y1="5"
+                        x2="7"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="1.5"/>
+
+                    <line
+                        x1="17"
+                        y1="5"
+                        x2="20"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="1.5"/>
+
+                    <line
+                        x1="4"
+                        y1="19"
+                        x2="7"
+                        y2="19"
+                        stroke="currentColor"
+                        stroke-width="1.5"/>
+
+                    <line
+                        x1="17"
+                        y1="19"
+                        x2="20"
+                        y2="19"
+                        stroke="currentColor"
+                        stroke-width="1.5"/>
+
+                </svg>
+
+            </button>
+
+
+            <!-- DELETE COLUMN -->
+            <button
+                type="button"
+                class="page-tool-btn"
+                id="pageToolDeleteColumn"
+                onclick="setDrawing2DTool('deleteColumn')"
+                title="Delete Column"
+                aria-label="Delete Column">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+
+                    <rect
+                        x="7"
+                        y="3"
+                        width="10"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"/>
+
+                    <line
+                        x1="8"
+                        y1="8"
+                        x2="16"
+                        y2="16"
+                        stroke="#d64545"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+
+                    <line
+                        x1="16"
+                        y1="8"
+                        x2="8"
+                        y2="16"
+                        stroke="#d64545"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+    <!-- PAGE WORKSPACE -->
+    <div class="page-workspace">
+
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+
+            <!-- ================= PAGE 1 ================= -->
+            <div class="page" id="page1">
+
+                <div class="page1-layout">
+
+                    <div class="page1-input-column">
+
+                        <!-- NODES -->
+                        <div class="card nodes-card">
+
+                            <h4>Nodes</h4>
+
+                            <div class="table-wrapper">
+
+                                <table class="input-table" id="nodesTable">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>X</th>
+                                        <th>Y</th>
+                                        <th>Z</th>
+                                        <th></th>
+                                    </tr>
+                                </table>
+
+                            </div>
 
                         </div>
 
-                    </div>
-
-                    <!-- BEAMS -->
-                    <div class="card members-card beams-card">
-                        <div class="structureHeader">
+                        <!-- BEAMS -->
+                        <div class="card members-card beams-card">
+                            
                             <h4>Beams</h4>
-                            <div class="structureHeaderActions">
-                                <button
-                                    type="button"
-                                    class="structure-delete-btn"
-                                    onclick="setDrawing2DTool('deleteBeam')"
-                                    title="Delete Beam using mouse">
-                                    Delete
-                                </button>
-                                <button
-                                    type="button"
-                                    class="structure-draw-btn"
-                                    onclick="setDrawing2DTool('beam')"
-                                    title="Draw Beam using mouse">
-                                    Draw Beam
-                                </button>
+                           
+                            <div class="table-wrapper">
+                                <table
+                                    class="input-table"
+                                    id="beamsTable">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
-                        <div class="table-wrapper">
-                            <table
-                                class="input-table"
-                                id="beamsTable">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                </tr>
-                            </table>
+
+                        <!-- COLUMNS -->
+                        <div class="card members-card columns-card">
+                            
+                            <h4>Columns</h4>
+                            
+                            <div class="table-wrapper">
+                                <table
+                                    class="input-table"
+                                    id="columnsTable">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- COLUMNS -->
-                    <div class="card members-card columns-card">
-                        <div class="structureHeader">
-                            <h4>Columns</h4>
-                            <div class="structureHeaderActions">
-                                <button
-                                    type="button"
-                                    class="structure-delete-btn"
-                                    onclick="setDrawing2DTool('deleteColumn')"
-                                    title="Delete Column using mouse">
-                                    Delete
-                                </button>
-                                <button
-                                    type="button"
-                                    class="structure-draw-btn"
-                                    onclick="setDrawing2DTool('column')"
-                                    title="Draw Column using mouse">
-                                    Draw Column
-                                </button>
-                            </div>
-                        </div>
-                        <div class="table-wrapper">
-                            <table
-                                class="input-table"
-                                id="columnsTable">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
                 </div>
 
             </div>
 
-        </div>
 
+            <!-- ================= PAGE 2 ================= -->
+            <div class="page" id="page2" style="display:none;">
 
-        <!-- ================= PAGE 2 ================= -->
-        <div class="page" id="page2" style="display:none;">
+                <div class="properties-page">
 
-            <div class="properties-page">
+                    <!-- ===================================-->
+                    <!-- MATERIAL PROPERTIES -->
+                    <!-- =================================== -->
 
-                <!-- ===================================-->
-                <!-- MATERIAL PROPERTIES -->
-                <!-- =================================== -->
+                    <div class="card properties-card">
 
-                <div class="card properties-card">
-
-                    <h4>Material Properties</h4>
-
-                    <div
-                        class="property-card-container"
-                        id="materialCardContainer">
-                    </div>
-
-                    <!-- MATERIAL CARD TEMPLATE -->
-                    <div
-                        id="materialCardTemplate"
-                        style="display:none;">
-
-                        <div class="load-item">
-
-                            <div class="load-card-layout">
-
-                                <!-- LEFT -->
-                                <div class="load-left">
-
-                                    <div class="material-title"></div>
-
-                                    <div class="material-description"></div>
-
-                                </div>
-
-
-                                <!-- RIGHT -->
-                                <div class="load-right">
-
-                                    <!-- ASSIGN -->
-                                    <div class="load-assignment-section">
-
-                                        <input
-                                            class="material-assignment-input"
-                                            placeholder="Assign members">
-
-                                        <button class="assign-material-btn">
-                                            Assign
-                                        </button>
-
-                                        <button
-                                            class="assign-all-btn"
-                                            type="button">
-                                            Assign All
-                                        </button>
-
-                                    </div>
-
-
-                                    <!-- CURRENT ASSIGNMENT -->
-                                    <div class="material-assignment"></div>
-
-
-                                    <!-- ACTION BUTTONS -->
-                                    <div class="load-buttons">
-
-                                        <button class="edit-material-btn">
-                                            Edit
-                                        </button>
-
-                                        <button class="delete-btn">
-                                            Delete
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <button onclick="openMaterialPopup()">
-                        + Add Material
-                    </button>
-
-                </div>
-
-
-
-                <!-- ================================= -->
-                <!-- SECTION / BETA PROPERTIES -->
-                <!-- ================================= -->
-
-                <div class="card properties-card">
-
-                    <div class="property-tabs">
-
-                        <button
-                            type="button"
-                            id="sectionPropertyTab"
-                            class="property-tab active"
-                            onclick="switchPropertyCardType('section')">
-                            Section
-                        </button>
-
-                        <button
-                            type="button"
-                            id="betaPropertyTab"
-                            class="property-tab"
-                            onclick="switchPropertyCardType('beta')">
-                            Beta Angle
-                        </button>
-                    </div>
-
-                    <div id="sectionPropertyContent">
-
+                        <h4>Material Properties</h4>
 
                         <div
                             class="property-card-container"
-                            id="sectionCardContainer">
+                            id="materialCardContainer">
                         </div>
 
-
-                        <!-- SECTION CARD TEMPLATE -->
+                        <!-- MATERIAL CARD TEMPLATE -->
                         <div
-                            id="sectionCardTemplate"
+                            id="materialCardTemplate"
                             style="display:none;">
 
                             <div class="load-item">
@@ -373,9 +583,9 @@
                                     <!-- LEFT -->
                                     <div class="load-left">
 
-                                        <div class="section-title"></div>
+                                        <div class="material-title"></div>
 
-                                        <div class="section-description"></div>
+                                        <div class="material-description"></div>
 
                                     </div>
 
@@ -387,10 +597,10 @@
                                         <div class="load-assignment-section">
 
                                             <input
-                                                class="section-assignment-input"
+                                                class="material-assignment-input"
                                                 placeholder="Assign members">
 
-                                            <button class="assign-section-btn">
+                                            <button class="assign-material-btn">
                                                 Assign
                                             </button>
 
@@ -404,13 +614,13 @@
 
 
                                         <!-- CURRENT ASSIGNMENT -->
-                                        <div class="section-assignment"></div>
+                                        <div class="material-assignment"></div>
 
 
                                         <!-- ACTION BUTTONS -->
                                         <div class="load-buttons">
 
-                                            <button class="edit-section-btn">
+                                            <button class="edit-material-btn">
                                                 Edit
                                             </button>
 
@@ -429,94 +639,106 @@
                         </div>
 
 
-                        <button onclick="openSectionPopup()">
-                            + Add Section
+                        <button onclick="openMaterialPopup()">
+                            + Add Material
                         </button>
 
                     </div>
 
+
+
                     <!-- ================================= -->
-                    <!-- BETA ANGLE PROPERTIES -->
+                    <!-- SECTION / BETA PROPERTIES -->
                     <!-- ================================= -->
 
-                    <div id="betaPropertyContent"
-                        style="display:none;">
+                    <div class="card properties-card">
 
-                        <div
-                            class="property-card-container"
-                            id="betaCardContainer">
+                        <div class="property-tabs">
+
+                            <button
+                                type="button"
+                                id="sectionPropertyTab"
+                                class="property-tab active"
+                                onclick="switchPropertyCardType('section')">
+                                Section
+                            </button>
+
+                            <button
+                                type="button"
+                                id="betaPropertyTab"
+                                class="property-tab"
+                                onclick="switchPropertyCardType('beta')">
+                                Beta Angle
+                            </button>
                         </div>
 
-
-                        <!-- BETA CARD TEMPLATE -->
-
-                        <div
-                            id="betaCardTemplate"
-                            style="display:none;">
-
-                            <div class="load-item">
-
-                                <div class="load-card-layout">
-
-                                    <!-- LEFT -->
-
-                                    <div class="load-left">
-
-                                        <div class="beta-title"></div>
-
-                                        <div class="beta-description"></div>
-
-                                    </div>
+                        <div id="sectionPropertyContent">
 
 
-                                    <!-- RIGHT -->
+                            <div
+                                class="property-card-container"
+                                id="sectionCardContainer">
+                            </div>
 
-                                    <div class="load-right">
 
-                                        <!-- ASSIGN -->
+                            <!-- SECTION CARD TEMPLATE -->
+                            <div
+                                id="sectionCardTemplate"
+                                style="display:none;">
 
-                                        <div class="load-assignment-section">
+                                <div class="load-item">
 
-                                            <input
-                                                class="beta-assignment-input"
-                                                placeholder="Assign members">
+                                    <div class="load-card-layout">
 
-                                            <button
-                                                class="assign-beta-btn">
-                                                Assign
-                                            </button>
+                                        <!-- LEFT -->
+                                        <div class="load-left">
 
-                                            <button
-                                                class="assign-all-btn"
-                                                type="button">
-                                                Assign All
-                                            </button>
+                                            <div class="section-title"></div>
+
+                                            <div class="section-description"></div>
 
                                         </div>
 
 
-                                        <!-- CURRENT ASSIGNMENT -->
+                                        <!-- RIGHT -->
+                                        <div class="load-right">
 
-                                        <div class="beta-assignment"></div>
+                                            <!-- ASSIGN -->
+                                            <div class="load-assignment-section">
+
+                                                <input
+                                                    class="section-assignment-input"
+                                                    placeholder="Assign members">
+
+                                                <button class="assign-section-btn">
+                                                    Assign
+                                                </button>
+
+                                                <button
+                                                    class="assign-all-btn"
+                                                    type="button">
+                                                    Assign All
+                                                </button>
+
+                                            </div>
 
 
-                                        <!-- EDIT / DELETE -->
+                                            <!-- CURRENT ASSIGNMENT -->
+                                            <div class="section-assignment"></div>
 
-                                        <div class="load-buttons">
 
-                                            <button
-                                                class="edit-beta-btn">
+                                            <!-- ACTION BUTTONS -->
+                                            <div class="load-buttons">
 
-                                                Edit
+                                                <button class="edit-section-btn">
+                                                    Edit
+                                                </button>
 
-                                            </button>
+                                                <button class="delete-btn">
+                                                    Delete
+                                                </button>
 
-                                            <button
-                                                class="delete-btn">
-
-                                                Delete
-
-                                            </button>
+                                            </div>
 
                                         </div>
 
@@ -526,282 +748,219 @@
 
                             </div>
 
+
+                            <button onclick="openSectionPopup()">
+                                + Add Section
+                            </button>
+
                         </div>
 
+                        <!-- ================================= -->
+                        <!-- BETA ANGLE PROPERTIES -->
+                        <!-- ================================= -->
 
-                        <button onclick="openBetaPopup()">
-                            + Add Beta Angle
+                        <div id="betaPropertyContent"
+                            style="display:none;">
+
+                            <div
+                                class="property-card-container"
+                                id="betaCardContainer">
+                            </div>
+
+
+                            <!-- BETA CARD TEMPLATE -->
+
+                            <div
+                                id="betaCardTemplate"
+                                style="display:none;">
+
+                                <div class="load-item">
+
+                                    <div class="load-card-layout">
+
+                                        <!-- LEFT -->
+
+                                        <div class="load-left">
+
+                                            <div class="beta-title"></div>
+
+                                            <div class="beta-description"></div>
+
+                                        </div>
+
+
+                                        <!-- RIGHT -->
+
+                                        <div class="load-right">
+
+                                            <!-- ASSIGN -->
+
+                                            <div class="load-assignment-section">
+
+                                                <input
+                                                    class="beta-assignment-input"
+                                                    placeholder="Assign members">
+
+                                                <button
+                                                    class="assign-beta-btn">
+                                                    Assign
+                                                </button>
+
+                                                <button
+                                                    class="assign-all-btn"
+                                                    type="button">
+                                                    Assign All
+                                                </button>
+
+                                            </div>
+
+
+                                            <!-- CURRENT ASSIGNMENT -->
+
+                                            <div class="beta-assignment"></div>
+
+
+                                            <!-- EDIT / DELETE -->
+
+                                            <div class="load-buttons">
+
+                                                <button
+                                                    class="edit-beta-btn">
+
+                                                    Edit
+
+                                                </button>
+
+                                                <button
+                                                    class="delete-btn">
+
+                                                    Delete
+
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <button onclick="openBetaPopup()">
+                                + Add Beta Angle
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ====================================== -->
+                <!-- MATERIAL POPUP -->
+                <!-- ======================================= -->
+
+                <div
+                    class="popup-overlay"
+                    id="materialPopup">
+
+                    <div class="popup-card popup-grid">
+
+                        <button
+                            class="popup-close-btn"
+                            onclick="closeMaterialPopup()">
+                            &times;
                         </button>
 
-                    </div>
 
-                </div>
+                        <!-- LEFT -->
+                        <div class="load-instruction-panel">
 
-            </div>
+                            <h4>Instructions</h4>
 
-            <!-- ====================================== -->
-            <!-- MATERIAL POPUP -->
-            <!-- ======================================= -->
+                            <div>
 
-            <div
-                class="popup-overlay"
-                id="materialPopup">
+                                <b>Material Properties</b>
 
-                <div class="popup-card popup-grid">
+                                <p>
+                                    Define the material properties used by
+                                    structural members.
+                                </p>
 
-                    <button
-                        class="popup-close-btn"
-                        onclick="closeMaterialPopup()">
-                        &times;
-                    </button>
+                                <p>
+                                    <b>E</b> = Young's Modulus
+                                </p>
 
+                                <p>
+                                    <b>G</b> = Shear Modulus
+                                </p>
 
-                    <!-- LEFT -->
-                    <div class="load-instruction-panel">
+                                <p>
+                                    Units:
+                                    E, G → kN/m²
+                                </p>
 
-                        <h4>Instructions</h4>
-
-                        <div>
-
-                            <b>Material Properties</b>
-
-                            <p>
-                                Define the material properties used by
-                                structural members.
-                            </p>
-
-                            <p>
-                                <b>E</b> = Young's Modulus
-                            </p>
-
-                            <p>
-                                <b>G</b> = Shear Modulus
-                            </p>
-
-                            <p>
-                                Units:
-                                E, G → kN/m²
-                            </p>
+                            </div>
 
                         </div>
 
-                    </div>
 
+                        <!-- RIGHT -->
+                        <div class="popup-input-panel">
 
-                    <!-- RIGHT -->
-                    <div class="popup-input-panel">
-
-                        <h3 id="materialPopupTitle">
-                            Add Material
-                        </h3>
-
-
-                        <!-- NAME -->
-                        <label>
-                            Material Name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="materialName"
-                            placeholder="e.g. M25 Concrete">
-
-
-                        <!-- E -->
-                        <label>
-                            E
-                        </label>
-
-                        <input
-                            type="text"
-                            id="materialE"
-                            step="any"
-                            placeholder="Young's Modulus">
-
-
-                        <!-- G -->
-                        <label>
-                            G
-                        </label>
-
-                        <input
-                            type="text"
-                            id="materialG"
-                            step="any"
-                            placeholder="Shear Modulus">
-
-
-                        <!-- BUTTONS -->
-                        <div class="popup-buttons">
-
-                            <button onclick="saveMaterial()">
-                                Add
-                            </button>
-
-                            <button
-                                class="delete-btn"
-                                onclick="closeMaterialPopup()">
-                                Cancel
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- ======================================= -->
-            <!-- SECTION POPUP -->
-            <!-- ======================================= -->
-
-            <div
-                class="popup-overlay"
-                id="sectionPopup">
-
-                <div class="popup-card popup-grid">
-
-                    <button
-                        class="popup-close-btn"
-                        onclick="closeSectionPopup()">
-                        &times;
-                    </button>
-
-
-                    <!-- LEFT -->
-                    <div class="section-shape-instruction">
-
-                        <h4>Section Geometry</h4>
-
-                        <div
-                            id="sectionShapeFigure"
-                            class="section-shape-figure">
-                        </div>
-
-                        <div
-                            id="sectionShapeInstructions"
-                            class="section-shape-instructions">
-                        </div>
-
-                    </div>
-
-
-                    <!-- RIGHT -->
-                    <div class="popup-input-panel">
-
-                        <div id="sectionPropertyPanel">
-
-                            <h3 id="sectionPopupTitle">
-                                Add Section
+                            <h3 id="materialPopupTitle">
+                                Add Material
                             </h3>
 
 
                             <!-- NAME -->
                             <label>
-                                Section Name
+                                Material Name
                             </label>
 
                             <input
                                 type="text"
-                                id="sectionName"
-                                placeholder="e.g. Beam 300x500">
+                                id="materialName"
+                                placeholder="e.g. M25 Concrete">
 
 
-                            <!-- SECTION TYPE -->
-
+                            <!-- E -->
                             <label>
-                                Cross Section Type
+                                E
                             </label>
 
-                            <select
-                                id="sectionType"
-                                onchange="updateSectionShape()">
-
-                                <option value="rectangular">
-                                    Rectangular
-                                </option>
-
-                                <option value="circular">
-                                    Solid Circular
-                                </option>
-
-                                <option value="hollow_circular">
-                                    Hollow Circular
-                                </option>
-
-                                <option value="i_section">
-                                    I-Section
-                                </option>
-
-                                <option value="box">
-                                    Rectangular Hollow
-                                </option>
-
-                                <option value="custom">
-                                    Custom
-                                </option>
-
-                            </select>
+                            <input
+                                type="text"
+                                id="materialE"
+                                step="any"
+                                placeholder="Young's Modulus">
 
 
-                            <!-- SECTION GEOMETRY -->
+                            <!-- G -->
+                            <label>
+                                G
+                            </label>
 
-                            <div id="sectionGeometryFields">
-                            </div>
-
-
-                            <!-- CALCULATED PROPERTIES -->
-
-                            <div class="section-calculated-properties">
-
-                                <label>
-                                    A
-                                    <input
-                                        type="text"
-                                        id="sectionA"
-                                        readonly>
-                                </label>
-
-                                <label>
-                                    Iyy
-                                    <input
-                                        type="text"
-                                        id="sectionIyy"
-                                        readonly>
-                                </label>
-
-                                <label>
-                                    Izz
-                                    <input
-                                        type="text"
-                                        id="sectionIzz"
-                                        readonly>
-                                </label>
-
-                                <label>
-                                    J
-                                    <input
-                                        type="text"
-                                        id="sectionJ"
-                                        readonly>
-                                </label>
-
-                            </div>
+                            <input
+                                type="text"
+                                id="materialG"
+                                step="any"
+                                placeholder="Shear Modulus">
 
 
                             <!-- BUTTONS -->
                             <div class="popup-buttons">
 
-                                <button onclick="saveSection()">
+                                <button onclick="saveMaterial()">
                                     Add
                                 </button>
 
                                 <button
                                     class="delete-btn"
-                                    onclick="closeSectionPopup()">
+                                    onclick="closeMaterialPopup()">
                                     Cancel
                                 </button>
 
@@ -813,200 +972,157 @@
 
                 </div>
 
-            </div>
-
-            <!-- ================================================= -->
-            <!-- BETA ANGLE POPUP -->
-            <!-- ================================================= -->
-
-            <div
-                class="popup-overlay"
-                id="betaPopup">
-
-                <div class="popup-card popup-grid">
-
-                    <!-- CLOSE -->
-
-                    <button
-                        class="popup-close-btn"
-                        onclick="closeBetaPopup()">
-
-                        &times;
-
-                    </button>
 
 
-                    <!-- LEFT -->
+                <!-- ======================================= -->
+                <!-- SECTION POPUP -->
+                <!-- ======================================= -->
 
-                    <div class="load-instruction-panel">
-
-                        <h4>Instructions</h4>
-
-                        <div>
-
-                            <b>Beta Angle</b>
-
-                            <p>
-                                Beta angle defines the rotation of the
-                                member's local Y-Z axes about the
-                                local X-axis.
-                            </p>
-
-                            <p>
-                                <b>β = 0°</b> means no rotation.
-                            </p>
-
-                            <p>
-                                Positive beta follows the
-                                right-hand rule about the local X-axis.
-                            </p>
-
-                            <p>
-                                Negative angles are allowed.
-                            </p>
-
-                            <p>
-                                The beta angle is assigned independently
-                                of the section property.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- RIGHT -->
-
-                    <div class="popup-input-panel">
-
-                        <h3 id="betaPopupTitle">
-                            Add Beta Angle
-                        </h3>
-
-
-                        <!-- NAME -->
-
-                        <label>
-                            Beta Angle Name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="betaName"
-                            placeholder="e.g. B30">
-
-
-                        <!-- ANGLE -->
-
-                        <label>
-                            Beta Angle (degrees)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="betaAngle"
-                            step="any"
-                            placeholder="e.g. 30">
-
-
-                        <!-- BUTTONS -->
-
-                        <div class="popup-buttons">
-
-                            <button
-                                type="button"
-                                onclick="saveBeta()">
-
-                                Add
-
-                            </button>
-
-                            <button
-                                type="button"
-                                class="delete-btn"
-                                onclick="closeBetaPopup()">
-
-                                Cancel
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= PAGE 3 ================= -->
-        <div class="page" id="page3" style="display:none;">
-
-            <!-- SUPPORTS -->
-            <div class="card page3-full">
-
-                <h4>Supports</h4>
-
-                <!-- SUPPORT CARD AREA -->
                 <div
-                    class="support-card-container"
-                    id="supportCardContainer">
-                </div>
+                    class="popup-overlay"
+                    id="sectionPopup">
 
-                <!-- SUPPORT CARD TEMPLATE -->
-                <div
-                    id="supportCardTemplate"
-                    style="display:none;">
+                    <div class="popup-card popup-grid">
 
-                    <div class="support-item">
+                        <button
+                            class="popup-close-btn"
+                            onclick="closeSectionPopup()">
+                            &times;
+                        </button>
 
-                        <div class="support-card-layout">
 
-                            <!-- LEFT -->
-                            <div class="support-left">
+                        <!-- LEFT -->
+                        <div class="section-shape-instruction">
 
-                                <div class="support-title"></div>
+                            <h4>Section Geometry</h4>
 
-                                <div class="support-description"></div>
-
+                            <div
+                                id="sectionShapeFigure"
+                                class="section-shape-figure">
                             </div>
 
-                            <!-- RIGHT -->
-                            <div class="support-right">
+                            <div
+                                id="sectionShapeInstructions"
+                                class="section-shape-instructions">
+                            </div>
 
-                                <!-- ASSIGN -->
-                                <div class="support-assignment-section">
+                        </div>
 
-                                    <input
-                                        class="support-assignment-input"
-                                        placeholder="Assign nodes">
 
-                                    <button class="assign-support-btn">
-                                        Assign
+                        <!-- RIGHT -->
+                        <div class="popup-input-panel">
+
+                            <div id="sectionPropertyPanel">
+
+                                <h3 id="sectionPopupTitle">
+                                    Add Section
+                                </h3>
+
+
+                                <!-- NAME -->
+                                <label>
+                                    Section Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="sectionName"
+                                    placeholder="e.g. Beam 300x500">
+
+
+                                <!-- SECTION TYPE -->
+
+                                <label>
+                                    Cross Section Type
+                                </label>
+
+                                <select
+                                    id="sectionType"
+                                    onchange="updateSectionShape()">
+
+                                    <option value="rectangular">
+                                        Rectangular
+                                    </option>
+
+                                    <option value="circular">
+                                        Solid Circular
+                                    </option>
+
+                                    <option value="hollow_circular">
+                                        Hollow Circular
+                                    </option>
+
+                                    <option value="i_section">
+                                        I-Section
+                                    </option>
+
+                                    <option value="box">
+                                        Rectangular Hollow
+                                    </option>
+
+                                    <option value="custom">
+                                        Custom
+                                    </option>
+
+                                </select>
+
+
+                                <!-- SECTION GEOMETRY -->
+
+                                <div id="sectionGeometryFields">
+                                </div>
+
+
+                                <!-- CALCULATED PROPERTIES -->
+
+                                <div class="section-calculated-properties">
+
+                                    <label>
+                                        A
+                                        <input
+                                            type="text"
+                                            id="sectionA"
+                                            readonly>
+                                    </label>
+
+                                    <label>
+                                        Iyy
+                                        <input
+                                            type="text"
+                                            id="sectionIyy"
+                                            readonly>
+                                    </label>
+
+                                    <label>
+                                        Izz
+                                        <input
+                                            type="text"
+                                            id="sectionIzz"
+                                            readonly>
+                                    </label>
+
+                                    <label>
+                                        J
+                                        <input
+                                            type="text"
+                                            id="sectionJ"
+                                            readonly>
+                                    </label>
+
+                                </div>
+
+
+                                <!-- BUTTONS -->
+                                <div class="popup-buttons">
+
+                                    <button onclick="saveSection()">
+                                        Add
                                     </button>
 
                                     <button
-                                        class="assign-all-btn"
-                                        type="button">
-                                        Assign All
-                                    </button>
-
-                                </div>
-
-                                <!-- CURRENT ASSIGNMENT -->
-                                <div class="support-assignment"></div>
-
-                                <!-- ACTION BUTTONS -->
-                                <div class="support-buttons">
-
-                                    <button class="edit-support-btn">
-                                        Edit
-                                    </button>
-
-                                    <button class="delete-btn">
-                                        Delete
+                                        class="delete-btn"
+                                        onclick="closeSectionPopup()">
+                                        Cancel
                                     </button>
 
                                 </div>
@@ -1019,1705 +1135,1885 @@
 
                 </div>
 
-                <!-- ADD SUPPORT -->
-                <button onclick="openSupportPopup()">
-                    + Add Support
-                </button>
+                <!-- ================================================= -->
+                <!-- BETA ANGLE POPUP -->
+                <!-- ================================================= -->
+
+                <div
+                    class="popup-overlay"
+                    id="betaPopup">
+
+                    <div class="popup-card popup-grid">
+
+                        <!-- CLOSE -->
+
+                        <button
+                            class="popup-close-btn"
+                            onclick="closeBetaPopup()">
+
+                            &times;
+
+                        </button>
+
+
+                        <!-- LEFT -->
+
+                        <div class="load-instruction-panel">
+
+                            <h4>Instructions</h4>
+
+                            <div>
+
+                                <b>Beta Angle</b>
+
+                                <p>
+                                    Beta angle defines the rotation of the
+                                    member's local Y-Z axes about the
+                                    local X-axis.
+                                </p>
+
+                                <p>
+                                    <b>β = 0°</b> means no rotation.
+                                </p>
+
+                                <p>
+                                    Positive beta follows the
+                                    right-hand rule about the local X-axis.
+                                </p>
+
+                                <p>
+                                    Negative angles are allowed.
+                                </p>
+
+                                <p>
+                                    The beta angle is assigned independently
+                                    of the section property.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- RIGHT -->
+
+                        <div class="popup-input-panel">
+
+                            <h3 id="betaPopupTitle">
+                                Add Beta Angle
+                            </h3>
+
+
+                            <!-- NAME -->
+
+                            <label>
+                                Beta Angle Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="betaName"
+                                placeholder="e.g. B30">
+
+
+                            <!-- ANGLE -->
+
+                            <label>
+                                Beta Angle (degrees)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="betaAngle"
+                                step="any"
+                                placeholder="e.g. 30">
+
+
+                            <!-- BUTTONS -->
+
+                            <div class="popup-buttons">
+
+                                <button
+                                    type="button"
+                                    onclick="saveBeta()">
+
+                                    Add
+
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="delete-btn"
+                                    onclick="closeBetaPopup()">
+
+                                    Cancel
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
 
-            <!-- ================================================= -->
-            <!-- SUPPORT POPUP -->
-            <!-- ================================================= -->
+            <!-- ================= PAGE 3 ================= -->
+            <div class="page" id="page3" style="display:none;">
 
-            <div
-                class="popup-overlay"
-                id="supportPopup">
+                <!-- SUPPORTS -->
+                <div class="card page3-full">
 
-                <div class="popup-card support-popup">
+                    <h4>Supports</h4>
 
-                    <!-- CLOSE -->
-                    <button
-                        class="popup-close-btn"
-                        onclick="closeSupportPopup()">
-                        &times;
-                    </button>
+                    <!-- SUPPORT CARD AREA -->
+                    <div
+                        class="support-card-container"
+                        id="supportCardContainer">
+                    </div>
 
-                    <!-- TOP NAVIGATION -->
+                    <!-- SUPPORT CARD TEMPLATE -->
+                    <div
+                        id="supportCardTemplate"
+                        style="display:none;">
 
-                    <div class="support-popup-tabs">
+                        <div class="support-item">
 
-                        <button
-                            id="supportTab"
-                            class="support-tab active"
-                            onclick="switchSupportType('support')">
+                            <div class="support-card-layout">
 
-                            Support
+                                <!-- LEFT -->
+                                <div class="support-left">
 
-                        </button>
+                                    <div class="support-title"></div>
 
-                        <button
-                            id="supportDeflectionTab"
-                            class="support-tab"
-                            onclick="switchSupportType('support_deflection')">
+                                    <div class="support-description"></div>
 
-                            Support with Deflection
+                                </div>
 
-                        </button>
+                                <!-- RIGHT -->
+                                <div class="support-right">
+
+                                    <!-- ASSIGN -->
+                                    <div class="support-assignment-section">
+
+                                        <input
+                                            class="support-assignment-input"
+                                            placeholder="Assign nodes">
+
+                                        <button class="assign-support-btn">
+                                            Assign
+                                        </button>
+
+                                        <button
+                                            class="assign-all-btn"
+                                            type="button">
+                                            Assign All
+                                        </button>
+
+                                    </div>
+
+                                    <!-- CURRENT ASSIGNMENT -->
+                                    <div class="support-assignment"></div>
+
+                                    <!-- ACTION BUTTONS -->
+                                    <div class="support-buttons">
+
+                                        <button class="edit-support-btn">
+                                            Edit
+                                        </button>
+
+                                        <button class="delete-btn">
+                                            Delete
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
+                    <!-- ADD SUPPORT -->
+                    <button onclick="openSupportPopup()">
+                        + Add Support
+                    </button>
 
-                    <!-- CONTENT -->
-
-                    <div class="support-popup-content">
-
-                        <h3 id="supportPopupTitle">
-                            Add Support
-                        </h3>
+                </div>
 
 
-                        <!-- DOF -->
+                <!-- ================================================= -->
+                <!-- SUPPORT POPUP -->
+                <!-- ================================================= -->
 
-                        <div class="support-dof-section">
+                <div
+                    class="popup-overlay"
+                    id="supportPopup">
 
-                            <label>
-                                Degrees of Freedom to Restrain
-                            </label>
+                    <div class="popup-card support-popup">
 
-                            <div class="support-dof-grid">
+                        <!-- CLOSE -->
+                        <button
+                            class="popup-close-btn"
+                            onclick="closeSupportPopup()">
+                            &times;
+                        </button>
 
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                id="supportUx"
-                                                onchange="updateSupportValueInputs()">
-                                            Ux
-                                        </label>
+                        <!-- TOP NAVIGATION -->
 
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                id="supportUy"
-                                                onchange="updateSupportValueInputs()">
-                                            Uy
-                                        </label>
+                        <div class="support-popup-tabs">
 
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                id="supportUz"
-                                                onchange="updateSupportValueInputs()">
-                                            Uz
-                                        </label>
+                            <button
+                                id="supportTab"
+                                class="support-tab active"
+                                onclick="switchSupportType('support')">
 
-                                        <!-- ROTATIONS -->
+                                Support
 
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                id="supportRx"
-                                                onchange="updateSupportValueInputs()">
-                                            θx
-                                        </label>
-
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                id="supportRy"
-                                                onchange="updateSupportValueInputs()">
-                                            θy
-                                        </label>
-
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                id="supportRz"
-                                                onchange="updateSupportValueInputs()">
-                                            θz
-                                        </label>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- PRESCRIBED VALUES -->
-
-                        <div
-                            id="supportDeflectionValues"
-                            class="support-deflection-values">
-
-                            <label>
-                                Prescribed Displacement / Rotation
-                            </label>
-
-                            <div class="support-value-row">
-
-                                <label>
-                                    Ux
-                                    <input
-                                        type="text"
-                                        id="supportUxValue"
-                                        value="0"
-                                        step="any">
-                                </label>
-
-                                <label>
-                                    Uy
-                                    <input
-                                        type="text"
-                                        id="supportUyValue"
-                                        value="0"
-                                        step="any">
-                                </label>
-
-                                <label>
-                                    Uz
-                                    <input
-                                        type="text"
-                                        id="supportUzValue"
-                                        value="0"
-                                        step="any">
-                                </label>
-
-                                <label>
-                                    θx
-                                    <input
-                                        type="text"
-                                        id="supportRxValue"
-                                        value="0"
-                                        step="any">
-                                </label>
-
-                                <label>
-                                    θy
-                                    <input
-                                        type="text"
-                                        id="supportRyValue"
-                                        value="0"
-                                        step="any">
-                                </label>
-
-                                <label>
-                                    θz
-                                    <input
-                                        type="text"
-                                        id="supportRzValue"
-                                        value="0"
-                                        step="any">
-                                </label>
-
-                            </div>
-
-                            <small>
-                                Values are entered in global coordinates.
-                            </small>
-
-                        </div>
-
-
-                        <!-- BUTTONS -->
-
-                        <div class="popup-buttons">
-
-                            <button onclick="saveSupport()">
-                                Save
                             </button>
 
                             <button
-                                class="delete-btn"
-                                onclick="closeSupportPopup()">
+                                id="supportDeflectionTab"
+                                class="support-tab"
+                                onclick="switchSupportType('support_deflection')">
 
-                                Cancel
+                                Support with Deflection
 
                             </button>
 
                         </div>
 
+
+                        <!-- CONTENT -->
+
+                        <div class="support-popup-content">
+
+                            <h3 id="supportPopupTitle">
+                                Add Support
+                            </h3>
+
+
+                            <!-- DOF -->
+
+                            <div class="support-dof-section">
+
+                                <label>
+                                    Degrees of Freedom to Restrain
+                                </label>
+
+                                <div class="support-dof-grid">
+
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id="supportUx"
+                                                    onchange="updateSupportValueInputs()">
+                                                Ux
+                                            </label>
+
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id="supportUy"
+                                                    onchange="updateSupportValueInputs()">
+                                                Uy
+                                            </label>
+
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id="supportUz"
+                                                    onchange="updateSupportValueInputs()">
+                                                Uz
+                                            </label>
+
+                                            <!-- ROTATIONS -->
+
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id="supportRx"
+                                                    onchange="updateSupportValueInputs()">
+                                                θx
+                                            </label>
+
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id="supportRy"
+                                                    onchange="updateSupportValueInputs()">
+                                                θy
+                                            </label>
+
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id="supportRz"
+                                                    onchange="updateSupportValueInputs()">
+                                                θz
+                                            </label>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PRESCRIBED VALUES -->
+
+                            <div
+                                id="supportDeflectionValues"
+                                class="support-deflection-values">
+
+                                <label>
+                                    Prescribed Displacement / Rotation
+                                </label>
+
+                                <div class="support-value-row">
+
+                                    <label>
+                                        Ux
+                                        <input
+                                            type="text"
+                                            id="supportUxValue"
+                                            value="0"
+                                            step="any">
+                                    </label>
+
+                                    <label>
+                                        Uy
+                                        <input
+                                            type="text"
+                                            id="supportUyValue"
+                                            value="0"
+                                            step="any">
+                                    </label>
+
+                                    <label>
+                                        Uz
+                                        <input
+                                            type="text"
+                                            id="supportUzValue"
+                                            value="0"
+                                            step="any">
+                                    </label>
+
+                                    <label>
+                                        θx
+                                        <input
+                                            type="text"
+                                            id="supportRxValue"
+                                            value="0"
+                                            step="any">
+                                    </label>
+
+                                    <label>
+                                        θy
+                                        <input
+                                            type="text"
+                                            id="supportRyValue"
+                                            value="0"
+                                            step="any">
+                                    </label>
+
+                                    <label>
+                                        θz
+                                        <input
+                                            type="text"
+                                            id="supportRzValue"
+                                            value="0"
+                                            step="any">
+                                    </label>
+
+                                </div>
+
+                                <small>
+                                    Values are entered in global coordinates.
+                                </small>
+
+                            </div>
+
+
+                            <!-- BUTTONS -->
+
+                            <div class="popup-buttons">
+
+                                <button onclick="saveSupport()">
+                                    Save
+                                </button>
+
+                                <button
+                                    class="delete-btn"
+                                    onclick="closeSupportPopup()">
+
+                                    Cancel
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
                 </div>
 
             </div>
 
-        </div>
 
+            <!-- ================= PAGE 4 ================= -->
+            <div class="page" id="page4" style="display:none;">
 
-        <!-- ================= PAGE 4 ================= -->
-        <div class="page" id="page4" style="display:none;">
+                <!-- LOADS -->
+                <div class="card page3-full">
 
-            <!-- LOADS -->
-            <div class="card page3-full">
+                    <h4>Loads</h4>
 
-                <h4>Loads</h4>
+                    <!-- LOAD CARD AREA -->
+                    <div
+                        class="load-card-container"
+                        id="loadCardContainer">
 
-                <!-- LOAD CARD AREA -->
-                <div
-                    class="load-card-container"
-                    id="loadCardContainer">
+                    </div>
 
-                </div>
+                    <!-- LOAD CARD TEMPLATE -->
+                    <div
+                        id="loadCardTemplate"
+                        style="display:none;">
 
-                <!-- LOAD CARD TEMPLATE -->
-                <div
-                    id="loadCardTemplate"
-                    style="display:none;">
+                        <div class="load-item">
+                            <div class="load-card-layout">
 
-                    <div class="load-item">
-                        <div class="load-card-layout">
-
-                            <!-- LEFT -->
-                            <div class="load-left">
-                                <div class="load-title"></div>
-                                <div class="load-description"></div>
-                            </div>
-
-                            <!-- RIGHT -->
-                            <div class="load-right">
-
-                                <!-- ASSIGN -->
-                                <div class="load-assignment-section">
-                                    <input
-                                        class="load-assignment-input"
-                                        placeholder="Assign nodes/members">
-                                    <button class="assign-load-btn">
-                                        Assign
-                                    </button>
-
-                                    <button
-                                        class="assign-all-btn"
-                                        type="button">
-                                        Assign All
-                                    </button>
-
+                                <!-- LEFT -->
+                                <div class="load-left">
+                                    <div class="load-title"></div>
+                                    <div class="load-description"></div>
                                 </div>
 
-                                <!-- CURRENT ASSIGNMENT -->
-                                <div class="load-assignment"></div>
+                                <!-- RIGHT -->
+                                <div class="load-right">
 
-                                <!-- ACTION BUTTONS -->
-                                <div class="load-buttons">
-                                    <button class="edit-load-btn">
-                                        Edit
-                                    </button>
-                                    <button class="delete-btn">
-                                        Delete
-                                    </button>
+                                    <!-- ASSIGN -->
+                                    <div class="load-assignment-section">
+                                        <input
+                                            class="load-assignment-input"
+                                            placeholder="Assign nodes/members">
+                                        <button class="assign-load-btn">
+                                            Assign
+                                        </button>
+
+                                        <button
+                                            class="assign-all-btn"
+                                            type="button">
+                                            Assign All
+                                        </button>
+
+                                    </div>
+
+                                    <!-- CURRENT ASSIGNMENT -->
+                                    <div class="load-assignment"></div>
+
+                                    <!-- ACTION BUTTONS -->
+                                    <div class="load-buttons">
+                                        <button class="edit-load-btn">
+                                            Edit
+                                        </button>
+                                        <button class="delete-btn">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- ADD LOAD -->
-                <button onclick="openLoadPopup()">
-                    + Add Load
-                </button>
-
-            </div>
-
-            <!-- ================================================= -->
-            <!-- LOAD POPUP -->
-            <!-- ================================================= -->
-
-            <div
-                class="popup-overlay"
-                id="loadPopup">
-
-                <div class="popup-card popup-grid">
-
-                    <button
-                        class="popup-close-btn"
-                        onclick="closeLoadPopup()">
-                        &times;
+                    <!-- ADD LOAD -->
+                    <button onclick="openLoadPopup()">
+                        + Add Load
                     </button>
 
-                    <!-- LEFT -->
-                    <div class="load-instruction-panel">
-                        <h4>Instructions</h4>
-                        <div id="loadInstructionContent">
-                            Select load type to view instructions.
+                </div>
+
+                <!-- ================================================= -->
+                <!-- LOAD POPUP -->
+                <!-- ================================================= -->
+
+                <div
+                    class="popup-overlay"
+                    id="loadPopup">
+
+                    <div class="popup-card popup-grid">
+
+                        <button
+                            class="popup-close-btn"
+                            onclick="closeLoadPopup()">
+                            &times;
+                        </button>
+
+                        <!-- LEFT -->
+                        <div class="load-instruction-panel">
+                            <h4>Instructions</h4>
+                            <div id="loadInstructionContent">
+                                Select load type to view instructions.
+                            </div>
+
                         </div>
+                        <!-- RIGHT -->
+                        <div class="popup-input-panel">
 
-                    </div>
-                    <!-- RIGHT -->
-                    <div class="popup-input-panel">
+                            <h3>Add Load</h3>
 
-                        <h3>Add Load</h3>
+                            <!-- CATEGORY -->
+                            <label>Category</label>
 
-                        <!-- CATEGORY -->
-                        <label>Category</label>
+                            <select
+                                id="loadCategory"
+                                onchange="updateLoadPopup()">
 
-                        <select
-                            id="loadCategory"
-                            onchange="updateLoadPopup()">
-
-                            <option value="nodal">
-                                Nodal Load
-                            </option>
-
-                            <option value="member">
-                                Member Load
-                            </option>
-
-                        </select>
-
-
-
-                        <!-- TYPE -->
-                        <label>Type</label>
-
-                        <select
-                            id="loadType"
-                            onchange="updateLoadFields()">
-
-                            <!-- Dynamic -->
-                        </select>
-
-
-                        <!-- COORDINATE SYSTEM -->
-                        <div id="coordinateSystemGroup">
-
-                            <label>Coordinate System</label>
-
-                            <select id="loadCoordinateSystem">
-
-                                <option value="local">
-                                    Local
+                                <option value="nodal">
+                                    Nodal Load
                                 </option>
 
-                                <option value="global">
-                                    Global
+                                <option value="member">
+                                    Member Load
                                 </option>
 
                             </select>
 
-                        </div>
 
 
-                        <!-- FORCE COMPONENTS -->
-                        <div id="forceComponentsGroup">
+                            <!-- TYPE -->
+                            <label>Type</label>
 
-                            <label>Force Components</label>
+                            <select
+                                id="loadType"
+                                onchange="updateLoadFields()">
 
-                            <div class="load-axis-grid">
+                                <!-- Dynamic -->
+                            </select>
 
-                                <div>
-                                    <label for="loadFx">Fx</label>
 
-                                    <input
-                                        id="loadFx"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadFy">Fy</label>
+                            <!-- COORDINATE SYSTEM -->
+                            <div id="coordinateSystemGroup">
 
-                                    <input
-                                        id="loadFy"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadFz">Fz</label>
+                                <label>Coordinate System</label>
 
-                                    <input
-                                        id="loadFz"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
+                                <select id="loadCoordinateSystem">
+
+                                    <option value="local">
+                                        Local
+                                    </option>
+
+                                    <option value="global">
+                                        Global
+                                    </option>
+
+                                </select>
+
                             </div>
-                        </div>
 
-                        <!-- MOMENT COMPONENTS -->
-                        <div id="momentComponentsGroup">
 
-                            <label>Moment Components</label>
+                            <!-- FORCE COMPONENTS -->
+                            <div id="forceComponentsGroup">
 
-                            <div class="load-axis-grid">
+                                <label>Force Components</label>
 
-                                <div>
-                                    <label for="loadMx">Mx</label>
+                                <div class="load-axis-grid">
 
-                                    <input
-                                        id="loadMx"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadMy">My</label>
+                                    <div>
+                                        <label for="loadFx">Fx</label>
 
-                                    <input
-                                        id="loadMy"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadMz">Mz</label>
+                                        <input
+                                            id="loadFx"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadFy">Fy</label>
 
-                                    <input
-                                        id="loadMz"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                            </div>
-                        </div>
+                                        <input
+                                            id="loadFy"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadFz">Fz</label>
 
-                        <!-- TRAPEZOIDAL LOAD -->
-                        <div id="trapezoidalComponentsGroup">
-
-                            <label>Start Load</label>
-
-                            <div class="load-axis-grid">
-
-                                <div>
-                                    <label for="loadWx1">wx₁</label>
-
-                                    <input
-                                        id="loadWx1"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadWy1">wy₁</label>
-
-                                    <input
-                                        id="loadWy1"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadWz1">wz₁</label>
-
-                                    <input
-                                        id="loadWz1"
-                                        type="text"
-                                        placeholder="0">
+                                        <input
+                                            id="loadFz"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
                                 </div>
                             </div>
 
-                            <label>End Load</label>
+                            <!-- MOMENT COMPONENTS -->
+                            <div id="momentComponentsGroup">
 
-                            <div class="load-axis-grid">
+                                <label>Moment Components</label>
 
-                                <div>
-                                    <label for="loadWx2">wx₂</label>
+                                <div class="load-axis-grid">
 
-                                    <input
-                                        id="loadWx2"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadWy2">wy₂</label>
+                                    <div>
+                                        <label for="loadMx">Mx</label>
 
-                                    <input
-                                        id="loadWy2"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadWz2">wz₂</label>
+                                        <input
+                                            id="loadMx"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadMy">My</label>
 
-                                    <input
-                                        id="loadWz2"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                            </div>
-                        </div>
+                                        <input
+                                            id="loadMy"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadMz">Mz</label>
 
-                        <!-- DISTRIBUTED LOAD -->
-                        <div id="distributedLoadComponentsGroup">
-
-                            <label>Load Intensity</label>
-
-                            <div class="load-axis-grid">
-
-                                <div>
-                                    <label for="loadWx">wx</label>
-
-                                    <input
-                                        id="loadWx"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadWy">wy</label>
-
-                                    <input
-                                        id="loadWy"
-                                        type="text"
-                                        placeholder="0">
-                                </div>
-                                <div>
-                                    <label for="loadWz">wz</label>
-
-                                    <input
-                                        id="loadWz"
-                                        type="text"
-                                        placeholder="0">
+                                        <input
+                                            id="loadMz"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- a -->
-                        <div id="aGroup">
+                            <!-- TRAPEZOIDAL LOAD -->
+                            <div id="trapezoidalComponentsGroup">
 
-                            <label>a</label>
+                                <label>Start Load</label>
 
-                            <input 
-                            id="loadA"
-                            type="text">
+                                <div class="load-axis-grid">
 
-                        </div>
+                                    <div>
+                                        <label for="loadWx1">wx₁</label>
 
-                        <!-- b -->
-                        <div id="bGroup">
+                                        <input
+                                            id="loadWx1"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadWy1">wy₁</label>
 
-                            <label>b</label>
+                                        <input
+                                            id="loadWy1"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadWz1">wz₁</label>
 
-                            <input 
-                            id="loadB"
-                            type="text">
+                                        <input
+                                            id="loadWz1"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                </div>
 
-                        </div>
+                                <label>End Load</label>
+
+                                <div class="load-axis-grid">
+
+                                    <div>
+                                        <label for="loadWx2">wx₂</label>
+
+                                        <input
+                                            id="loadWx2"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadWy2">wy₂</label>
+
+                                        <input
+                                            id="loadWy2"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadWz2">wz₂</label>
+
+                                        <input
+                                            id="loadWz2"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DISTRIBUTED LOAD -->
+                            <div id="distributedLoadComponentsGroup">
+
+                                <label>Load Intensity</label>
+
+                                <div class="load-axis-grid">
+
+                                    <div>
+                                        <label for="loadWx">wx</label>
+
+                                        <input
+                                            id="loadWx"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadWy">wy</label>
+
+                                        <input
+                                            id="loadWy"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="loadWz">wz</label>
+
+                                        <input
+                                            id="loadWz"
+                                            type="text"
+                                            placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- a -->
+                            <div id="aGroup">
+
+                                <label>a</label>
+
+                                <input 
+                                id="loadA"
+                                type="text">
+
+                            </div>
+
+                            <!-- b -->
+                            <div id="bGroup">
+
+                                <label>b</label>
+
+                                <input 
+                                id="loadB"
+                                type="text">
+
+                            </div>
 
 
-                        <!-- BUTTONS -->
-                        <div class="popup-buttons">
+                            <!-- BUTTONS -->
+                            <div class="popup-buttons">
 
-                            <button onclick="saveLoad()">
-                                Save
+                                <button onclick="saveLoad()">
+                                    Save
+                                </button>
+
+                                <button
+                                    class="delete-btn"
+                                    onclick="closeLoadPopup()">
+
+                                    Cancel
+
+                                </button>
+
+                            </div>
+
+                        </div>    
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ============================================== -->
+            <!-- ASSIGN ALL CONFIRMATION POPUP -->
+            <!-- ============================================== -->
+
+            <div class="popup-overlay" id="assignAllConfirmPopup">
+
+                <div class="popup-card assign-confirm-popup">
+
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeAssignAllConfirmation()">
+                        &times;
+                    </button>
+
+                    <h3 id="assignAllConfirmTitle">
+                        Assign to All?
+                    </h3>
+
+                    <p id="assignAllConfirmMessage">
+                        Do you really want to assign this to all?
+                    </p>
+
+                    <div class="popup-buttons">
+
+                        <button
+                            type="button"
+                            onclick="closeAssignAllConfirmation()">
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            id="confirmAssignAllBtn">
+                            Assign All
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= PAGE 5 ================= -->
+            <div class="page" id="page5" style="display:none;">
+
+                <div class="results-column">
+
+                    <!-- LOADING -->
+                    <div id="loading" style="display:none; text-align:center;">
+                        <div class="spinner"></div>
+                        <p>Running analysis...</p>
+                    </div>
+
+                    <!-- PLACEHOLDER -->
+                    <div id="resultPlaceholder" class="card">
+                        <p style="text-align:center; font-size:13px;">
+                            Fill inputs and click <b>ANALYZE</b> to view results
+                        </p>
+                    </div>
+
+                    <!-- RESULTS LAYOUT -->
+                    <div class="results-layout"
+                        style="display:none;">
+
+                        <!-- SIDEBAR -->
+                        <div class="results-sidebar">
+                            <button
+                                class="results-nav-btn active-result-tab"
+                                onclick="showResultTab('reactionTab',this); setDiagram('structure');">
+                                Reactions
                             </button>
 
                             <button
-                                class="delete-btn"
-                                onclick="closeLoadPopup()">
+                                class="results-nav-btn"
+                                onclick="showResultTab('displacementTab',this); setDiagram('structure');">
+                                Displacements
+                            </button>
 
-                                Cancel
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('memberForceTab',this); setDiagram('structure');">
+                                Member Forces
+                            </button>
 
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('afdTab',this); setDiagram('afd');">
+                                AFD
+                            </button>
+
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('sfdYTab',this); setDiagram('sfd_y');">
+                                SFD - Vy
+                            </button>
+
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('sfdZTab',this); setDiagram('sfd_z');">
+                                SFD - Vz
+                            </button>
+
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('bmdYTab',this); setDiagram('bmd_y');">
+                                BMD - My
+                            </button>
+
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('bmdZTab',this); setDiagram('bmd_z');">
+                                BMD - Mz
+                            </button>
+
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('tmdTab',this); setDiagram('tmd');">
+                                TMD
+                            </button>
+
+                            <button
+                                class="results-nav-btn"
+                                onclick="showResultTab('deflectionTab',this); setDiagram('deflection');">
+                                Deflection
                             </button>
 
                         </div>
 
-                    </div>    
+                        <!-- RESULT CONTENT -->
+                        <div class="results-content">
 
-                </div>
+                            <!-- REACTIONS -->
+                            <div
+                                id="reactionTab"
+                                class="result-tab active-result-tab-content">
+                                <div id="reactionCard"></div>
+                            </div>
 
-            </div>
+                            <!-- DISPLACEMENT -->
+                            <div
+                                id="displacementTab"
+                                class="result-tab">
+                                <div id="displacementCard"></div>
+                            </div>
 
-        </div>
+                            <!-- MEMBER FORCES -->
+                            <div
+                                id="memberForceTab"
+                                class="result-tab">
+                                <div id="memberForceCard"></div>
+                            </div>
 
-        <!-- ============================================== -->
-        <!-- ASSIGN ALL CONFIRMATION POPUP -->
-        <!-- ============================================== -->
+                            <!-- AXIAL FORCE DIAGRAM -->
+                            <div
+                                id="afdTab"
+                                class="result-tab">
+                                <div id="afdTable"></div>
+                            </div>
 
-        <div class="popup-overlay" id="assignAllConfirmPopup">
+                            <!-- SFD - Vy -->
+                            <div
+                                id="sfdYTab"
+                                class="result-tab">
+                                <div id="sfdYTable"></div>
+                            </div>
 
-            <div class="popup-card assign-confirm-popup">
+                            <!-- SFD - Vz -->
+                            <div
+                                id="sfdZTab"
+                                class="result-tab">
+                                <div id="sfdZTable"></div>
+                            </div>
 
-                <button
-                    class="popup-close-btn"
-                    onclick="closeAssignAllConfirmation()">
-                    &times;
-                </button>
+                            <!-- BMD - My -->
+                            <div
+                                id="bmdYTab"
+                                class="result-tab">
+                                <div id="bmdYTable"></div>
+                            </div>
 
-                <h3 id="assignAllConfirmTitle">
-                    Assign to All?
-                </h3>
+                            <!-- BMD - Mz -->
+                            <div
+                                id="bmdZTab"
+                                class="result-tab">
+                                <div id="bmdZTable"></div>
+                            </div>
 
-                <p id="assignAllConfirmMessage">
-                    Do you really want to assign this to all?
-                </p>
+                            <!-- TORSIONAL MOMENT DIAGRAM -->
+                            <div
+                                id="tmdTab"
+                                class="result-tab">
+                                <div id="tmdTable"></div>
+                            </div>
 
-                <div class="popup-buttons">
+                            <!-- DEFLECTION -->
+                            <div
+                                id="deflectionTab"
+                                class="result-tab">
+                                <div id="deflectionTable"></div>
+                            </div>
 
-                    <button
-                        type="button"
-                        onclick="closeAssignAllConfirmation()">
-                        Cancel
-                    </button>
-
-                    <button
-                        type="button"
-                        id="confirmAssignAllBtn">
-                        Assign All
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= PAGE 5 ================= -->
-        <div class="page" id="page5" style="display:none;">
-
-            <div class="results-column">
-
-                <!-- LOADING -->
-                <div id="loading" style="display:none; text-align:center;">
-                    <div class="spinner"></div>
-                    <p>Running analysis...</p>
-                </div>
-
-                <!-- PLACEHOLDER -->
-                <div id="resultPlaceholder" class="card">
-                    <p style="text-align:center; font-size:13px;">
-                        Fill inputs and click <b>ANALYZE</b> to view results
-                    </p>
-                </div>
-
-                <!-- RESULTS LAYOUT -->
-                <div class="results-layout"
-                    style="display:none;">
-
-                    <!-- SIDEBAR -->
-                    <div class="results-sidebar">
-                        <button
-                            class="results-nav-btn active-result-tab"
-                            onclick="showResultTab('reactionTab',this); setDiagram('structure');">
-                            Reactions
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('displacementTab',this); setDiagram('structure');">
-                            Displacements
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('memberForceTab',this); setDiagram('structure');">
-                            Member Forces
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('afdTab',this); setDiagram('afd');">
-                            AFD
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('sfdYTab',this); setDiagram('sfd_y');">
-                            SFD - Vy
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('sfdZTab',this); setDiagram('sfd_z');">
-                            SFD - Vz
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('bmdYTab',this); setDiagram('bmd_y');">
-                            BMD - My
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('bmdZTab',this); setDiagram('bmd_z');">
-                            BMD - Mz
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('tmdTab',this); setDiagram('tmd');">
-                            TMD
-                        </button>
-
-                        <button
-                            class="results-nav-btn"
-                            onclick="showResultTab('deflectionTab',this); setDiagram('deflection');">
-                            Deflection
-                        </button>
-
+                            
+                        </div>
                     </div>
 
-                    <!-- RESULT CONTENT -->
-                    <div class="results-content">
-
-                        <!-- REACTIONS -->
-                        <div
-                            id="reactionTab"
-                            class="result-tab active-result-tab-content">
-                            <div id="reactionCard"></div>
-                        </div>
-
-                        <!-- DISPLACEMENT -->
-                        <div
-                            id="displacementTab"
-                            class="result-tab">
-                            <div id="displacementCard"></div>
-                        </div>
-
-                        <!-- MEMBER FORCES -->
-                        <div
-                            id="memberForceTab"
-                            class="result-tab">
-                            <div id="memberForceCard"></div>
-                        </div>
-
-                        <!-- AXIAL FORCE DIAGRAM -->
-                        <div
-                            id="afdTab"
-                            class="result-tab">
-                            <div id="afdTable"></div>
-                        </div>
-
-                        <!-- SFD - Vy -->
-                        <div
-                            id="sfdYTab"
-                            class="result-tab">
-                            <div id="sfdYTable"></div>
-                        </div>
-
-                        <!-- SFD - Vz -->
-                        <div
-                            id="sfdZTab"
-                            class="result-tab">
-                            <div id="sfdZTable"></div>
-                        </div>
-
-                        <!-- BMD - My -->
-                        <div
-                            id="bmdYTab"
-                            class="result-tab">
-                            <div id="bmdYTable"></div>
-                        </div>
-
-                        <!-- BMD - Mz -->
-                        <div
-                            id="bmdZTab"
-                            class="result-tab">
-                            <div id="bmdZTable"></div>
-                        </div>
-
-                        <!-- TORSIONAL MOMENT DIAGRAM -->
-                        <div
-                            id="tmdTab"
-                            class="result-tab">
-                            <div id="tmdTable"></div>
-                        </div>
-
-                        <!-- DEFLECTION -->
-                        <div
-                            id="deflectionTab"
-                            class="result-tab">
-                            <div id="deflectionTable"></div>
-                        </div>
-
-                        
-                    </div>
-                </div>
-
-                <div class="results-actions">
-                    <button id="analyzeBtn"
-                        onclick="analyzeAndShow();">
-                        ANALYZE
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-    </div>
-
-    <!-- ===================================================== -->
-    <!-- 2D BUILDING MODELING PANEL -->
-    <!-- ===================================================== -->
-    <div class="drawing2d-panel">
-
-        <div class="card drawing2d-card">
-
-            <!-- HEADER -->
-            <div class="drawing2d-header">
-
-                <div class="drawing2d-title">
-                    <h4>Plan View</h4>
-                </div>
-
-                <div class="drawing2d-header-controls">
-
-                    <!-- GRID SETTINGS -->
-
-                    <button
-                        id="drawing2DGridSettingsBtn"
-                        class="drawing2d-header-btn"
-                        onclick="openDrawing2DGridPopup()"
-                        title="Grid Settings">
-                        Grid Setting
-                    </button>
-
-                    <div class="drawing2d-floor-control">
-
-                        <label for="drawing2DFloor">
-                            Floor
-                        </label>
-
-                        <select id="drawing2DFloor">
-                        </select>
-
+                    <div class="results-actions">
+                        <button id="analyzeBtn"
+                            onclick="analyzeAndShow();">
+                            ANALYZE
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- 2D TOOLBAR -->
-            <div class="drawing2d-toolbar">
 
-                <button
-                    id="drawing2DSelectBtn"
-                    class="drawing2d-tool active"
-                    onclick="setDrawing2DTool('select')">
-                    Select
-                </button>
-
-                <button
-                    id="drawing2DBeamBtn"
-                    class="drawing2d-tool"
-                    onclick="setDrawing2DTool('beam')">
-                    Beam
-                </button>
-
-                <button
-                    id="drawing2DColumnBtn"
-                    class="drawing2d-tool"
-                    onclick="setDrawing2DTool('column')">
-                    Column
-                </button>
-
-                <button
-                    id="drawing2DGridBtn"
-                    class="drawing2d-tool active"
-                    onclick="toggleDrawing2DGrid()">
-                    Grid
-                </button>
-
-                <button
-                    class="drawing2d-tool"
-                    onclick="fitDrawing2DView()">
-                    Fit
-                </button>
-
-            </div>
-
-
-            <!-- THREE.JS 2D VIEWPORT -->
-            <div id="drawing2DViewport" class="drawing2d-viewport">
-
-                <canvas
-                    id="drawing2DCanvas">
-                </canvas>
-
-            </div>
-
-            <!-- STATUS BAR -->
-            <div class="drawing2d-status">
-
-                <span id="drawing2DToolStatus">
-                    Tool: Select
-                </span>
-
-                <span id="drawing2DCoordinateStatus">
-                    X: 0.00 m &nbsp;&nbsp; Z: 0.00 m
-                </span>
-
-                <span id="drawing2DGridStatus">
-                    Grid: 5.00 × 4.00 m
-                </span>
-
-            </div>
         </div>
 
-        <!-- GRID SETTINGS POPUP -->
-        <div id="drawing2DGridPopup"
-            class="drawing2d-grid-popup-overlay">
+        <!-- ===================================================== -->
+        <!-- 2D BUILDING MODELING PANEL -->
+        <!-- ===================================================== -->
+        <div class="drawing2d-panel">
 
-            <div class="drawing2d-grid-popup">
+            <div class="card drawing2d-card resizable-workspace-card"
+                data-workspace-column="1">
 
                 <!-- HEADER -->
-                <div class="drawing2d-grid-popup-header">
-                    <h3>
-                        Grid Settings
-                    </h3>
-                </div>
+                <div class="drawing2d-header">
 
-                <!-- CONTENT -->
-                <div class="drawing2d-grid-popup-content">
-
-
-                    <!-- TOP SYSTEM DATA -->
-                    <div class="grid-system-top">
-
-                        <!-- GRID SYSTEM -->
-                        <section class="grid-settings-section">
-
-                            <div class="grid-section-title">
-                                Grid System
-                            </div>
-
-                            <div class="grid-form-row">
-
-                                <label
-                                    for="gridSystemName">
-                                    Grid System Name
-                                </label>
-
-                                <input
-                                    id="gridSystemName"
-                                    type="text"
-                                    value="G1"
-                                    maxlength="30">
-
-                            </div>
-
-                            <div class="grid-section-title">
-                                System Origin
-                            </div>
-
-                            <div class="grid-origin-row">
-                                <div class="grid-origin-field">
-
-                                    <label
-                                        for="gridOriginX">
-                                        Global X
-                                    </label>
-                                    <div class="grid-input-unit">
-                                        <input
-                                            id="gridOriginX"
-                                            type="number"
-                                            step="0.01"
-                                            value="0">
-                                        <span>m</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-origin-field">
-                                    <label
-                                        for="gridOriginZ">
-                                        Global Z
-                                    </label>
-                                    <div class="grid-input-unit">
-                                        <input
-                                            id="gridOriginZ"
-                                            type="number"
-                                            step="0.01"
-                                            value="0">
-                                        <span>m</span>
-                                    </div>
-                                </div>
-
-                                <div class="grid-origin-field">
-
-                                    <label
-                                        for="gridRotation">
-                                        Rotation
-                                    </label>
-
-                                    <div class="grid-input-unit">
-
-                                        <input
-                                            id="gridRotation"
-                                            type="number"
-                                            step="0.1"
-                                            value="0">
-
-                                        <span>deg</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="grid-form-row">
-                                <label
-                                    for="gridColor">
-                                    Grid Color
-                                </label>
-                                <input
-                                    id="gridColor"
-                                    class="grid-color-input"
-                                    type="color"
-                                    value="#9BA7B5">
-                            </div>
-
-                        </section>
-
-                        <!-- STORY SETTINGS -->
-                        <section class="grid-settings-section story-settings-section">
-
-                            <div class="grid-section-title">
-                                Story Data
-                            </div>
-
-                            <div class="story-mode-tabs">
-                                <button
-                                    type="button"
-                                    id="storySpacingModeBtn"
-                                    class="story-mode-btn active"
-                                    onclick="switchStoryMode('spacing')">
-                                    Add by Spacing
-                                </button>
-
-                                <button
-                                    type="button"
-                                    id="storyOrdinateModeBtn"
-                                    class="story-mode-btn"
-                                    onclick="switchStoryMode('ordinate')">
-                                    Add by Ordinate
-                                </button>
-                            </div>
-
-                            <div id="storySpacingSection"
-                                class="story-add-section">
-
-                                <div class="story-add-grid">
-                                    <div class="story-input-field">
-                                        <label for="storySpacing">
-                                            Spacing
-                                        </label>
-                                        <div class="grid-input-unit">
-                                            <input
-                                                id="storySpacing"
-                                                type="number"
-                                                min="0.01"
-                                                step="0.01"
-                                                value="3">
-                                            <span>m</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="story-input-field">
-                                        <label for="storySpacingCount">
-                                            Number to Add
-                                        </label>
-                                        <input
-                                            id="storySpacingCount"
-                                            type="number"
-                                            min="1"
-                                            max="100"
-                                            step="1"
-                                            value="1">
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="grid-add-main-btn story-add-btn"
-                                    onclick="addStoriesBySpacing()">
-                                    + Add Stories
-                                </button>
-                            </div>
-
-                            <div id="storyOrdinateSection"
-                                class="story-add-section"
-                                style="display:none;">
-
-                                <div class="story-add-grid">
-                                    <div class="story-input-field">
-                                        <label for="storyNameInput">
-                                            Story Name
-                                        </label>
-                                        <input
-                                            id="storyNameInput"
-                                            type="text"
-                                            placeholder="e.g. Second Floor">
-                                    </div>
-
-                                    <div class="story-input-field">
-
-                                        <label for="storyYInput">
-                                            Y Ordinate
-                                        </label>
-
-                                        <div class="grid-input-unit">
-                                            <input
-                                                id="storyYInput"
-                                                type="number"
-                                                min="0.01"
-                                                step="0.01"
-                                                placeholder="e.g. 6.00">
-                                            <span>m</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="grid-add-main-btn story-add-btn"
-                                    onclick="addStoryByOrdinate()">
-                                    + Add Story
-                                </button>
-                            </div>
-
-                             <div class="story-table-card">
-                                <div class="story-table-scroll">
-                                    <table class="story-data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Story Name</th>
-                                                <th>Y Ordinate (m)</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="storyLineList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </section>
+                    <div class="drawing2d-title">
+                        <h4>Plan View</h4>
                     </div>
 
-                    <!-- RECTANGULAR GRIDS -->
-                    <section class="grid-rectangular-section">
+                    <div class="drawing2d-header-controls">
 
-                        <div class="grid-rectangular-header">
-
-                            <div>
-
-                                <div class="grid-section-title">
-                                    Rectangular Grids
-                                </div>
-
-                                <div class="grid-subtitle">
-                                    Define plan grid lines and spacing
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- GRID ADD MODE -->
-                        <div class="grid-mode-tabs">
-
-                            <button
-                                type="button"
-                                class="grid-mode-btn active"
-                                id="btnUniformMode"
-                                onclick="switchGridMode('spacing')">
-                                Add as Spacing
-                            </button>
-
-                            <button
-                                type="button"
-                                class="grid-mode-btn"
-                                id="btnCustomMode"
-                                onclick="switchGridMode('ordinate')">
-                                Add as Ordinate
-                            </button>
-
-                        </div>
-
-                        <!-- ADD BY SPACING -->
-                        <div id="gridUniformSection"
-                            class="grid-uniform-section">
-
-                            <div class="grid-uniform-grid">
-
-                                <!-- X -->
-
-                                <div class="grid-axis-card">
-
-                                    <div class="grid-axis-card-header">
-                                        Add X Grids by Spacing
-                                    </div>
-
-                                    <div class="grid-form-row">
-
-                                        <label
-                                            for="gridXSpacing">
-                                            Spacing
-                                        </label>
-
-                                        <div class="grid-input-unit">
-
-                                            <input
-                                                id="gridXSpacing"
-                                                type="number"
-                                                min="0.01"
-                                                step="0.01"
-                                                value="5">
-
-                                            <span>m</span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <div class="grid-form-row">
-
-                                        <label
-                                            for="gridXCount">
-                                            Number to Add
-                                        </label>
-
-                                        <input
-                                            id="gridXCount"
-                                            type="number"
-                                            min="1"
-                                            max="100"
-                                            step="1"
-                                            value="4">
-
-                                    </div>
-
-
-                                    <button
-                                        type="button"
-                                        class="grid-add-main-btn"
-                                        onclick="addGridBySpacing('X')">
-                                        + Add X Grids
-                                    </button>
-
-                                </div>
-
-
-                                <!-- Y -->
-
-                                <div class="grid-axis-card">
-
-                                    <div class="grid-axis-card-header">
-                                        Add Z Grids by Spacing
-                                    </div>
-
-                                    <div class="grid-form-row">
-
-                                        <label
-                                            for="gridZSpacing">
-                                            Spacing
-                                        </label>
-
-                                        <div class="grid-input-unit">
-
-                                            <input
-                                                id="gridZSpacing"
-                                                type="number"
-                                                min="0.01"
-                                                step="0.01"
-                                                value="4">
-
-                                            <span>m</span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <div class="grid-form-row">
-
-                                        <label
-                                            for="gridZCount">
-                                            Number to Add
-                                        </label>
-
-                                        <input
-                                            id="gridZCount"
-                                            type="number"
-                                            min="1"
-                                            max="100"
-                                            step="1"
-                                            value="5">
-
-                                    </div>
-
-
-                                    <button
-                                        type="button"
-                                        class="grid-add-main-btn"
-                                        onclick="addGridBySpacing('Z')">
-                                        + Add Z Grids
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- ADD BY ORDINATE -->
-                        <div id="gridCustomSection"
-                            class="grid-custom-section"
-                            style="display: none;">
-
-                            <div class="grid-custom-input-grid">
-
-                                <!-- X -->
-
-                                <div class="grid-axis-card">
-
-                                    <div class="grid-axis-card-header">
-                                        Add X Grid by Coordinate
-                                    </div>
-
-                                    <div class="grid-add-row">
-
-                                        <input
-                                            id="customXPos"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="X ordinate (m)">
-
-                                        <button
-                                            type="button"
-                                            onclick="addCustomGridCoord('X')">
-                                            + Add
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-
-                                <!-- Y -->
-
-                                <div class="grid-axis-card">
-
-                                    <div class="grid-axis-card-header">
-                                        Add Z Grid by Coordinate
-                                    </div>
-
-                                    <div class="grid-add-row">
-
-                                        <input
-                                            id="customZPos"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="Z ordinate (m)">
-
-                                        <button
-                                            type="button"
-                                            onclick="addCustomGridCoord('Z')">
-                                            + Add
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- GRID DATA TABLES -->
-                        <div class="grid-data-tables">
-
-
-                            <!-- X TABLE -->
-
-                            <div class="grid-data-table-card">
-
-                                <div class="grid-data-table-title">
-                                    X Grid Data
-                                </div>
-
-
-                                <div class="grid-data-table-scroll">
-
-                                    <table class="grid-data-table">
-
-                                        <thead>
-
-                                            <tr>
-
-                                                <th>
-                                                    Grid ID
-                                                </th>
-
-                                                <th id="gridXValueHeader">
-                                                    X Spacing (m)
-                                                </th>
-
-                                            </tr>
-
-                                        </thead>
-
-
-                                        <tbody
-                                            id="gridXLineList">
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <!-- Z TABLE -->
-
-                            <div class="grid-data-table-card">
-
-                                <div class="grid-data-table-title">
-                                    Z Grid Data
-                                </div>
-
-
-                                <div class="grid-data-table-scroll">
-
-                                    <table class="grid-data-table">
-
-                                        <thead>
-
-                                            <tr>
-
-                                                <th>
-                                                    Grid ID
-                                                </th>
-
-                                                <th id="gridZValueHeader">
-                                                    Z Spacing (m)
-                                                </th>
-
-                                            </tr>
-
-                                        </thead>
-
-
-                                        <tbody
-                                            id="gridZLineList">
-                                        </tbody>
-
-                                    </table>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                    </section>
-                </div>
-
-                <!-- FOOTER -->
-                <div class="drawing2d-grid-popup-footer">
-                    <button
-                        class="drawing2d-popup-cancel-btn"
-                        onclick="closeDrawing2DGridPopup()">
-                        Cancel
-                    </button>
-
-                    <button
-                        class="drawing2d-popup-apply-btn"
-                        onclick="applyDrawing2DGridSettings()">
-                        Apply Grid
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ===================================================== -->
-    <!-- 3D VISUALIZATION PANEL -->
-    <!-- ===================================================== -->
-    <div class="visualization-panel">
-
-        <!-- STRUCTURE VIEW -->
-        <div class="card structure-card">
-
-            <div class="structureHeader">
-
-                <h4>Structure View</h4>
-
-                <div class="structureHeaderActions">
-
-                <button
-                    id="section3DRenderBtn"
-                    class="section3DRenderBtn"
-                    onclick="toggleSection3DRendering()"
-                    style="display:none;">
-                    3D RENDERING
-                </button>
-
-                <button
-                    id="threeDGridBtn"
-                    class="drawing2d-tool active"
-                    onclick="toggleThreeDGrid()"
-                    title="Show / Hide Grid">
-                    GRID
-                </button>
-
-                <button id="resetBtn" onclick="resetView()">
-                    RESET VIEW
-                </button>
-
-                <!-- DIAGRAM MENU BUTTON -->
-                <div class="diagramMenuContainer">
-
-                    <button
-                        id="diagramMenuBtn"
-                        class="diagramMenuBtn"
-                        onclick="toggleDiagramMenu()"
-                        title="Diagram Settings">
-                        ☰
-                    </button>
-                    <!-- POPUP -->
-                    <div
-                        id="diagramMenuPopup"
-                        class="diagramMenuPopup">
-
-                        <div class="diagramMenuHeader">
-                            <span>Diagram Scales</span>
-                        </div>
-
-                        <!-- AFD -->
-                        <div class="diagramScaleRow">
-                            <span>AFD</span>
-                            <div class="diagramScaleControls">
-                                <input
-                                    type="text"
-                                    id="afdScaleInput"
-                                    value="0.03"
-                                    step="0.01"
-                                    min="0.001"
-                                    onchange="updateDiagramScale('afd')">
-                            </div>
-                        </div>
-
-                        <!-- SFD -->
-                        <div class="diagramScaleRow">
-                            <span>SFD</span>
-                            <div class="diagramScaleControls">
-                                <input
-                                    type="text"
-                                    id="sfdScaleInput"
-                                    value="0.20"
-                                    step="0.05"
-                                    min="0.01"
-                                    onchange="updateDiagramScale('sfd')"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- BMD -->
-                        <div class="diagramScaleRow">
-                            <span>BMD</span>
-                            <div class="diagramScaleControls">
-                                <input
-                                    type="text"
-                                    id="bmdScaleInput"
-                                    value="0.10"
-                                    step="0.05"
-                                    min="0.01"
-                                    onchange="updateDiagramScale('bmd')"
-                                >
-                            </div>
-                        </div>
-                        
-                        <!-- TMD -->
-                        <div class="diagramScaleRow">
-                            <span>TMD</span>
-                            <div class="diagramScaleControls">
-                                <input
-                                    type="text"
-                                    id="tmdScaleInput"
-                                    value="0.01"
-                                    step="0.01"
-                                    min="0.001"
-                                    onchange="updateDiagramScale('tmd')">
-                            </div>
-                        </div>
-
-                        <!-- DEFLECTION -->
-                        <div class="diagramScaleRow">
-                            <span>Deflection</span>
-                            <div class="diagramScaleControls">
-                                <input
-                                    type="text"
-                                    id="deflectionScaleInput"
-                                    value="1"
-                                    step="0.01"
-                                    min="0.01"
-                                    onchange="updateDiagramScale('deflection')"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- RESET BUTTON -->
                         <button
-                            class="resetDiagramBtn"
-                            onclick="resetDiagramScales()"
-                        >
-                            Reset Diagram Scales
+                            id="drawing2DGridBtn"
+                            class="drawing2d-tool active"
+                            onclick="toggleDrawing2DGrid()"
+                            title="Show / Hide Grid">
+                            Grid
                         </button>
 
-                        <!-- VISIBILITY -->
-                        <div class="diagramVisibilityHeader">
-                            View Options
-                        </div>
+                        <button
+                            class="drawing2d-tool"
+                            onclick="fitDrawing2DView()">
+                            Reset View
+                        </button>
 
-                        <div class="diagramToggleRow">
-                            <label>
-                                <span>Show Labels</span>
-                                <input
-                                    type="checkbox"
-                                    id="showLabelsToggle"
-                                    checked
-                                    onchange="toggleViewOptions()"
-                                >
-                            </label>
-                        </div>
+                        <div class="drawing2d-floor-control">
 
-                        <div class="diagramToggleRow">
-                            <label>
-                                <span>Show Supports</span>
-                                <input
-                                    type="checkbox"
-                                    id="showSupportsToggle"
-                                    checked
-                                    onchange="toggleViewOptions()"
-                                >
+                            <label for="drawing2DFloor">
+                                Floor
                             </label>
-                        </div>
 
-                        <div class="diagramToggleRow">
-                            <label>
-                                <span>Show Loads</span>
-                                <input
-                                    type="checkbox"
-                                    id="showLoadsToggle"
-                                    checked
-                                    onchange="toggleViewOptions()"
-                                >
-                            </label>
-                        </div>
+                            <select id="drawing2DFloor">
+                            </select>
 
-                        <div class="diagramToggleRow">
-                            <label>
-                                <span>Show Load Labels</span>
-                                <input
-                                    type="checkbox"
-                                    id="showLoadLabelsToggle"
-                                    checked
-                                    onchange="toggleViewOptions()"
-                                >
-                            </label>
                         </div>
                     </div>
                 </div>
+
+
+                <!-- THREE.JS 2D VIEWPORT -->
+                <div id="drawing2DViewport" class="drawing2d-viewport">
+
+                    <canvas
+                        id="drawing2DCanvas">
+                    </canvas>
+
+                </div>
+
+                <!-- STATUS BAR -->
+                <div class="drawing2d-status">
+
+                    <span id="drawing2DToolStatus">
+                        Tool: Select
+                    </span>
+
+                    <span id="drawing2DCoordinateStatus">
+                        X: 0.00 m &nbsp;&nbsp; Z: 0.00 m
+                    </span>
+
+                    <span id="drawing2DGridStatus">
+                        Grid: 5.00 × 4.00 m
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- GRID SETTINGS POPUP -->
+            <div id="drawing2DGridPopup"
+                class="drawing2d-grid-popup-overlay">
+
+                <div class="drawing2d-grid-popup">
+
+                    <!-- HEADER -->
+                    <div class="drawing2d-grid-popup-header">
+                        <h3>
+                            Grid Settings
+                        </h3>
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="drawing2d-grid-popup-content">
+
+
+                        <!-- TOP SYSTEM DATA -->
+                        <div class="grid-system-top">
+
+                            <!-- GRID SYSTEM -->
+                            <section class="grid-settings-section">
+
+                                <div class="grid-section-title">
+                                    Grid System
+                                </div>
+
+                                <div class="grid-form-row">
+
+                                    <label
+                                        for="gridSystemName">
+                                        Grid System Name
+                                    </label>
+
+                                    <input
+                                        id="gridSystemName"
+                                        type="text"
+                                        value="G1"
+                                        maxlength="30">
+
+                                </div>
+
+                                <div class="grid-section-title">
+                                    System Origin
+                                </div>
+
+                                <div class="grid-origin-row">
+                                    <div class="grid-origin-field">
+
+                                        <label
+                                            for="gridOriginX">
+                                            Global X
+                                        </label>
+                                        <div class="grid-input-unit">
+                                            <input
+                                                id="gridOriginX"
+                                                type="number"
+                                                step="0.01"
+                                                value="0">
+                                            <span>m</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid-origin-field">
+                                        <label
+                                            for="gridOriginZ">
+                                            Global Z
+                                        </label>
+                                        <div class="grid-input-unit">
+                                            <input
+                                                id="gridOriginZ"
+                                                type="number"
+                                                step="0.01"
+                                                value="0">
+                                            <span>m</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid-origin-field">
+
+                                        <label
+                                            for="gridRotation">
+                                            Rotation
+                                        </label>
+
+                                        <div class="grid-input-unit">
+
+                                            <input
+                                                id="gridRotation"
+                                                type="number"
+                                                step="0.1"
+                                                value="0">
+
+                                            <span>deg</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid-form-row">
+                                    <label
+                                        for="gridColor">
+                                        Grid Color
+                                    </label>
+                                    <input
+                                        id="gridColor"
+                                        class="grid-color-input"
+                                        type="color"
+                                        value="#9BA7B5">
+                                </div>
+
+                            </section>
+
+                            <!-- STORY SETTINGS -->
+                            <section class="grid-settings-section story-settings-section">
+
+                                <div class="grid-section-title">
+                                    Story Data
+                                </div>
+
+                                <div class="story-mode-tabs">
+                                    <button
+                                        type="button"
+                                        id="storySpacingModeBtn"
+                                        class="story-mode-btn active"
+                                        onclick="switchStoryMode('spacing')">
+                                        Add by Spacing
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        id="storyOrdinateModeBtn"
+                                        class="story-mode-btn"
+                                        onclick="switchStoryMode('ordinate')">
+                                        Add by Ordinate
+                                    </button>
+                                </div>
+
+                                <div id="storySpacingSection"
+                                    class="story-add-section">
+
+                                    <div class="story-add-grid">
+                                        <div class="story-input-field">
+                                            <label for="storySpacing">
+                                                Spacing
+                                            </label>
+                                            <div class="grid-input-unit">
+                                                <input
+                                                    id="storySpacing"
+                                                    type="number"
+                                                    min="0.01"
+                                                    step="0.01"
+                                                    value="3">
+                                                <span>m</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="story-input-field">
+                                            <label for="storySpacingCount">
+                                                Number to Add
+                                            </label>
+                                            <input
+                                                id="storySpacingCount"
+                                                type="number"
+                                                min="1"
+                                                max="100"
+                                                step="1"
+                                                value="1">
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="grid-add-main-btn story-add-btn"
+                                        onclick="addStoriesBySpacing()">
+                                        + Add Stories
+                                    </button>
+                                </div>
+
+                                <div id="storyOrdinateSection"
+                                    class="story-add-section"
+                                    style="display:none;">
+
+                                    <div class="story-add-grid">
+                                        <div class="story-input-field">
+                                            <label for="storyNameInput">
+                                                Story Name
+                                            </label>
+                                            <input
+                                                id="storyNameInput"
+                                                type="text"
+                                                placeholder="e.g. Second Floor">
+                                        </div>
+
+                                        <div class="story-input-field">
+
+                                            <label for="storyYInput">
+                                                Y Ordinate
+                                            </label>
+
+                                            <div class="grid-input-unit">
+                                                <input
+                                                    id="storyYInput"
+                                                    type="number"
+                                                    min="0.01"
+                                                    step="0.01"
+                                                    placeholder="e.g. 6.00">
+                                                <span>m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="grid-add-main-btn story-add-btn"
+                                        onclick="addStoryByOrdinate()">
+                                        + Add Story
+                                    </button>
+                                </div>
+
+                                <div class="story-table-card">
+                                    <div class="story-table-scroll">
+                                        <table class="story-data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Story Name</th>
+                                                    <th>Y Ordinate (m)</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="storyLineList"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- RECTANGULAR GRIDS -->
+                        <section class="grid-rectangular-section">
+
+                            <div class="grid-rectangular-header">
+
+                                <div>
+
+                                    <div class="grid-section-title">
+                                        Rectangular Grids
+                                    </div>
+
+                                    <div class="grid-subtitle">
+                                        Define plan grid lines and spacing
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- GRID ADD MODE -->
+                            <div class="grid-mode-tabs">
+
+                                <button
+                                    type="button"
+                                    class="grid-mode-btn active"
+                                    id="btnUniformMode"
+                                    onclick="switchGridMode('spacing')">
+                                    Add as Spacing
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="grid-mode-btn"
+                                    id="btnCustomMode"
+                                    onclick="switchGridMode('ordinate')">
+                                    Add as Ordinate
+                                </button>
+
+                            </div>
+
+                            <!-- ADD BY SPACING -->
+                            <div id="gridUniformSection"
+                                class="grid-uniform-section">
+
+                                <div class="grid-uniform-grid">
+
+                                    <!-- X -->
+
+                                    <div class="grid-axis-card">
+
+                                        <div class="grid-axis-card-header">
+                                            Add X Grids by Spacing
+                                        </div>
+
+                                        <div class="grid-form-row">
+
+                                            <label
+                                                for="gridXSpacing">
+                                                Spacing
+                                            </label>
+
+                                            <div class="grid-input-unit">
+
+                                                <input
+                                                    id="gridXSpacing"
+                                                    type="number"
+                                                    min="0.01"
+                                                    step="0.01"
+                                                    value="5">
+
+                                                <span>m</span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="grid-form-row">
+
+                                            <label
+                                                for="gridXCount">
+                                                Number to Add
+                                            </label>
+
+                                            <input
+                                                id="gridXCount"
+                                                type="number"
+                                                min="1"
+                                                max="100"
+                                                step="1"
+                                                value="4">
+
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            class="grid-add-main-btn"
+                                            onclick="addGridBySpacing('X')">
+                                            + Add X Grids
+                                        </button>
+
+                                    </div>
+
+
+                                    <!-- Y -->
+
+                                    <div class="grid-axis-card">
+
+                                        <div class="grid-axis-card-header">
+                                            Add Z Grids by Spacing
+                                        </div>
+
+                                        <div class="grid-form-row">
+
+                                            <label
+                                                for="gridZSpacing">
+                                                Spacing
+                                            </label>
+
+                                            <div class="grid-input-unit">
+
+                                                <input
+                                                    id="gridZSpacing"
+                                                    type="number"
+                                                    min="0.01"
+                                                    step="0.01"
+                                                    value="4">
+
+                                                <span>m</span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="grid-form-row">
+
+                                            <label
+                                                for="gridZCount">
+                                                Number to Add
+                                            </label>
+
+                                            <input
+                                                id="gridZCount"
+                                                type="number"
+                                                min="1"
+                                                max="100"
+                                                step="1"
+                                                value="5">
+
+                                        </div>
+
+
+                                        <button
+                                            type="button"
+                                            class="grid-add-main-btn"
+                                            onclick="addGridBySpacing('Z')">
+                                            + Add Z Grids
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- ADD BY ORDINATE -->
+                            <div id="gridCustomSection"
+                                class="grid-custom-section"
+                                style="display: none;">
+
+                                <div class="grid-custom-input-grid">
+
+                                    <!-- X -->
+
+                                    <div class="grid-axis-card">
+
+                                        <div class="grid-axis-card-header">
+                                            Add X Grid by Coordinate
+                                        </div>
+
+                                        <div class="grid-add-row">
+
+                                            <input
+                                                id="customXPos"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                placeholder="X ordinate (m)">
+
+                                            <button
+                                                type="button"
+                                                onclick="addCustomGridCoord('X')">
+                                                + Add
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- Y -->
+
+                                    <div class="grid-axis-card">
+
+                                        <div class="grid-axis-card-header">
+                                            Add Z Grid by Coordinate
+                                        </div>
+
+                                        <div class="grid-add-row">
+
+                                            <input
+                                                id="customZPos"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                placeholder="Z ordinate (m)">
+
+                                            <button
+                                                type="button"
+                                                onclick="addCustomGridCoord('Z')">
+                                                + Add
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- GRID DATA TABLES -->
+                            <div class="grid-data-tables">
+
+
+                                <!-- X TABLE -->
+
+                                <div class="grid-data-table-card">
+
+                                    <div class="grid-data-table-title">
+                                        X Grid Data
+                                    </div>
+
+
+                                    <div class="grid-data-table-scroll">
+
+                                        <table class="grid-data-table">
+
+                                            <thead>
+
+                                                <tr>
+
+                                                    <th>
+                                                        Grid ID
+                                                    </th>
+
+                                                    <th id="gridXValueHeader">
+                                                        X Spacing (m)
+                                                    </th>
+
+                                                </tr>
+
+                                            </thead>
+
+
+                                            <tbody
+                                                id="gridXLineList">
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- Z TABLE -->
+
+                                <div class="grid-data-table-card">
+
+                                    <div class="grid-data-table-title">
+                                        Z Grid Data
+                                    </div>
+
+
+                                    <div class="grid-data-table-scroll">
+
+                                        <table class="grid-data-table">
+
+                                            <thead>
+
+                                                <tr>
+
+                                                    <th>
+                                                        Grid ID
+                                                    </th>
+
+                                                    <th id="gridZValueHeader">
+                                                        Z Spacing (m)
+                                                    </th>
+
+                                                </tr>
+
+                                            </thead>
+
+
+                                            <tbody
+                                                id="gridZLineList">
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                        </section>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="drawing2d-grid-popup-footer">
+                        <button
+                            class="drawing2d-popup-cancel-btn"
+                            onclick="closeDrawing2DGridPopup()">
+                            Cancel
+                        </button>
+
+                        <button
+                            class="drawing2d-popup-apply-btn"
+                            onclick="applyDrawing2DGridSettings()">
+                            Apply Grid
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="structureView">
-            <canvas id="structureCanvas"></canvas>
+
+        <!-- ===================================================== -->
+        <!-- 3D VISUALIZATION PANEL -->
+        <!-- ===================================================== -->
+        <div class="visualization-panel resizable-workspace-card"
+            data-workspace-column="2">
+
+            <!-- STRUCTURE VIEW -->
+            <div class="card structure-card">
+
+                <div class="structureHeader">
+
+                    <h4>Structure View</h4>
+
+                    <div class="structureHeaderActions">
+
+                    <button
+                        id="section3DRenderBtn"
+                        class="section3DRenderBtn"
+                        onclick="toggleSection3DRendering()"
+                        style="display:none;">
+                        3D RENDERING
+                    </button>
+
+                    <button
+                        id="threeDGridBtn"
+                        class="drawing2d-tool active"
+                        onclick="toggleThreeDGrid()"
+                        title="Show / Hide Grid">
+                        GRID
+                    </button>
+
+                    <button id="resetBtn" onclick="resetView()">
+                        RESET VIEW
+                    </button>
+
+                    <!-- DIAGRAM MENU BUTTON -->
+                    <div class="diagramMenuContainer">
+
+                        <button
+                            id="diagramMenuBtn"
+                            class="diagramMenuBtn"
+                            onclick="toggleDiagramMenu()"
+                            title="Diagram Settings">
+                            ☰
+                        </button>
+                        <!-- POPUP -->
+                        <div
+                            id="diagramMenuPopup"
+                            class="diagramMenuPopup">
+
+                            <div class="diagramMenuHeader">
+                                <span>Diagram Scales</span>
+                            </div>
+
+                            <!-- AFD -->
+                            <div class="diagramScaleRow">
+                                <span>AFD</span>
+                                <div class="diagramScaleControls">
+                                    <input
+                                        type="text"
+                                        id="afdScaleInput"
+                                        value="0.03"
+                                        step="0.01"
+                                        min="0.001"
+                                        onchange="updateDiagramScale('afd')">
+                                </div>
+                            </div>
+
+                            <!-- SFD -->
+                            <div class="diagramScaleRow">
+                                <span>SFD</span>
+                                <div class="diagramScaleControls">
+                                    <input
+                                        type="text"
+                                        id="sfdScaleInput"
+                                        value="0.20"
+                                        step="0.05"
+                                        min="0.01"
+                                        onchange="updateDiagramScale('sfd')"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- BMD -->
+                            <div class="diagramScaleRow">
+                                <span>BMD</span>
+                                <div class="diagramScaleControls">
+                                    <input
+                                        type="text"
+                                        id="bmdScaleInput"
+                                        value="0.10"
+                                        step="0.05"
+                                        min="0.01"
+                                        onchange="updateDiagramScale('bmd')"
+                                    >
+                                </div>
+                            </div>
+                            
+                            <!-- TMD -->
+                            <div class="diagramScaleRow">
+                                <span>TMD</span>
+                                <div class="diagramScaleControls">
+                                    <input
+                                        type="text"
+                                        id="tmdScaleInput"
+                                        value="0.01"
+                                        step="0.01"
+                                        min="0.001"
+                                        onchange="updateDiagramScale('tmd')">
+                                </div>
+                            </div>
+
+                            <!-- DEFLECTION -->
+                            <div class="diagramScaleRow">
+                                <span>Deflection</span>
+                                <div class="diagramScaleControls">
+                                    <input
+                                        type="text"
+                                        id="deflectionScaleInput"
+                                        value="1"
+                                        step="0.01"
+                                        min="0.01"
+                                        onchange="updateDiagramScale('deflection')"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- RESET BUTTON -->
+                            <button
+                                class="resetDiagramBtn"
+                                onclick="resetDiagramScales()"
+                            >
+                                Reset Diagram Scales
+                            </button>
+
+                            <!-- VISIBILITY -->
+                            <div class="diagramVisibilityHeader">
+                                View Options
+                            </div>
+
+                            <div class="diagramToggleRow">
+                                <label>
+                                    <span>Show Labels</span>
+                                    <input
+                                        type="checkbox"
+                                        id="showLabelsToggle"
+                                        checked
+                                        onchange="toggleViewOptions()"
+                                    >
+                                </label>
+                            </div>
+
+                            <div class="diagramToggleRow">
+                                <label>
+                                    <span>Show Supports</span>
+                                    <input
+                                        type="checkbox"
+                                        id="showSupportsToggle"
+                                        checked
+                                        onchange="toggleViewOptions()"
+                                    >
+                                </label>
+                            </div>
+
+                            <div class="diagramToggleRow">
+                                <label>
+                                    <span>Show Loads</span>
+                                    <input
+                                        type="checkbox"
+                                        id="showLoadsToggle"
+                                        checked
+                                        onchange="toggleViewOptions()"
+                                    >
+                                </label>
+                            </div>
+
+                            <div class="diagramToggleRow">
+                                <label>
+                                    <span>Show Load Labels</span>
+                                    <input
+                                        type="checkbox"
+                                        id="showLoadLabelsToggle"
+                                        checked
+                                        onchange="toggleViewOptions()"
+                                    >
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="structureView">
+                <canvas id="structureCanvas"></canvas>
+                </div>
+
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div id="actionButtonArea">
+
+                <button id="previousBtn" onclick="previousPage()">PREVIOUS</button>
+
+                <button id="nextBtn" onclick="nextPage()">NEXT</button>
+
             </div>
 
         </div>
 
-        <!-- ACTION BUTTONS -->
-        <div id="actionButtonArea">
+        <div class="workspace-resize-handle"
+            data-resize-boundary="0"></div>
 
-            <button id="previousBtn" onclick="previousPage()">PREVIOUS</button>
-
-            <button id="nextBtn" onclick="nextPage()">NEXT</button>
-
-        </div>
+        <div class="workspace-resize-handle"
+            data-resize-boundary="1"></div>
 
     </div>
 
@@ -2991,6 +3287,8 @@
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/workspace_resize.js') }}"></script>
 
 </body>
 </html>

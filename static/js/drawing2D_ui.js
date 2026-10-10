@@ -100,7 +100,7 @@ function saveDrawing2DGridSettings() {
         document.getElementById(
             "gridColor"
         )?.value ||
-        "#9BA7B5";
+        "#B5B6B8";
 }
 
 
@@ -2179,9 +2179,20 @@ function setDrawing2DTool(tool) {
         tool;
 
 
+    if (
+        tool !== "beamBetweenPoints" &&
+        typeof clearDrawing2DBeamBetweenPointsPreview ===
+            "function"
+    ) {
+
+        clearDrawing2DBeamBetweenPointsPreview();
+
+    }
+
+
     document
         .querySelectorAll(
-            ".drawing2d-tool"
+            ".drawing2d-tool, .page-tool-btn"
         )
         .forEach(
             button =>
@@ -2194,13 +2205,22 @@ function setDrawing2DTool(tool) {
     const buttonMap = {
 
         select:
-            "drawing2DSelectBtn",
+            "pageToolSelect",
 
         beam:
-            "drawing2DBeamBtn",
+            "pageToolBeam",
+
+        beamBetweenPoints:
+            "pageToolBeamPoint",
 
         column:
-            "drawing2DColumnBtn"
+            "pageToolColumn",
+
+        deleteBeam:
+            "pageToolDeleteBeam",
+
+        deleteColumn:
+            "pageToolDeleteColumn"
     };
 
 
@@ -2310,20 +2330,46 @@ function changeDrawing2DFloor() {
 // STARTUP
 // =====================================================
 
+
 document.addEventListener(
     "DOMContentLoaded",
     () => {
-
         document
-            .getElementById(
-                "drawing2DFloor"
-            )
+            .getElementById("drawing2DFloor")
             ?.addEventListener(
                 "change",
                 changeDrawing2DFloor
             );
 
-
+        // Create the Three.js canvas/renderer first.
         initDrawing2D();
+
+        // Initialize nodes before member visuals and events.
+        if (
+            typeof initializeDrawing2DNodeSystem === "function"
+        ) {
+            initializeDrawing2DNodeSystem();
+        }
+
+        if (
+            typeof updateDrawing2DNodeToolState === "function"
+        ) {
+            updateDrawing2DNodeToolState(
+                window.drawing2D.activeTool
+            );
+        }
+
+        // Explicitly initialize the member events.
+        if (
+            typeof window.initializeDrawing2DMemberEvents ===
+            "function"
+        ) {
+            window.initializeDrawing2DMemberEvents();
+        } else {
+            console.error(
+                "[2D Members] Initializer is missing. " +
+                "Check that drawing2D_members.js loaded successfully."
+            );
+        }
     }
 );

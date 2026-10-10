@@ -346,16 +346,47 @@
     display:flex;
     justify-content:left;
     gap:10px;
-    padding:10px;
+    padding:5px;
     background:#ddd;
+    align-items: center;
 }
 
 
 .nav-bar button{
-    padding:6px 12px;
+    padding:6px 6px;
 }
 
 .nav-bar button.active-page{
     background:#163a8c;
     box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+
+
+/* ==========================================================
+   STORY CREATION SCOPE
+   ========================================================== */
+
+.story-scope-control {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.story-scope-control label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #263238;
+}
+
+.story-scope-control select {
+    min-width: 135px;
+    padding: 6px 10px;
+    border: 1px solid #b8c2d1;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #263238;
+    font-size: 13px;
+    cursor: pointer;
 }

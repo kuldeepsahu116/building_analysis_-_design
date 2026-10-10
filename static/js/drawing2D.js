@@ -44,7 +44,7 @@ window.drawing2D = {
 
         bubbleSize: 1250,
 
-        color: "#000000",
+        color: "#C2C0C0",
     },
 
     // STORY SETTINGS
@@ -2418,5 +2418,16 @@ function handleDrawing2DMouseMove(event) {
                 `X: ${point.x.toFixed(2)} m    ` +
                 `Z: ${point.z.toFixed(2)} m`;
         }
+    }
+
+    if (
+        typeof handleDrawing2DBeamBetweenPointsMouseMove ===
+        "function"
+    ) {
+
+        handleDrawing2DBeamBetweenPointsMouseMove(
+            event
+        );
+
     }
 }

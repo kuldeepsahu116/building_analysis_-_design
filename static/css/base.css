@@ -31,7 +31,7 @@ body{
 }
 
 .card:hover{
-    transform:translateY(-3px);
+    transform:none;
     box-shadow:0 8px 20px rgba(0,0,0,0.12);
 }
 
@@ -45,7 +45,7 @@ body{
    ========================================================== */
 
 h4{
-    margin:0 0 5px;
+    margin:0 0 0;
     font-size:14px;
 }
 
@@ -58,9 +58,11 @@ input,
 textarea,
 select{
     width:100%;
+    box-sizing: border-box;
     font-size:12px;
     padding:4px;
     border:1px solid #ccc;
+    min-width: 0;
 }
 
 input:hover,

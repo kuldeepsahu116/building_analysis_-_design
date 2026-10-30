@@ -442,3 +442,28 @@
 .page-workspace.is-resizing *{
     cursor:col-resize !important;
 }
+
+
+/* ==========================================================
+   SUPPORT PAGE LAYOUT
+   ========================================================== */
+
+/* Remove the first-page tool sidebar completely */
+.main-container.support-page-active {
+    grid-template-columns: 0.03fr 0.97fr;
+}
+
+.main-container.support-page-active > .page-tool-sidebar {
+    display: block;
+}
+
+.main-container.support-page-active .page-workspace {
+    width: 100%;
+    min-width: 0;
+}
+
+/* Make sure the support page itself uses the full left panel */
+.main-container.support-page-active .left-panel {
+    min-width: 0;
+    min-height: 0;
+}

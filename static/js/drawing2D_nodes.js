@@ -513,9 +513,7 @@ function findDrawing2DGridIntersection(
 // CREATE NODE VISUAL
 // =====================================================
 
-function createDrawing2DNodeVisual(
-    node
-) {
+function createDrawing2DNodeVisual(node) {
 
     const geometry =
         new THREE.CircleGeometry(
@@ -527,11 +525,8 @@ function createDrawing2DNodeVisual(
 
     const material =
         new THREE.MeshBasicMaterial({
-
             color: 0x1565c0,
-
-            side:
-                THREE.DoubleSide
+            side: THREE.DoubleSide
         });
 
 
@@ -545,30 +540,20 @@ function createDrawing2DNodeVisual(
     mesh.rotation.x =
         -Math.PI / 2;
 
-
     mesh.position.set(
-
         Number(node.x),
-
         0.04,
-
         Number(node.z)
     );
 
-
     mesh.userData = {
-
         type: "node",
-
-        nodeId:
-            node.nodeId,
-
-        uid:
-            node.uid
+        nodeId: node.nodeId,
+        uid: node.uid
     };
 
-
     return mesh;
+
 }
 
 
@@ -993,6 +978,257 @@ function updateDrawing2DNodeToolState(
 }
 
 
+function handleDrawing2DSupportAssignmentClick(event){
+
+    const supportPage =
+        getPageElement(PAGES.SUPPORT);
+
+    if (
+        !supportPage ||
+        supportPage.style.display === "none"
+    ){
+        return;
+    }
+
+
+    if(
+        supportAssignmentMode !==
+        "mouse"
+    ){
+        return;
+    }
+
+
+    if(
+        typeof selectedSupportIndex ===
+        "undefined" ||
+        selectedSupportIndex < 0
+    ){
+        return;
+    }
+
+
+    const canvas =
+        window.drawing2D
+            ?.renderer
+            ?.domElement;
+
+    const camera =
+        window.drawing2D
+            ?.camera;
+
+    const nodeGroup =
+        window.drawing2DNodeState
+            ?.group;
+
+
+    if(
+        !canvas ||
+        !camera ||
+        !nodeGroup
+    ){
+        return;
+    }
+
+
+    // =====================================================
+    // RAYCAST ONLY NODE VISUALS
+    // =====================================================
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const mouse =
+        new THREE.Vector2(
+            (
+                (event.clientX - rect.left) /
+                rect.width
+            ) * 2 - 1,
+
+            -(
+                (
+                    event.clientY - rect.top
+                ) /
+                rect.height
+            ) * 2 + 1
+        );
+
+
+    const raycaster =
+        new THREE.Raycaster();
+
+
+    raycaster.setFromCamera(
+        mouse,
+        camera
+    );
+
+
+    const intersections =
+        raycaster.intersectObjects(
+            nodeGroup.children,
+            true
+        );
+
+
+    if(
+        !intersections.length
+    ){
+        return;
+    }
+
+
+    const hit =
+        intersections[0].object;
+
+
+    const nodeId =
+        hit.userData?.nodeId;
+
+
+    if(
+        nodeId === undefined ||
+        nodeId === null
+    ){
+        return;
+    }
+
+
+    const node =
+        window.nodeDatabase.find(
+            item =>
+                String(item.nodeId) ===
+                String(nodeId)
+        );
+
+
+    if(!node){
+        return;
+    }
+
+
+    // =====================================================
+    // ONE STORY
+    // =====================================================
+
+    if(
+        getSupportAssignmentScope() ===
+        "one"
+    ){
+
+        const story =
+            getCurrentDrawing2DStory();
+
+
+        if(
+            !story ||
+            String(node.storyUid) !==
+            String(story.id)
+        ){
+            return;
+        }
+
+
+        const id =
+            String(node.nodeId);
+
+
+        const index =
+            supportMouseSelectedNodes
+                .findIndex(
+                    value =>
+                        String(value) ===
+                        id
+                );
+
+
+        if(index >= 0){
+
+            supportMouseSelectedNodes
+                .splice(index,1);
+
+        }
+        else{
+
+            supportMouseSelectedNodes
+                .push(id);
+
+        }
+
+    }
+
+
+    // =====================================================
+    // ALL STORIES
+    //
+    // Same grid intersection on every story
+    // =====================================================
+
+    else{
+
+        const matchingNodes =
+            window.nodeDatabase.filter(
+                item =>
+
+                    String(item.xGridUid) ===
+                    String(node.xGridUid)
+
+                    &&
+
+                    String(item.zGridUid) ===
+                    String(node.zGridUid)
+            );
+
+
+        const matchingIds =
+            matchingNodes.map(
+                item =>
+                    String(item.nodeId)
+            );
+
+
+        const alreadySelected =
+            matchingIds.every(
+                id =>
+                    supportMouseSelectedNodes
+                        .map(String)
+                        .includes(id)
+            );
+
+
+        if(alreadySelected){
+
+            supportMouseSelectedNodes =
+                supportMouseSelectedNodes.filter(
+                    id =>
+                        !matchingIds.includes(
+                            String(id)
+                        )
+                );
+
+        }
+        else{
+
+            supportMouseSelectedNodes =
+                [
+                    ...new Set([
+                        ...supportMouseSelectedNodes,
+                        ...matchingIds
+                    ])
+                ];
+
+        }
+
+    }
+
+
+    updateSupportAssignmentPanel();
+
+    refreshStructuralSelection();
+
+}
+
 // =====================================================
 // STARTUP
 // =====================================================
@@ -1019,6 +1255,25 @@ document.addEventListener(
 
 
                 initializeDrawing2DNodeSystem();
+
+                const canvas =
+                    window.drawing2D
+                        ?.renderer
+                        ?.domElement;
+
+                if (
+                    canvas &&
+                    !window.drawing2DSupportAssignmentEventsBound
+                ) {
+
+                    canvas.addEventListener(
+                        "click",
+                        handleDrawing2DSupportAssignmentClick
+                    );
+
+                    window.drawing2DSupportAssignmentEventsBound =
+                        true;
+                }
 
                 updateDrawing2DNodeToolState(
                     window.drawing2D.activeTool

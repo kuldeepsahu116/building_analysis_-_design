@@ -2,51 +2,144 @@
 // APPLICATION STARTUP
 // =====================================================
 
+
+/* =====================================================
+   DEFAULT PROJECT DATA
+   Loaded on every page refresh
+   ===================================================== */
+
+function initializeDefaultProjectData() {
+
+    // -------------------------------------------------
+    // 1. DEFAULT MATERIAL PROPERTY
+    // -------------------------------------------------
+
+    materialDatabase.length = 0;
+
+    materialDatabase.push({
+        name: "Concrete",
+        concreteGrade: 25,
+        E: 25000,
+        G: 10416.67,
+        assignedMembers: []
+    });
+
+
+    // -------------------------------------------------
+    // 2. DEFAULT SECTION PROPERTY
+    // -------------------------------------------------
+
+    sectionDatabase.length = 0;
+
+    const defaultSectionId =
+        typeof generateSectionId === "function"
+            ? generateSectionId()
+            : "SEC_DEFAULT";
+
+    sectionDatabase.push({
+        id: defaultSectionId,
+        name: "RCC 300x500",
+        materialName: "Concrete",
+        designProperties: {
+            steelGrade: "Fe500",
+            effectiveCover: 30
+        },
+        type: "rectangular",
+
+        dimensions: {
+            b: 0.30,
+            d: 0.50
+        },
+
+        A: 0.15,
+        Iyy: 0.001125,
+        Izz: 0.003125,
+        J: 0.00281737,
+
+        assignedMembers: []
+    });
+
+    // Use the default section for newly created members.
+    window.activeMemberSectionId = defaultSectionId;
+
+
+    // -------------------------------------------------
+    // 3. DEFAULT GRID SETTINGS
+    // -------------------------------------------------
+
+    window.drawing2D.gridMode = "spacing";
+
+    window.drawing2D.grid = {
+        initialized: false,
+        xSpacing: 5,
+        zSpacing: 4,
+        xCount: 4,
+        zCount: 5,
+        xLines: [],
+        zLines: []
+    };
+
+    window.drawing2D.gridSettings = {
+        name: "G1",
+        originX: 0,
+        originZ: 0,
+        rotation: 0,
+        bubbleSize: 1250,
+        color: "#C2C0C0"
+    };
+
+
+    // -------------------------------------------------
+    // 4. DEFAULT STORIES / FLOORS
+    // -------------------------------------------------
+
+    window.drawing2D.floor = "F0";
+
+    window.drawing2D.storySettings = {
+        addMode: "spacing",
+        nextId: 5,
+
+        stories: [
+            { id: "F0", name: "Base",          y: 0  },
+            { id: "F1", name: "Ground Floor",  y: 3  },
+            { id: "F2", name: "First Floor",   y: 6  },
+            { id: "F3", name: "Second Floor",  y: 9  },
+            { id: "F4", name: "Third Floor",   y: 12 }
+        ]
+    };
+
+
+    // -------------------------------------------------
+    // 5. SYNCHRONIZE GRID INPUTS WITH DEFAULTS
+    // -------------------------------------------------
+
+    const gridInputs = {
+        gridXSpacing: 5,
+        gridZSpacing: 4,
+        gridXCount: 4,
+        gridZCount: 5
+    };
+
+    Object.entries(gridInputs).forEach(([id, value]) => {
+        const input = document.getElementById(id);
+
+        if (input) {
+            input.value = value;
+        }
+    });
+}
+
+
 window.onload = function(){
 
-    showPage(1);
+    initializeDefaultProjectData();
 
-    // addNode(0,0,0,0);
-    // addNode(1,0,1,0);
-    // addNode(2,0,2,0);
-    // addNode(3,5,2,0);
-    // addNode(4,5,0,0);
-    // addNode(5,0,2,5);
-    // addNode(6,5,2,5);
-    // addNode(7,0,0,5);
-    // addNode(8,5,0,5);
+    applyDrawing2DGridSettings();
 
-    // addMember("A",0,1);
-    // addMember("B",1,2);
-    // addMember("C",2,3);
-    // addMember("D",3,4);
-    // addMember("E",2,5);
-    // addMember("F",3,6);
-    // addMember("G",5,6);
-    // addMember("H",5,7);
-    // addMember("I",6,8);
+    renderMemberSectionDropdown();
 
-    // materialDatabase.push({
-    //     name : "Steel",
-    //     E : 200000,
-    //     G : 77000,
-    //     assignedMembers:["A","B","C","D","E","F","G","H","I"]
-    // });
+    showPage(PAGES.MODEL);
 
-    // sectionDatabase.push({
-    //     name : "Section 0.3*0.5",
-    //     type : "rectangular",
-    //     dimensions : {
-    //         b : 0.3,
-    //         d : 0.5},
-    //     A : 0.15,
-    //     Iyy : 0.001125,
-    //     Izz : 0.003125,
-    //     J : 0.00281737,
-    //     assignedMembers:["A","B","C","D","E","F","G","H","I"]
-    // });
-
-    // supportDatabase.push({
     //     type: "support",
     //     ux: true,
     //     uy: true,
@@ -79,9 +172,6 @@ window.onload = function(){
     //     rzValue: 0,
     //     assignedNodes: ["7","8"]
     // });
-
-    renderMaterialCards();
-    renderSectionCards();
 
     renderSupportCards();
 

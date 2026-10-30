@@ -118,12 +118,35 @@
 
 <!-- NAVIGATION -->
 <div class="nav-bar">
-    <button onclick="showPage(1)">Model</button>
-    <button onclick="showPage(2)">Properties</button>
-    <button onclick="showPage(3)">Supports</button>
-    <button onclick="showPage(4)">Loads</button>
-    <button onclick="showPage(5)">Results</button>
-    <button onclick="showPage(6)">Report</button>
+    <button
+        data-page="model"
+        onclick="showPage(PAGES.MODEL)">
+        Model
+    </button>
+
+    <button
+        data-page="support"
+        onclick="showPage(PAGES.SUPPORT)">
+        Supports
+    </button>
+
+    <button
+        data-page="load"
+        onclick="showPage(PAGES.LOAD)">
+        Loads
+    </button>
+
+    <button
+        data-page="results"
+        onclick="showPage(PAGES.RESULTS)">
+        Analysis
+    </button>
+
+    <button
+        data-page="report"
+        onclick="showPage(PAGES.REPORT)">
+        Report
+    </button>
 
     <div class="story-scope-control">
         <label for="storyCreationScope">Modeling Scope</label>
@@ -141,7 +164,7 @@
 
     <aside class="page-tool-sidebar" aria-label="Page tools">
 
-        <!-- ================= PAGE 1 TOOLS ================= -->
+        <!-- ================= Model PAGE TOOLS ================= -->
         <div class="page-tool-set" data-tool-page="1">
 
             <!-- GRID SETTINGS -->
@@ -521,6 +544,107 @@
 
         </div>
 
+        <!-- ================= RESULTS PAGE TOOLS ================= -->
+        <div class="page-tool-set" data-tool-page="4" style="display:none;">
+
+            <!-- REACTIONS -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn active-result-tab"
+                title="Reactions" aria-label="Reactions"
+                onclick="showResultTab('reactionTab',this); setDiagram('structure');">
+                <img src="/static/images/result-icons/reaction.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <!-- DISPLACEMENTS -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Displacements" aria-label="Displacements"
+                onclick="showResultTab('displacementTab',this); setDiagram('structure');">
+                <img src="/static/images/result-icons/displacement.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <!-- MEMBER FORCES -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Member Forces" aria-label="Member Forces"
+                onclick="showResultTab('memberForceTab',this); setDiagram('structure');">
+                <img src="/static/images/result-icons/member-forces.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <div class="page-tool-separator"></div>
+
+            <!-- AFD: AXIAL FORCE (FX) -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Axial Force Diagram (FX)" aria-label="Axial Force Diagram FX"
+                onclick="showResultTab('afdTab',this); setDiagram('afd');">
+                <img src="/static/images/result-icons/afd.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <!-- SFD: VY (FY) -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Shear Force Diagram - FY" aria-label="SFD FY"
+                onclick="showResultTab('sfdYTab',this); setDiagram('sfd_y');">
+                <img src="/static/images/result-icons/sfd-vy.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <!-- SFD: VZ (FZ) -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Shear Force Diagram - FZ" aria-label="SFD FZ"
+                onclick="showResultTab('sfdZTab',this); setDiagram('sfd_z');">
+                <img src="/static/images/result-icons/sfd-vz.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <div class="page-tool-separator"></div>
+
+            <!-- BMD: MX (TMD) -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Torsional Moment Diagram (MX)" aria-label="TMD MX"
+                onclick="showResultTab('tmdTab',this); setDiagram('tmd');">
+                <img src="/static/images/result-icons/tmd.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <!-- BMD: MY -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Bending Moment Diagram - MY" aria-label="BMD MY"
+                onclick="showResultTab('bmdYTab',this); setDiagram('bmd_y');">
+                <img src="/static/images/result-icons/bmd-my.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <!-- BMD: MZ -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Bending Moment Diagram - MZ" aria-label="BMD MZ"
+                onclick="showResultTab('bmdZTab',this); setDiagram('bmd_z');">
+                <img src="/static/images/result-icons/bmd-mz.png"
+                    alt="" class="result-icon">
+            </button>
+
+            <div class="page-tool-separator"></div>
+
+            <!-- DEFLECTION -->
+            <button type="button"
+                class="page-tool-btn results-tool-btn"
+                title="Deflection" aria-label="Deflection"
+                onclick="showResultTab('deflectionTab',this); setDiagram('deflection');">
+                <img src="/static/images/result-icons/deflection.png"
+                    alt="" class="result-icon">
+            </button>
+
+        </div>
+
     </aside>
 
     <!-- PAGE WORKSPACE -->
@@ -529,8 +653,8 @@
         <!-- LEFT PANEL -->
         <div class="left-panel">
 
-            <!-- ================= PAGE 1 ================= -->
-            <div class="page" id="page1">
+            <!-- ================= MODEL PAGE ================= -->
+            <div class="page" data-page="model">
 
                 <div class="page1-layout">
 
@@ -636,18 +760,41 @@
                         <!-- PROPERTY ASSIGNMENT PANEL -->
                         <div class="card model-placeholder-card">
                             <div class="member-property-panel">
-                                <h4>Member Property</h4>
 
-                                <select
-                                    id="memberSectionSelect"
-                                    onchange="setActiveMemberSection(this.value)">
-                                    <option value="">No section defined</option>
-                                </select>
+                                <div id="memberPropertyCreationView" hidden>
 
-                                <p class="member-property-help">
-                                    The selected section will be assigned to newly
-                                    created members. Existing members will remain unchanged.
-                                </p>
+                                    <h4>Member Property</h4>
+
+                                    <select
+                                        id="memberSectionSelect"
+                                        onchange="setActiveMemberSection(this.value)">
+                                        <option value="">No section defined</option>
+                                    </select>
+
+                                    <p class="member-property-help">
+                                        The selected section will be assigned to newly
+                                        created members. Existing members will remain unchanged.
+                                    </p>
+                                </div>
+
+                                <!-- Layout for Select tool -->
+                                <div id="memberPropertySelectionView">
+
+                                    <div class="member-property-selection-header">
+
+                                        <h4>Selected Member Property</h4>
+
+                                        <button
+                                            type="button"
+                                            id="editMemberPropertiesBtn"
+                                            class="member-property-edit-btn"
+                                            onclick="openMemberPropertiesEditPopup()">
+                                            Edit
+                                        </button>
+                                    </div>
+
+                                    <div id="memberPropertySelectionContent"></div>
+                                </div>
                             </div>
                         </div>
                         
@@ -678,8 +825,9 @@
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>E (kN/m²)</th>
-                                        <th>G (kN/m²)</th>
+                                        <th>Grade</th>
+                                        <th>E (MPa)</th>
+                                        <th>G (MPa)</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -708,14 +856,25 @@
                             id="materialName"
                             placeholder="e.g. M25 Concrete">
 
-                        <label for="materialE">Young's Modulus (E)</label>
+                        <label for="materialConcreteGrade">Grade of Concrete</label>
+                        <select id="materialConcreteGrade"
+                                onchange="updateConcreteMaterialModuli()">                    
+                            <option value="15">M15</option>
+                            <option value="20">M20</option>
+                            <option value="25">M25</option>
+                            <option value="30">M30</option>
+                            <option value="35">M35</option>
+                            <option value="40">M40</option>
+                        </select>
+
+                        <label for="materialE">Young's Modulus, E (MPa)</label>
                         <input
                             type="number"
                             id="materialE"
                             step="any"
                             placeholder="Enter E">
 
-                        <label for="materialG">Shear Modulus (G)</label>
+                        <label for="materialG">Shear Modulus, G (MPa)</label>
                         <input
                             type="number"
                             id="materialG"
@@ -793,9 +952,19 @@
                                     placeholder="e.g. Beam 300x500">
 
                                 <label for="sectionMaterial">Material</label>
-                                <select id="sectionMaterial">
-                                    <option value="">Select material</option>
-                                </select>
+
+                                <div class="section-material-row">
+                                    <select id="sectionMaterial">
+                                        <option value="">Select material</option>
+                                    </select>
+
+                                    <button type="button"
+                                            id="sectionDesignPropertiesButton"
+                                            class="section-design-properties-btn"
+                                            onclick="openSectionDesignPropertiesPopup()">
+                                        Design Properties
+                                    </button>
+                                </div>
 
                                 <label for="sectionType">Cross Section Type</label>
                                 <select
@@ -871,681 +1040,1007 @@
                 </div>
             </div>
 
+            <!-- SECTION DESIGN PROPERTIES POPUP -->
+            <div class="popup-overlay section-design-overlay"
+                id="sectionDesignPropertiesPopup"
+                style="display:none;">
 
-            <!-- ================= PAGE 3 ================= -->
-            <div class="page" id="page3" style="display:none;">
+                <div class="section-design-popup" role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="sectionDesignPopupTitle">
 
-                <!-- SUPPORTS -->
-                <div class="card page3-full">
+                    <div class="section-design-popup-header">
+                        <h3 id="sectionDesignPopupTitle">Design Properties</h3>
 
-                    <h4>Supports</h4>
-
-                    <!-- SUPPORT CARD AREA -->
-                    <div
-                        class="support-card-container"
-                        id="supportCardContainer">
+                        <button type="button"
+                                class="popup-close-btn"
+                                onclick="closeSectionDesignPropertiesPopup()">
+                            &times;
+                        </button>
                     </div>
 
-                    <!-- SUPPORT CARD TEMPLATE -->
-                    <div
-                        id="supportCardTemplate"
-                        style="display:none;">
+                    <p class="section-design-help">
+                        Set the default reinforcement properties for this section.
+                    </p>
 
-                        <div class="support-item">
+                    <label for="sectionDesignSteelGrade">
+                        Reinforcement Steel Grade
+                    </label>
+                    <select id="sectionDesignSteelGrade">
+                        <option value="Fe250">Fe250</option>
+                        <option value="Fe415">Fe415</option>
+                        <option value="Fe500">Fe500</option>
+                        <option value="Fe550">Fe550</option>
+                    </select>
 
-                            <div class="support-card-layout">
+                    <label for="sectionDesignEffectiveCover">
+                        Effective Cover (mm)
+                    </label>
+                    <input type="number"
+                        id="sectionDesignEffectiveCover"
+                        min="0"
+                        step="any"
+                        value="30">
 
-                                <!-- LEFT -->
-                                <div class="support-left">
+                    <div class="popup-buttons">
+                        <button type="button"
+                                onclick="saveSectionDesignProperties()">
+                            Save Properties
+                        </button>
 
-                                    <div class="support-title"></div>
+                        <button type="button"
+                                class="delete-btn"
+                                onclick="closeSectionDesignPropertiesPopup()">
+                            Cancel
+                        </button>
+                    </div>
 
-                                    <div class="support-description"></div>
+                </div>
+            </div>
 
+            <!-- MEMBER PROPERTY EDIT POPUP -->
+            <div id="memberPropertiesEditPopup" class="popup-overlay"
+                style="display:none;">
+
+                <div class="popup-card member-properties-edit-card">
+
+                    <div class="member-properties-edit-header">
+                        <h3>Edit Member Properties</h3>
+
+                        <button type="button"
+                                class="popup-close-btn"
+                                onclick="closeMemberPropertiesEditPopup()">
+                            &times;
+                        </button>
+                    </div>
+
+                    <div id="memberPropertiesEditMemberInfo"></div>
+
+                    <div class="member-properties-edit-layout">
+
+                        <!-- LEFT: NODE INFORMATION -->
+                        <section class="member-edit-section">
+                            <h4>Node Information</h4>
+
+                            <div class="member-edit-inner-grid">
+
+                                <div class="member-properties-edit-field">
+                                    <label>Start Node</label>
+                                    <input id="editMemberStartNode" readonly>
                                 </div>
 
-                                <!-- RIGHT -->
-                                <div class="support-right">
-
-                                    <!-- ASSIGN -->
-                                    <div class="support-assignment-section">
-
-                                        <input
-                                            class="support-assignment-input"
-                                            placeholder="Assign nodes">
-
-                                        <button class="assign-support-btn">
-                                            Assign
-                                        </button>
-
-                                        <button
-                                            class="assign-all-btn"
-                                            type="button">
-                                            Assign All
-                                        </button>
-
-                                    </div>
-
-                                    <!-- CURRENT ASSIGNMENT -->
-                                    <div class="support-assignment"></div>
-
-                                    <!-- ACTION BUTTONS -->
-                                    <div class="support-buttons">
-
-                                        <button class="edit-support-btn">
-                                            Edit
-                                        </button>
-
-                                        <button class="delete-btn">
-                                            Delete
-                                        </button>
-
-                                    </div>
-
+                                <div class="member-properties-edit-field">
+                                    <label>End Node</label>
+                                    <input id="editMemberEndNode" readonly>
                                 </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Start Node Coordinates (X, Y, Z)</label>
+                                    <input id="editMemberStartCoordinates" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>End Node Coordinates (X, Y, Z)</label>
+                                    <input id="editMemberEndCoordinates" readonly>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        <!-- RIGHT: SECTION AND MEMBER PROPERTIES -->
+                        <section class="member-edit-section">
+                            <h4>Member Properties</h4>
+
+                            <div class="member-edit-inner-grid">
+
+                                <div class="member-properties-edit-field">
+                                    <label>Section</label>
+                                    <select
+                                        id="editMemberSection"
+                                        onchange="updateMemberEditSectionDetails()">
+                                    </select>
+                                    <small>Changing the section requires confirmation.</small>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Material</label>
+                                    <input id="editMemberMaterial" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Width / Section Property b</label>
+                                    <input id="editMemberB" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Depth / Section Property D</label>
+                                    <input id="editMemberD" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Area A</label>
+                                    <input id="editMemberA" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Iyy</label>
+                                    <input id="editMemberIyy" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Izz</label>
+                                    <input id="editMemberIzz" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Torsional Constant J</label>
+                                    <input id="editMemberJ" readonly>
+                                </div>
+
+                                <div class="member-properties-edit-field">
+                                    <label>Beta Angle (degrees)</label>
+                                    <input
+                                        id="editMemberBeta"
+                                        type="number"
+                                        step="any">
+                                </div>
+
+                            </div>
+                        </section>
+
+                    </div>
+
+                    <div class="member-properties-edit-actions">
+                        <button type="button"
+                                class="secondary-btn"
+                                onclick="closeMemberPropertiesEditPopup()">
+                            Cancel
+                        </button>
+
+                        <button type="button"
+                                class="primary-btn"
+                                onclick="saveMemberPropertiesEdit()">
+                            Apply Changes
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- ================= SUPPPORT PAGE ================= -->
+            <div class="page" data-page="support" style="display:none;">
+
+                <div class="support-page-layout">
+
+                    <!-- TOP 50% : SUPPORTS -->
+                    <div class="card support-list-card">
+
+                        <div class="support-card-header">
+                            <h4>Supports</h4>
+                        </div>
+
+                        <!-- ADDED SUPPORTS -->
+                        <div
+                            class="support-card-container"
+                            id="supportCardContainer">
+                        </div>
+
+                        <!-- SUPPORT ACTIONS -->
+                        <div class="support-actions">
+
+                            <button
+                                type="button"
+                                id="supportDeleteBtn"
+                                class="support-action-btn support-delete-btn"
+                                onclick="deleteSelectedSupport()"
+                                disabled>
+                                Delete
+                            </button>
+
+                            <button
+                                type="button"
+                                id="supportEditBtn"
+                                class="support-action-btn"
+                                onclick="editSelectedSupport()"
+                                disabled>
+                                Edit
+                            </button>
+
+                            <button
+                                type="button"
+                                id="supportAddBtn"
+                                class="support-action-btn"
+                                onclick="openSupportPopup()">
+                                Add
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM 50% : ASSIGN SUPPORT -->
+                    <div class="card support-assignment-card">
+
+                        <div class="support-assignment-header">
+                            <h4>Assign Support</h4>
+
+                            <span
+                                id="selectedSupportLabel"
+                                class="selected-support-label">
+                                No support selected
+                            </span>
+                        </div>
+
+                        <!-- ACTIVE ASSIGNMENT CONTENT -->
+                        <div
+                            id="supportAssignmentContent"
+                            class="support-assignment-content"
+                            hidden>
+
+                            <!-- CURRENTLY ASSIGNED NODES -->
+                            <div class="support-assignment-group">
+
+                                <label>Assigned Nodes</label>
+                                <div
+                                    id="supportAssignedNodes"
+                                    class="support-assigned-nodes">
+
+                                    <span class="support-no-nodes">
+                                        No nodes assigned
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- NODE INPUT -->
+                            <div class="support-assignment-group">
+
+                                <label for="supportNodeAssignmentInput">
+                                    Selected Nodes
+                                </label>
+                                <input
+                                    type="text"
+                                    id="supportNodeAssignmentInput"
+                                    class="support-node-assignment-input"
+                                    placeholder="No nodes selected"
+                                    disabled>
+                            </div>
+
+                            <!-- ASSIGNMENT MODE BUTTONS -->
+                            <div class="support-assignment-mode-buttons">
+
+                                <button
+                                    type="button"
+                                    id="supportAssignAllBtn"
+                                    onclick="assignAllSupportNodes()"
+                                    disabled>
+                                    Assign All
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="supportMouseAssignBtn"
+                                    onclick="setSupportMouseAssignmentMode()"
+                                    disabled>
+                                    Use Mouse
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="supportEditListBtn"
+                                    onclick="setSupportEditListMode()"
+                                    disabled>
+                                    Edit List
+                                </button>
+
+                            </div>
+
+                            <!-- FINAL ASSIGN BUTTON -->
+                            <button
+                                type="button"
+                                id="assignSelectedSupportBtn"
+                                class="support-final-assign-btn"
+                                onclick="assignSelectedSupportNodes()"
+                                disabled>
+
+                                Assign Selected Nodes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUPPORT CARD TEMPLATE -->
+                <div id="supportCardTemplate"
+                    style="display:none;">
+
+                    <div class="support-item">
+
+                        <div class="support-card-layout">
+
+                            <!-- SUPPORT INFORMATION -->
+                            <div class="support-left">
+
+                                <div class="support-title"></div>
+
+                                <div class="support-description"></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SUPPORT POPUP -->
+            <div class="popup-overlay" id="supportPopup">
+
+                <div class="popup-card support-popup">
+
+                        <h3 id="supportPopupTitle">
+                        Add Support
+                    </h3>
+
+                    <!-- CLOSE -->
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeSupportPopup()">
+                        &times;
+                    </button>
+
+                    <!-- TOP NAVIGATION -->
+
+                    <div class="support-popup-tabs">
+
+                        <button
+                            id="supportTab"
+                            class="support-tab active"
+                            onclick="switchSupportType('support')">
+
+                            Support
+
+                        </button>
+
+                        <button
+                            id="supportDeflectionTab"
+                            class="support-tab"
+                            onclick="switchSupportType('support_deflection')">
+
+                            Support with Deflection
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- CONTENT -->
+
+                    <div class="support-popup-content">
+
+                        <!-- DOF -->
+
+                        <div class="support-dof-section">
+
+                            <label>
+                                Degrees of Freedom to Restrain
+                            </label>
+
+                            <div class="support-dof-grid">
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportUx"
+                                                onchange="updateSupportValueInputs()">
+                                            Ux
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportUy"
+                                                onchange="updateSupportValueInputs()">
+                                            Uy
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportUz"
+                                                onchange="updateSupportValueInputs()">
+                                            Uz
+                                        </label>
+
+                                        <!-- ROTATIONS -->
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportRx"
+                                                onchange="updateSupportValueInputs()">
+                                            θx
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportRy"
+                                                onchange="updateSupportValueInputs()">
+                                            θy
+                                        </label>
+
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                id="supportRz"
+                                                onchange="updateSupportValueInputs()">
+                                            θz
+                                        </label>
 
                             </div>
 
                         </div>
 
-                    </div>
 
-                    <!-- ADD SUPPORT -->
-                    <button onclick="openSupportPopup()">
-                        + Add Support
-                    </button>
+                        <!-- PRESCRIBED VALUES -->
+
+                        <div
+                            id="supportDeflectionValues"
+                            class="support-deflection-values">
+
+                            <label>
+                                Prescribed Displacement / Rotation
+                            </label>
+
+                            <div class="support-value-row">
+
+                                <label>
+                                    Ux
+                                    <input
+                                        type="text"
+                                        id="supportUxValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    Uy
+                                    <input
+                                        type="text"
+                                        id="supportUyValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    Uz
+                                    <input
+                                        type="text"
+                                        id="supportUzValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    θx
+                                    <input
+                                        type="text"
+                                        id="supportRxValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    θy
+                                    <input
+                                        type="text"
+                                        id="supportRyValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                                <label>
+                                    θz
+                                    <input
+                                        type="text"
+                                        id="supportRzValue"
+                                        value="0"
+                                        step="any">
+                                </label>
+
+                            </div>
+
+                            <small>
+                                Values are entered in global coordinates.
+                            </small>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="popup-buttons">
+
+                            <button onclick="saveSupport()">
+                                Save
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="closeSupportPopup()">
+
+                                Cancel
+
+                            </button>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
+            </div>
 
-                <!-- ================================================= -->
-                <!-- SUPPORT POPUP -->
-                <!-- ================================================= -->
 
-                <div
-                    class="popup-overlay"
-                    id="supportPopup">
 
-                    <div class="popup-card support-popup">
+            <!-- ================= LOAD PAGE ================= -->
+            <div class="page" data-page="load" style="display:none;">
 
-                        <!-- CLOSE -->
-                        <button
-                            class="popup-close-btn"
-                            onclick="closeSupportPopup()">
-                            &times;
-                        </button>
+                <div class="load-page-layout">
+                    <!-- LOADS DEFINATION CARD -->
+                    <div class="card load-page-card">
 
-                        <!-- TOP NAVIGATION -->
+                        <h4>Loads</h4>
 
-                        <div class="support-popup-tabs">
+                        <!-- LOAD CARD AREA -->
+                        <div
+                            class="load-card-container"
+                            id="loadCardContainer">
+
+                        </div>
+
+                        <!-- LOAD CARD TEMPLATE -->
+                        <div id="loadCardTemplate" style="display:none;">
+
+                            <div class="load-item">
+
+                                <div class="load-title"></div>
+
+                                <div class="load-description"></div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- LOAD ACTIONS -->
+                        <div class="load-actions">
 
                             <button
-                                id="supportTab"
-                                class="support-tab active"
-                                onclick="switchSupportType('support')">
-
-                                Support
-
+                                type="button"
+                                id="loadDeleteBtn"
+                                class="load-action-btn load-delete-btn"
+                                onclick="deleteSelectedLoad()"
+                                disabled>
+                                Delete
                             </button>
 
                             <button
-                                id="supportDeflectionTab"
-                                class="support-tab"
-                                onclick="switchSupportType('support_deflection')">
+                                type="button"
+                                id="loadEditBtn"
+                                class="load-action-btn"
+                                onclick="editSelectedLoad()"
+                                disabled>
+                                Edit
+                            </button>
 
-                                Support with Deflection
-
+                            <button
+                                type="button"
+                                class="load-action-btn"
+                                onclick="openLoadPopup()">
+                                Add
                             </button>
 
                         </div>
 
+                    </div>
 
-                        <!-- CONTENT -->
+                    <!-- ASSIGN LOAD CARD -->
+                    <div class="card load-assignment-card">
 
-                        <div class="support-popup-content">
+                        <div class="load-assignment-header">
 
-                            <h3 id="supportPopupTitle">
-                                Add Support
-                            </h3>
+                            <h4>Assign Load</h4>
 
+                            <span
+                                id="selectedLoadLabel"
+                                class="selected-load-label">
+                                No load selected
+                            </span>
 
-                            <!-- DOF -->
-
-                            <div class="support-dof-section">
-
-                                <label>
-                                    Degrees of Freedom to Restrain
-                                </label>
-
-                                <div class="support-dof-grid">
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    id="supportUx"
-                                                    onchange="updateSupportValueInputs()">
-                                                Ux
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    id="supportUy"
-                                                    onchange="updateSupportValueInputs()">
-                                                Uy
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    id="supportUz"
-                                                    onchange="updateSupportValueInputs()">
-                                                Uz
-                                            </label>
-
-                                            <!-- ROTATIONS -->
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    id="supportRx"
-                                                    onchange="updateSupportValueInputs()">
-                                                θx
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    id="supportRy"
-                                                    onchange="updateSupportValueInputs()">
-                                                θy
-                                            </label>
-
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    id="supportRz"
-                                                    onchange="updateSupportValueInputs()">
-                                                θz
-                                            </label>
-
-                                </div>
-
-                            </div>
+                        </div>
 
 
-                            <!-- PRESCRIBED VALUES -->
+                        <!-- ASSIGNED ITEMS -->
+                        <div class="load-assignment-group">
+
+                            <label id="loadAssignedLabel">
+                                Assigned Nodes
+                            </label>
 
                             <div
-                                id="supportDeflectionValues"
-                                class="support-deflection-values">
+                                id="loadAssignedItems"
+                                class="load-assigned-items">
 
-                                <label>
-                                    Prescribed Displacement / Rotation
-                                </label>
-
-                                <div class="support-value-row">
-
-                                    <label>
-                                        Ux
-                                        <input
-                                            type="text"
-                                            id="supportUxValue"
-                                            value="0"
-                                            step="any">
-                                    </label>
-
-                                    <label>
-                                        Uy
-                                        <input
-                                            type="text"
-                                            id="supportUyValue"
-                                            value="0"
-                                            step="any">
-                                    </label>
-
-                                    <label>
-                                        Uz
-                                        <input
-                                            type="text"
-                                            id="supportUzValue"
-                                            value="0"
-                                            step="any">
-                                    </label>
-
-                                    <label>
-                                        θx
-                                        <input
-                                            type="text"
-                                            id="supportRxValue"
-                                            value="0"
-                                            step="any">
-                                    </label>
-
-                                    <label>
-                                        θy
-                                        <input
-                                            type="text"
-                                            id="supportRyValue"
-                                            value="0"
-                                            step="any">
-                                    </label>
-
-                                    <label>
-                                        θz
-                                        <input
-                                            type="text"
-                                            id="supportRzValue"
-                                            value="0"
-                                            step="any">
-                                    </label>
-
-                                </div>
-
-                                <small>
-                                    Values are entered in global coordinates.
-                                </small>
-
-                            </div>
-
-
-                            <!-- BUTTONS -->
-
-                            <div class="popup-buttons">
-
-                                <button onclick="saveSupport()">
-                                    Save
-                                </button>
-
-                                <button
-                                    class="delete-btn"
-                                    onclick="closeSupportPopup()">
-
-                                    Cancel
-
-                                </button>
+                                <span class="load-no-items">
+                                    No items assigned
+                                </span>
 
                             </div>
 
                         </div>
 
-                    </div>
 
-                </div>
+                        <!-- EDIT ASSIGNMENT -->
+                        <div class="load-assignment-group">
 
-            </div>
+                            <label id="loadAssignmentInputLabel">
+                                Selected Nodes
+                            </label>
 
+                            <input
+                                type="text"
+                                id="loadAssignmentInput"
+                                class="load-assignment-input"
+                                placeholder="No nodes selected"
+                                disabled>
 
-            <!-- ================= PAGE 4 ================= -->
-            <div class="page" id="page4" style="display:none;">
-
-                <!-- LOADS -->
-                <div class="card page3-full">
-
-                    <h4>Loads</h4>
-
-                    <!-- LOAD CARD AREA -->
-                    <div
-                        class="load-card-container"
-                        id="loadCardContainer">
-
-                    </div>
-
-                    <!-- LOAD CARD TEMPLATE -->
-                    <div
-                        id="loadCardTemplate"
-                        style="display:none;">
-
-                        <div class="load-item">
-                            <div class="load-card-layout">
-
-                                <!-- LEFT -->
-                                <div class="load-left">
-                                    <div class="load-title"></div>
-                                    <div class="load-description"></div>
-                                </div>
-
-                                <!-- RIGHT -->
-                                <div class="load-right">
-
-                                    <!-- ASSIGN -->
-                                    <div class="load-assignment-section">
-                                        <input
-                                            class="load-assignment-input"
-                                            placeholder="Assign nodes/members">
-                                        <button class="assign-load-btn">
-                                            Assign
-                                        </button>
-
-                                        <button
-                                            class="assign-all-btn"
-                                            type="button">
-                                            Assign All
-                                        </button>
-
-                                    </div>
-
-                                    <!-- CURRENT ASSIGNMENT -->
-                                    <div class="load-assignment"></div>
-
-                                    <!-- ACTION BUTTONS -->
-                                    <div class="load-buttons">
-                                        <button class="edit-load-btn">
-                                            Edit
-                                        </button>
-                                        <button class="delete-btn">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                    </div>
 
-                    <!-- ADD LOAD -->
-                    <button onclick="openLoadPopup()">
-                        + Add Load
-                    </button>
 
-                </div>
+                        <!-- ASSIGNMENT MODE BUTTONS -->
+                        <div class="load-assignment-buttons">
 
-                <!-- ================================================= -->
-                <!-- LOAD POPUP -->
-                <!-- ================================================= -->
+                            <button type="button"
+                                    id="loadAssignAllBtn"
+                                    onclick="assignAllSelectedLoad()"
+                                    disabled>
+                                Assign All
+                            </button>
 
-                <div
-                    class="popup-overlay"
-                    id="loadPopup">
+                            <button type="button"
+                                    id="loadMouseAssignBtn"
+                                    onclick="setLoadMouseAssignmentMode()"
+                                    disabled>
+                                Use Mouse
+                            </button>
 
-                    <div class="popup-card popup-grid">
+                            <button type="button"
+                                    id="loadEditListBtn"
+                                    onclick="setLoadEditListMode()"
+                                    disabled>
+                                Edit List
+                            </button>
 
-                        <button
-                            class="popup-close-btn"
-                            onclick="closeLoadPopup()">
-                            &times;
+                        </div>
+
+                        <button type="button"
+                                id="loadAssignBtn"
+                                class="load-final-assign-btn"
+                                onclick="assignSelectedLoad()"
+                                disabled>
+                            Assign Selected
                         </button>
 
-                        <!-- LEFT -->
-                        <div class="load-instruction-panel">
-                            <h4>Instructions</h4>
-                            <div id="loadInstructionContent">
-                                Select load type to view instructions.
-                            </div>
+                    </div>
+                </div>
 
+            </div>
+
+            <!-- LOAD POPUP -->
+            <div class="popup-overlay" id="loadPopup">
+
+                <div class="popup-card popup-grid">
+
+                    <button
+                        class="popup-close-btn"
+                        onclick="closeLoadPopup()">
+                        &times;
+                    </button>
+
+                    <!-- LEFT -->
+                    <div class="load-instruction-panel">
+                        <h4>Instructions</h4>
+                        <div id="loadInstructionContent">
+                            Select load type to view instructions.
                         </div>
-                        <!-- RIGHT -->
-                        <div class="popup-input-panel">
-
-                            <h3>Add Load</h3>
-
-                            <!-- CATEGORY -->
-                            <label>Category</label>
-
-                            <select
-                                id="loadCategory"
-                                onchange="updateLoadPopup()">
-
-                                <option value="nodal">
-                                    Nodal Load
-                                </option>
-
-                                <option value="member">
-                                    Member Load
-                                </option>
-
-                            </select>
-
-
-
-                            <!-- TYPE -->
-                            <label>Type</label>
-
-                            <select
-                                id="loadType"
-                                onchange="updateLoadFields()">
-
-                                <!-- Dynamic -->
-                            </select>
-
-
-                            <!-- COORDINATE SYSTEM -->
-                            <div id="coordinateSystemGroup">
-
-                                <label>Coordinate System</label>
-
-                                <select id="loadCoordinateSystem">
-
-                                    <option value="local">
-                                        Local
-                                    </option>
-
-                                    <option value="global">
-                                        Global
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
-                            <!-- FORCE COMPONENTS -->
-                            <div id="forceComponentsGroup">
-
-                                <label>Force Components</label>
-
-                                <div class="load-axis-grid">
-
-                                    <div>
-                                        <label for="loadFx">Fx</label>
-
-                                        <input
-                                            id="loadFx"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadFy">Fy</label>
-
-                                        <input
-                                            id="loadFy"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadFz">Fz</label>
-
-                                        <input
-                                            id="loadFz"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- MOMENT COMPONENTS -->
-                            <div id="momentComponentsGroup">
-
-                                <label>Moment Components</label>
-
-                                <div class="load-axis-grid">
-
-                                    <div>
-                                        <label for="loadMx">Mx</label>
-
-                                        <input
-                                            id="loadMx"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadMy">My</label>
-
-                                        <input
-                                            id="loadMy"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadMz">Mz</label>
-
-                                        <input
-                                            id="loadMz"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- TRAPEZOIDAL LOAD -->
-                            <div id="trapezoidalComponentsGroup">
-
-                                <label>Start Load</label>
-
-                                <div class="load-axis-grid">
-
-                                    <div>
-                                        <label for="loadWx1">wx₁</label>
-
-                                        <input
-                                            id="loadWx1"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadWy1">wy₁</label>
-
-                                        <input
-                                            id="loadWy1"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadWz1">wz₁</label>
-
-                                        <input
-                                            id="loadWz1"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                </div>
-
-                                <label>End Load</label>
-
-                                <div class="load-axis-grid">
-
-                                    <div>
-                                        <label for="loadWx2">wx₂</label>
-
-                                        <input
-                                            id="loadWx2"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadWy2">wy₂</label>
-
-                                        <input
-                                            id="loadWy2"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadWz2">wz₂</label>
-
-                                        <input
-                                            id="loadWz2"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- DISTRIBUTED LOAD -->
-                            <div id="distributedLoadComponentsGroup">
-
-                                <label>Load Intensity</label>
-
-                                <div class="load-axis-grid">
-
-                                    <div>
-                                        <label for="loadWx">wx</label>
-
-                                        <input
-                                            id="loadWx"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadWy">wy</label>
-
-                                        <input
-                                            id="loadWy"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label for="loadWz">wz</label>
-
-                                        <input
-                                            id="loadWz"
-                                            type="text"
-                                            placeholder="0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- a -->
-                            <div id="aGroup">
-
-                                <label>a</label>
-
-                                <input 
-                                id="loadA"
-                                type="text">
-
-                            </div>
-
-                            <!-- b -->
-                            <div id="bGroup">
-
-                                <label>b</label>
-
-                                <input 
-                                id="loadB"
-                                type="text">
-
-                            </div>
-
-
-                            <!-- BUTTONS -->
-                            <div class="popup-buttons">
-
-                                <button onclick="saveLoad()">
-                                    Save
-                                </button>
-
-                                <button
-                                    class="delete-btn"
-                                    onclick="closeLoadPopup()">
-
-                                    Cancel
-
-                                </button>
-
-                            </div>
-
-                        </div>    
 
                     </div>
+                    <!-- RIGHT -->
+                    <div class="popup-input-panel">
+
+                        <h3>Add Load</h3>
+
+                        <!-- CATEGORY -->
+                        <label>Category</label>
+
+                        <select
+                            id="loadCategory"
+                            onchange="updateLoadPopup()">
+
+                            <option value="nodal">
+                                Nodal Load
+                            </option>
+
+                            <option value="member">
+                                Member Load
+                            </option>
+
+                        </select>
+
+
+
+                        <!-- TYPE -->
+                        <label>Type</label>
+
+                        <select
+                            id="loadType"
+                            onchange="updateLoadFields()">
+
+                            <!-- Dynamic -->
+                        </select>
+
+
+                        <!-- COORDINATE SYSTEM -->
+                        <div id="coordinateSystemGroup">
+
+                            <label>Coordinate System</label>
+
+                            <select id="loadCoordinateSystem">
+
+                                <option value="local">
+                                    Local
+                                </option>
+
+                                <option value="global">
+                                    Global
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- FORCE COMPONENTS -->
+                        <div id="forceComponentsGroup">
+
+                            <label>Force Components</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadFx">Fx</label>
+
+                                    <input
+                                        id="loadFx"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadFy">Fy</label>
+
+                                    <input
+                                        id="loadFy"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadFz">Fz</label>
+
+                                    <input
+                                        id="loadFz"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MOMENT COMPONENTS -->
+                        <div id="momentComponentsGroup">
+
+                            <label>Moment Components</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadMx">Mx</label>
+
+                                    <input
+                                        id="loadMx"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadMy">My</label>
+
+                                    <input
+                                        id="loadMy"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadMz">Mz</label>
+
+                                    <input
+                                        id="loadMz"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TRAPEZOIDAL LOAD -->
+                        <div id="trapezoidalComponentsGroup">
+
+                            <label>Start Load</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadWx1">wx₁</label>
+
+                                    <input
+                                        id="loadWx1"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWy1">wy₁</label>
+
+                                    <input
+                                        id="loadWy1"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWz1">wz₁</label>
+
+                                    <input
+                                        id="loadWz1"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+
+                            <label>End Load</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadWx2">wx₂</label>
+
+                                    <input
+                                        id="loadWx2"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWy2">wy₂</label>
+
+                                    <input
+                                        id="loadWy2"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWz2">wz₂</label>
+
+                                    <input
+                                        id="loadWz2"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DISTRIBUTED LOAD -->
+                        <div id="distributedLoadComponentsGroup">
+
+                            <label>Load Intensity</label>
+
+                            <div class="load-axis-grid">
+
+                                <div>
+                                    <label for="loadWx">wx</label>
+
+                                    <input
+                                        id="loadWx"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWy">wy</label>
+
+                                    <input
+                                        id="loadWy"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                                <div>
+                                    <label for="loadWz">wz</label>
+
+                                    <input
+                                        id="loadWz"
+                                        type="text"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- a -->
+                        <div id="aGroup">
+
+                            <label>a</label>
+
+                            <input 
+                            id="loadA"
+                            type="text">
+
+                        </div>
+
+                        <!-- b -->
+                        <div id="bGroup">
+
+                            <label>b</label>
+
+                            <input 
+                            id="loadB"
+                            type="text">
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+                        <div class="popup-buttons">
+
+                            <button onclick="saveLoad()">
+                                Save
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="closeLoadPopup()">
+
+                                Cancel
+
+                            </button>
+
+                        </div>
+
+                    </div>    
 
                 </div>
 
             </div>
 
-            <!-- ============================================== -->
             <!-- ASSIGN ALL CONFIRMATION POPUP -->
-            <!-- ============================================== -->
-
             <div class="popup-overlay" id="assignAllConfirmPopup">
 
                 <div class="popup-card assign-confirm-popup">
@@ -1585,8 +2080,8 @@
             </div>
 
 
-            <!-- ================= PAGE 5 ================= -->
-            <div class="page" id="page5" style="display:none;">
+            <!-- ================= RESULT PAGE ================= -->
+            <div class="page" data-page="results" style="display:none;">
 
                 <div class="results-column">
 
@@ -1604,72 +2099,7 @@
                     </div>
 
                     <!-- RESULTS LAYOUT -->
-                    <div class="results-layout"
-                        style="display:none;">
-
-                        <!-- SIDEBAR -->
-                        <div class="results-sidebar">
-                            <button
-                                class="results-nav-btn active-result-tab"
-                                onclick="showResultTab('reactionTab',this); setDiagram('structure');">
-                                Reactions
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('displacementTab',this); setDiagram('structure');">
-                                Displacements
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('memberForceTab',this); setDiagram('structure');">
-                                Member Forces
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('afdTab',this); setDiagram('afd');">
-                                AFD
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('sfdYTab',this); setDiagram('sfd_y');">
-                                SFD - Vy
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('sfdZTab',this); setDiagram('sfd_z');">
-                                SFD - Vz
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('bmdYTab',this); setDiagram('bmd_y');">
-                                BMD - My
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('bmdZTab',this); setDiagram('bmd_z');">
-                                BMD - Mz
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('tmdTab',this); setDiagram('tmd');">
-                                TMD
-                            </button>
-
-                            <button
-                                class="results-nav-btn"
-                                onclick="showResultTab('deflectionTab',this); setDiagram('deflection');">
-                                Deflection
-                            </button>
-
-                        </div>
+                    <div class="results-layout" style="display:none;">
 
                         <!-- RESULT CONTENT -->
                         <div class="results-content">
@@ -1823,10 +2253,6 @@
 
                     <span id="drawing2DCoordinateStatus">
                         X: 0.00 m &nbsp;&nbsp; Z: 0.00 m
-                    </span>
-
-                    <span id="drawing2DGridStatus">
-                        Grid: 5.00 × 4.00 m
                     </span>
 
                 </div>
@@ -2632,10 +3058,10 @@
 
 
 <!-- ===================================================== -->
-<!-- REPORT WORKSPACE — PAGE 6 -->
+<!-- REPORT WORKSPACE — REPORT PAGE -->
 <!-- ===================================================== -->
 
-<div class="report-workspace" id="page6">
+<div class="report-workspace" id="reportWorkspace" data-page="report">
 
     <div class="report-left">
 
@@ -2872,6 +3298,8 @@
 <script src="{{ url_for('static', filename='js/drawing2D_ui.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/drawing2D_nodes.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/drawing2D_supports.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/drawing2D_members.js') }}"></script>
 

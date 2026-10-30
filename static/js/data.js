@@ -104,16 +104,6 @@ function getMembers(){
                 c[2].children[0].value;
 
 
-            // FIND ASSIGNED MATERIAL
-            const material =
-                materialDatabase.find(
-                    m =>
-                        m.assignedMembers
-                            .map(String)
-                            .includes(String(name))
-                );
-
-
             // FIND THE SECTION STORED ON THIS MEMBER ROW
             const sectionId =
                 rows[i].dataset.sectionId || null;
@@ -123,6 +113,24 @@ function getMembers(){
                     s => String(s.id) === String(sectionId)
                 )
                 : null;
+
+            // FIND MATERIAL THROUGH THE ASSIGNED SECTION
+            const material =
+                (section?.materialName
+                    ? materialDatabase.find(
+                        m =>
+                            String(m.name).trim().toLowerCase() ===
+                            String(section.materialName).trim().toLowerCase()
+                    )
+                    : null)
+                || materialDatabase.find(
+                    m =>
+                        Array.isArray(m.assignedMembers) &&
+                        m.assignedMembers
+                            .map(String)
+                            .includes(String(name))
+                )
+                || null;
 
 
             // Backward compatibility for members created

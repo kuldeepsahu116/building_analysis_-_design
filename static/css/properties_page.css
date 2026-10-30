@@ -536,3 +536,100 @@ input{
 #betaPropertyContent > button{
     flex-shrink:0;
 }
+
+
+/* Material dropdown and Design Properties button */
+.section-material-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.section-material-row select {
+    flex: 1;
+    min-width: 0;
+}
+
+.section-design-properties-btn {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding: 5px 8px;
+    white-space: nowrap;
+    font-size: 11px;
+}
+
+/* Nested section design popup */
+.section-design-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.section-design-popup {
+    position: relative;
+    width: 360px;
+    max-width: 92vw;
+    box-sizing: border-box;
+    padding: 22px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-design-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.section-design-popup-header h3 {
+    margin: 0;
+    color: #1f3c88;
+    font-size: 16px;
+}
+
+.section-design-popup .popup-close-btn {
+    position: static;
+    margin: 0;
+    padding: 2px 8px;
+}
+
+.section-design-help {
+    margin: 0 0 4px;
+    color: #666;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.section-design-popup label {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.section-design-popup input,
+.section-design-popup select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.section-design-popup .popup-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.section-design-popup .popup-buttons button {
+    flex: 1;
+}

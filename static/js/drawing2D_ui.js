@@ -2178,6 +2178,12 @@ function setDrawing2DTool(tool) {
     window.drawing2D.activeTool =
         tool;
 
+    // Synchronize shared selection with the active drawing tool.
+    if (tool !== "select") {
+        clearStructuralSelection();
+    } else {
+        refreshStructuralSelection();
+    }
 
     if (
         tool !== "beamBetweenPoints" &&
@@ -2260,6 +2266,11 @@ function setDrawing2DTool(tool) {
 
         updateDrawing2DMemberToolState(tool);
     }
+
+    if (typeof updateMemberPropertyPanel === "function") {
+        
+        updateMemberPropertyPanel(tool);
+    }
 }
 
 
@@ -2323,6 +2334,8 @@ function changeDrawing2DFloor() {
 
         refreshDrawing2DMembers();
     }
+
+    renderDrawing2DSupports();
 }
 
 

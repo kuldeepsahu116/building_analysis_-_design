@@ -61,6 +61,16 @@ function setDrawing2DStoryScope(scope) {
         );
     }
 
+    if(
+        typeof updateSupportAssignmentPanel ===
+        "function"
+    ){
+
+        updateSupportAssignmentPanel();
+
+    }
+
+
     const status =
         document.getElementById("drawing2DToolStatus");
 
@@ -3587,6 +3597,10 @@ function getDrawing2DMemberDragMouseWorldPoint(event) {
 
 function handleDrawing2DRectangleMouseDown(event) {
 
+    if (event.button !== 0) {
+        return;
+    }
+
     const drawing = window.drawing2D;
     const canvas = drawing?.renderer?.domElement;
     const structureCard = document.querySelector(
@@ -3596,7 +3610,8 @@ function handleDrawing2DRectangleMouseDown(event) {
     if (!canvas || !structureCard) return;
 
     // Rectangle creation is allowed only for beam/column tools.
-    if (!["beam", "column", "deleteBeam","deleteColumn"].includes(drawing.activeTool)) {
+    if (!["select", "beam", "column", "deleteBeam","deleteColumn"]
+        .includes(drawing.activeTool)) {
         return;
     }
 
@@ -3644,6 +3659,8 @@ function handleDrawing2DRectangleMouseDown(event) {
     state.moved = false;
     state.suppressNextClick = false;
 
+    state.ctrlKey = Boolean(event.ctrlKey);
+
     const controls = window.drawing2D?.controls;
 
     state.previousControlsEnabled =
@@ -3671,6 +3688,9 @@ function handleDrawing2DRectangleMouseMove(event) {
 }
 
 function handleDrawing2DRectangleMouseUp(event) {
+
+    const tool = window.drawing2D.activeTool;
+
     const state = window.drawing2DMemberState.rectangleDrag;
     if (!state.active) return;
 
@@ -3708,7 +3728,15 @@ function handleDrawing2DRectangleMouseUp(event) {
         maxZ: Math.max(startPoint.z, endWorldPoint.z)
     };
 
-    const tool = window.drawing2D.activeTool;
+    // Select mode: rectangle selection; Ctrl adds to existing selection.
+    if (tool === "select") {
+        const additive = Boolean(event.ctrlKey || state.ctrlKey);
+
+        selectStructuralItemsInBounds(bounds, additive);
+
+        clearDrawing2DRectanglePreview();
+        return;
+    }
 
     if (tool === "beam") {
         updateDrawing2DMemberStatus(

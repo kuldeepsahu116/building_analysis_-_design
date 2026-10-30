@@ -25,11 +25,12 @@ window.threeLoadGroup = null;
 // PAGE VIEW UPDATE
 // =============================================
 
-function updateViewForPage(page) {
+function updateViewForPage(page){
 
-    if (page === 1) {
+    if(
+        page === getPageNumber(PAGES.MODEL)
+    ){
 
-        // Model page
         window.viewOptions.labels = true;
         window.viewOptions.supports = false;
         window.viewOptions.loads = false;
@@ -37,19 +38,10 @@ function updateViewForPage(page) {
 
     }
 
-    else if (page ===2) {
+    else if(
+        page === getPageNumber(PAGES.SUPPORT)
+    ){
 
-        // Properties page
-        window.viewOptions.labels = true;
-        window.viewOptions.supports = false;
-        window.viewOptions.loads = false;
-        window.showResultDiagrams = false;
-
-    }
-
-    else if (page === 3) {
-
-        // Supports & Loads page
         window.viewOptions.labels = true;
         window.viewOptions.supports = true;
         window.viewOptions.loads = false;
@@ -57,9 +49,10 @@ function updateViewForPage(page) {
 
     }
 
-    else if (page === 4) {
+    else if(
+        page === getPageNumber(PAGES.LOAD)
+    ){
 
-        // Supports & Loads page
         window.viewOptions.labels = true;
         window.viewOptions.supports = true;
         window.viewOptions.loads = true;
@@ -67,17 +60,19 @@ function updateViewForPage(page) {
 
     }
 
-    else {
+    else if(
+        page === getPageNumber(PAGES.RESULTS)
+    ){
 
-        // Results / Report
         window.viewOptions.labels = true;
         window.viewOptions.supports = true;
-        window.viewOptions.loads = true;
-        window.showResultDiagrams = true;
+        window.viewOptions.loads =true;
+        window.showResultDiagrams =true;
     }
 
 
     drawStructure();
+
 }
 
 function toThreeVector(c) {
@@ -796,9 +791,15 @@ function drawThreeMember(member, nodes) {
 
     line.userData = {
         type: "member",
-        name: member.name,
-        start: member.start,
-        end: member.end
+        name: String(member.name ?? member.id ?? ""),
+        memberType: String(
+            member.memberType ??
+            member.type ??
+            member.kind ??
+            ""
+        ).toLowerCase(),
+        start: String(member.start),
+        end: String(member.end)
     };
 
 

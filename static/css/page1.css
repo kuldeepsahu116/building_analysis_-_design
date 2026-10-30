@@ -259,25 +259,25 @@
 
 
 .member-property-panel {
-    padding: 10px 12px;
+    padding: 0px 12px;
 }
 
 .member-property-panel h4 {
-    margin: 0 0 10px;
-    font-size: 13px;
+    margin: 0 0 5px;
+    font-size: 12px;
 }
 
 .member-property-panel label {
     display: block;
     margin-bottom: 5px;
-    font-size: 12px;
+    font-size: 5px;
     font-weight: 600;
 }
 
 .member-property-panel select {
     width: 100%;
     box-sizing: border-box;
-    padding: 7px 9px;
+    padding: 2px 9px;
     border: 1px solid #c9ced8;
     border-radius: 5px;
     background: #fff;
@@ -292,6 +292,254 @@
 }
 
 
+/* Member Property panel */
+.member-property-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    min-width: 0;
+}
+
+.member-property-panel [hidden] {
+    display: none !important;
+}
+
+.member-property-selection-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1f3c88;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.member-property-selected-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.member-property-selected-name span {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.member-property-selected-name strong {
+    color: #1f3c88;
+    font-size: 14px;
+}
+
+.member-property-detail {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.member-property-detail span {
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+.member-property-detail strong {
+    text-align: right;
+    overflow-wrap: anywhere;
+    font-weight: 600;
+    color: #222;
+}
+
+.member-property-empty {
+    margin: 0;
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+/* Selection card header and Edit button */
+.member-property-selection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+}
+
+.member-property-selection-header h4 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.member-property-edit-btn {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 2px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    background: #fff;
+    color: #1f3c88;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.member-property-edit-btn:hover {
+    background: #eff6ff;
+}
+
+/* Edit popup */
+/* Main popup: wider landscape layout */
+.member-properties-edit-card {
+    width: min(2180px, 150vw);
+    max-height: 90vh;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 24px;
+    box-sizing: border-box;
+}
+
+/* Use the same overlay behavior as Material and Section popups */
+#memberPropertiesEditPopup {
+    display: none;
+}
+
+/* Customize only the Edit popup card */
+#memberPropertiesEditPopup .member-properties-edit-card {
+    width: min(1100px, 96vw);
+    max-width: 1100px;
+    max-height: 88vh;
+    margin: auto;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Popup title */
+.member-properties-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.member-properties-edit-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+#memberPropertiesEditMemberInfo {
+    margin-bottom: 12px;
+    color: #1f3c88;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Two main sections side by side */
+.member-properties-edit-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Node information and member properties sections */
+.member-edit-section {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.member-edit-section h4 {
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f3c88;
+    font-size: 14px;
+}
+
+/* Two columns INSIDE each main section */
+.member-edit-inner-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 12px;
+    row-gap: 12px;
+    min-width: 0;
+}
+
+.member-properties-edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.member-properties-edit-field label {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.member-properties-edit-field input,
+.member-properties-edit-field select {
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    padding: 7px 9px;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.member-properties-edit-field input[readonly] {
+    background: #f8fafc;
+    color: #475569;
+}
+
+.member-properties-edit-field small {
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+/* Footer buttons */
+.member-properties-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* Narrow screens */
+@media (max-width: 760px) {
+    .member-properties-edit-card {
+        width: 95vw;
+        max-height: 90vh;
+        padding: 14px;
+    }
+
+    .member-properties-edit-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+}
+
+@media (max-width: 420px) {
+    .member-edit-inner-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
 
 /* Property manager popup */
 .property-manager-popup {
@@ -404,6 +652,7 @@
     min-height: 0;
     padding: 18px;
     gap: 14px;
+    margin: auto;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -415,7 +664,7 @@
 
 /* Section popup: narrow table + wider form area */
 #sectionPopup .section-manager-popup {
-    grid-template-columns: minmax(220px, 1.2fr) minmax(0, 1.7fr);
+    grid-template-columns: minmax(220px, 1.4fr) minmax(0, 1.7fr);
     width: min(1100px, 96vw);
     max-height: 88vh;
 }
@@ -549,6 +798,63 @@
 
 
 
+/* =====================================================
+   MATERIAL & SECTION PROPERTY TABLE SCROLL
+   Keep popup/card height fixed when rows increase
+   ===================================================== */
+
+#materialPopup .property-manager-popup,
+#sectionPopup .section-manager-popup {
+    min-height: 0;
+    overflow: hidden;
+}
+
+#materialPopup .property-manager-list,
+#sectionPopup .property-manager-list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+#materialPopup .property-manager-table-wrap,
+#sectionPopup .property-manager-table-wrap {
+    flex: 1 1 0;
+    height: 0;
+    min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* Keep table dimensions based on its content */
+#materialPopup .property-manager-table,
+#sectionPopup .property-manager-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Keep column headings visible while scrolling */
+#materialPopup .property-manager-table th,
+#sectionPopup .property-manager-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f3f5f8;
+}
+
+/* Avoid long tables forcing the popup to grow */
+#materialPopup .property-manager-list,
+#sectionPopup .property-manager-list,
+#materialPopup .property-manager-table-wrap,
+#sectionPopup .property-manager-table-wrap {
+    box-sizing: border-box;
+}
+
+
+
 
 /* =====================================================
    STRUCTURAL SELECTION — TABLE ROW HIGHLIGHT
@@ -580,3 +886,26 @@
     outline: 1px solid #91c4f0;
     outline-offset: -1px;
 }
+
+
+/* Selected structural rows */
+#nodesTable tr.structural-row-selected,
+#beamsTable tr.structural-row-selected,
+#columnsTable tr.structural-row-selected {
+    background-color: #cfe8ff !important;
+    outline: 1px solid #91c4f0;
+    outline-offset: -1px;
+}
+
+#nodesTable tr.structural-row-selected td,
+#beamsTable tr.structural-row-selected td,
+#columnsTable tr.structural-row-selected td {
+    background-color: #cfe8ff !important;
+}
+
+#nodesTable tr.structural-row-selected input,
+#beamsTable tr.structural-row-selected input,
+#columnsTable tr.structural-row-selected input {
+    background-color: #cfe8ff !important;
+}
+

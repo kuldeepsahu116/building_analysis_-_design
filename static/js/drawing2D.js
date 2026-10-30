@@ -270,6 +270,14 @@ function initDrawing2D() {
 
         controls.screenSpacePanning = true;
 
+        // LEFT mouse button is reserved for structural tools.
+        // RIGHT mouse button pans/translates the 2D view.
+        controls.mouseButtons = {
+            LEFT: null,
+            MIDDLE: THREE.MOUSE.DOLLY,
+            RIGHT: THREE.MOUSE.PAN
+        };
+
         window.drawing2D.controls =
             controls;
     }
@@ -300,6 +308,16 @@ function initDrawing2D() {
         "mousemove",
         handleDrawing2DMouseMove
     );
+
+    // Structural selection: use the actual initialized canvas.
+    if (!canvas.dataset.selectionListenerAttached) {
+        canvas.addEventListener(
+            "pointerup",
+            handleStructural2DPointerUp
+        );
+
+        canvas.dataset.selectionListenerAttached = "true";
+    }
 
 
     // -------------------------------------------------

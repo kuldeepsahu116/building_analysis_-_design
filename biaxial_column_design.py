@@ -218,10 +218,9 @@ def generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash):
         Pu_kN = Pu/1000.0
         Mu_kNm = abs(Mu) / 1e6
 
-        if Pu_kN >= 0:
-            P_values.append(Pu_kN)      # kN
-            M_values.append(Mu_kNm)     # kNm
-            Xu_values.append(xu)
+        P_values.append(Pu_kN)      # kN
+        M_values.append(Mu_kNm)     # kNm
+        Xu_values.append(xu)
 
     fc_axial = 0.446 * fck
     Cc_axial = fc_axial * b * D
@@ -268,7 +267,10 @@ def find_Mu_at_Pu(Pu_required, P_curve, M_curve):
 
     # No intersection
     if len(Mu_values) == 0:
-        Mu_values.append(0.1)
+        raise ValueError(
+            f"No interaction-curve intersection found "
+            f"at Pu = {Pu_required:.2f} kN."
+        )
 
     # If more than one intersection exists, take the maximum available moment capacity.
     return max(Mu_values)
@@ -296,7 +298,7 @@ def biaxial_interaction(Pu_required, Mux_required, Muy_required, Mux1, Muy1, Puz
 # ============================================================
 # Get required Ast for column design
 # ============================================================
-def get_Ast_biaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mux_required, Muy_required, Ast_min_percent, Ast_max_percent, interaction_tolerance):
+def get_Ast_biaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mux_required, Muy_required, Ast_min_percent = 0.8, Ast_max_percent=4.0, interaction_tolerance=0.01):
 
     low = Ast_min_percent
     high = Ast_max_percent
@@ -434,10 +436,10 @@ if __name__ == "__main__":
     Es = 200000.0   # MPa
 
     # Distance of reinforcement centroid from nearest face
-    d_dash = 50.0   # mm
+    d_dash = 30.0   # mm
 
     # DESIGN LOADS
-    Pu_required = 2000.0      # kN
+    Pu_required = 1000.0      # kN
     Mux_required = 120.0       # kNm
     Muy_required = 80.0       # kNm
 

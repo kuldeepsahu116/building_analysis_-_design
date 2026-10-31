@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 import numpy as np
 from stuructural_analysis_solver import Member, run_analysis
+from design import run_design, collect_design_results
+
+analysis_members = None
 
 app = Flask(__name__)
 
@@ -9,6 +12,7 @@ def home():
     return render_template("index.html")
 
 @app.route("/analyze", methods=["POST"])
+
 def analyze():
 
     try:
@@ -286,6 +290,9 @@ def analyze():
 
         result = run_analysis(nodes, members, F_node, fixed_dofs, support_settlements)
 
+        global analysis_members
+        analysis_members = result["members"]
+
         reverse_node_map = {
             v:k for k,v in node_map.items()
         }
@@ -357,5 +364,29 @@ def analyze():
         return jsonify({"error": str(e)}), 400
 
 
+
+@app.route("/design", methods=["POST"])
+def design():
+
+    if analysis_members is None:
+        return jsonify({"error": "Run structural analysis first."}), 400
+
+    try:
+        design_inputs = request.get_json()
+
+        design_members = run_design(
+            analysis_members,
+            design_inputs
+        )
+
+        return jsonify(
+            collect_design_results(design_members)
+        )
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+    
 if __name__ == "__main__":
     app.run(debug=True)

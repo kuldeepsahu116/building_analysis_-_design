@@ -3,13 +3,7 @@
    SHARED STRUCTURAL SELECTION
    ===================================================== */
 
-window.structuralSelection = {
-    type: null,        // "node" or "member"
-    memberType: null,  // "beam" or "column"
-    id: null,
-    start: null,
-    end: null
-};
+window.structuralSelection = { items: [] };
 
 const STRUCTURAL_SELECTION_COLORS = {
     selected: 0xff2020,
@@ -653,6 +647,10 @@ function refreshStructuralSelection() {
     refreshStructuralTableSelection();
     refreshStructural2DSelection();
     refreshStructural3DSelection();
+
+    if (typeof renderSelectedDesignResult === "function") {
+        renderSelectedDesignResult();
+    }
 }
 
 

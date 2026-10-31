@@ -8,6 +8,7 @@ const PAGES = Object.freeze({
     SUPPORT: "support",
     LOAD: "load",
     RESULTS: "results",
+    DESIGN: "design",
     REPORT: "report"
 
 });
@@ -19,6 +20,7 @@ const PAGE_ORDER = Object.freeze([
     PAGES.SUPPORT,
     PAGES.LOAD,
     PAGES.RESULTS,
+    PAGES.DESIGN,
     PAGES.REPORT
 
 ]);
@@ -30,7 +32,8 @@ const PAGE_NUMBERS = Object.freeze({
     [PAGES.SUPPORT]: 2,
     [PAGES.LOAD]: 3,
     [PAGES.RESULTS]: 4,
-    [PAGES.REPORT]: 5
+    [PAGES.DESIGN]: 5,
+    [PAGES.REPORT]: 6
 
 });
 
@@ -123,6 +126,20 @@ function showPage(page){
         if (typeof setDrawing2DTool === "function") {
             setDrawing2DTool(modelPagePreviousTool || "select");
         }
+
+    }else if (page === PAGES.DESIGN) {
+
+        // Keep the drawing selection tool active on Design.
+        setDrawing2DTool("select");
+
+        document
+            .querySelectorAll(".page-tool-btn")
+            .forEach(button => button.classList.remove("active"));
+
+        document
+            .getElementById("pageToolDesignSelect")
+            ?.classList.add("active");
+            
     } else {
         // Deactivate drawing tools on every other page.
         if (window.drawing2D) {
@@ -201,12 +218,12 @@ function showPage(page){
     }
 
 
-    if(
-        page === PAGES.RESULTS
-    ){
-
+    if(page === PAGES.RESULTS){
         checkAnalysisInputChanges();
+    }
 
+    if (page === PAGES.DESIGN) {
+        renderSelectedDesignResult();
     }
 
 
@@ -477,4 +494,3 @@ function leaveSupportPageMode() {
         new Event("resize")
     );
 }
-

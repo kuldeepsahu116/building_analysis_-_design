@@ -1,0 +1,142 @@
+/* ==========================================================
+   DESIGN PAGE
+   ========================================================== */
+
+.page[data-page="design"] {
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.page[data-page="design"] .results-column {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+#designResultCard {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    box-sizing: border-box;
+    margin-bottom: 4px;
+    width: 100%;
+    min-width: 0;
+}
+
+#designResultCard .result-card-heading {
+    margin-bottom: 6px;
+}
+
+#designResultCard .result-card-heading h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+#designResultCard .result-card-heading p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #666;
+}
+
+#designResultCard .design-error {
+    color: #c0392b;
+    font-size: 12px;
+}
+
+#designResultCard .design-result-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 4px;
+    border-bottom: 1px solid #eee;
+    font-size: 12px;
+}
+
+#runDesignBtn {
+    width: 140px;
+}
+
+
+/* ==========================================================
+   BEAM DESIGN RESULTS
+   ========================================================== */
+
+#designResultCard .beam-section-details {
+    margin-bottom: 4px;
+    width: 100%;
+    min-width: 0;
+}
+
+#designResultCard .beam-section-details .design-result-row {
+    padding: 6px 4px;
+}
+
+/* ==========================================================
+   BEAM DESIGN TABLE
+   ========================================================== */
+
+#designResultCard .beam-design-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+#designResultCard .beam-design-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+#designResultCard .beam-design-table th,
+#designResultCard .beam-design-table td {
+    padding: 7px 3px;
+    border: 1px solid #ddd;
+    text-align: center;
+    font-size: 11px;
+    color: #333;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    box-sizing: border-box;
+}
+
+/* Neutral header background */
+
+#designResultCard .beam-design-table th {
+    background: #f1f2f4;
+    color: #333;
+    font-weight: 600;
+}
+
+/* First column */
+
+#designResultCard .beam-design-table th:first-child,
+#designResultCard .beam-design-table td:first-child {
+    width: 38%;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* Three station columns */
+
+#designResultCard .beam-design-table th:not(:first-child),
+#designResultCard .beam-design-table td:not(:first-child) {
+    width: 20.66%;
+}
+
+/* Normal table rows */
+
+#designResultCard .beam-design-table tbody tr {
+    background: white;
+}
+
+#designResultCard .beam-design-table tbody tr:hover {
+    background: #f8f9fa;
+}

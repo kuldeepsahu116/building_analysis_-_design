@@ -143,6 +143,12 @@
     </button>
 
     <button
+        data-page="design"
+        onclick="showPage(PAGES.DESIGN)">
+        Design
+    </button>
+
+    <button
         data-page="report"
         onclick="showPage(PAGES.REPORT)">
         Report
@@ -641,6 +647,30 @@
                 onclick="showResultTab('deflectionTab',this); setDiagram('deflection');">
                 <img src="/static/images/result-icons/deflection.png"
                     alt="" class="result-icon">
+            </button>
+
+        </div>
+
+        <!-- ================= DESIGN PAGE TOOLS ================= -->
+        <div class="page-tool-set" data-tool-page="5" style="display:none;">
+
+            <button
+                type="button"
+                class="page-tool-btn active"
+                id="pageToolDesignSelect"
+                onclick="setDrawing2DTool('select'); this.classList.add('active')"
+                title="Select Member"
+                aria-label="Select Member">
+
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M5 2 L19 13 L13 14 L16 21 L12.5 22 L9.5 15 L5 19 Z"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        stroke-width="0.7"
+                        stroke-linejoin="round"/>
+                </svg>
+
             </button>
 
         </div>
@@ -2187,6 +2217,30 @@
                 </div>
             </div>
 
+            <!-- ================= DESIGN PAGE ================= -->
+            <div class="page" data-page="design" style="display:none;">
+
+                <div class="results-column">
+
+                    <!-- DESIGN RESULT CARD -->
+                    <div class="results-content" id="designResultCard">
+                        <div class="result-card-heading">
+                            <h3>Member Design</h3>
+                            <p>Select a beam or column in the Plan View to see its design results.</p>
+                        </div>
+                    </div>
+
+                    <!-- BOTTOM ACTION BUTTON -->
+                    <div class="results-actions">
+                        <button type="button" id="runDesignBtn"
+                            onclick="loadDesignResults()">
+                            RUN DESIGN
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
 
         </div>
 
@@ -3328,6 +3382,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script src="{{ url_for('static', filename='js/workspace_resize.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/design.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/selection.js') }}"></script>
 

@@ -176,10 +176,10 @@ def generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash):
         Pu_kN = Pu/1000.0
         Mu_kNm = abs(Mu) / 1e6
 
-        if Pu_kN >= 0:
-            P_values.append(Pu_kN)      # kN
-            M_values.append(Mu_kNm)     # kNm
-            Xu_values.append(xu)
+
+        P_values.append(Pu_kN)      # kN
+        M_values.append(Mu_kNm)     # kNm
+        Xu_values.append(xu)
 
     fc_axial = 0.446 * fck
     Cc_axial = fc_axial * b * D
@@ -226,12 +226,12 @@ def find_Mu_at_Pu(Pu_required, P_curve, M_curve):
 
     # No intersection
     if len(Mu_values) == 0:
-        Mu_values.append(0.0)
+        return None
 
     # If more than one intersection exists, take the maximum available moment capacity.
     return max(Mu_values)
 
-def get_Ast(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent, Ast_max_percent, Mu_tolarance):
+def get_Ast_uniaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent = 0.8, Ast_max_percent=4.0, Mu_tolarance= 1.0):
 
     low = Ast_min_percent
     high = Ast_max_percent
@@ -243,6 +243,9 @@ def get_Ast(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent
     P_curve, M_curve, Xu_curve = generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash)
 
     Mu_capacity = find_Mu_at_Pu(Pu_required,P_curve,M_curve)
+
+    if Mu_capacity is None:
+        Mu_capacity = 0.1
 
     # Minimum reinforcement already satisfies requirement
     if Mu_required <= Mu_capacity:
@@ -258,10 +261,11 @@ def get_Ast(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent
     Mu_capacity = find_Mu_at_Pu(Pu_required, P_curve, M_curve)
 
     # Even maximum reinforcement cannot satisfy requirement
-    if Mu_required > Mu_capacity:
+    if Mu_capacity is None or Mu_required > Mu_capacity:
         raise ValueError(
             "Required moment capacity cannot be achieved "
             f"within maximum Ast limits of {Ast_max_percent:.2f}%."
+            "Increase the column dimensions or concrete grade, "
         )
  
 
@@ -316,7 +320,7 @@ if __name__ == "__main__":
     Mu_tolarance = 1.0           # kNm
 
 
-    Ast_percent, Ast, Mu_capacity, P_curve, M_curve = get_Ast(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent, Ast_max_percent, Mu_tolarance)
+    Ast_percent, Ast, Mu_capacity, P_curve, M_curve = get_Ast_uniaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent, Ast_max_percent, Mu_tolarance)
 
 
     # CALCULATE RESULTS

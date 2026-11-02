@@ -27,6 +27,16 @@
 
     <div class="header-right">
 
+        <div id="projectSaveStatus" 
+            class="project-save-status not-saved">
+            Not saved
+        </div>
+
+        <div id="currentProjectName" class="current-project-name"
+            title="Current project">
+            Untitled Project
+        </div>
+
         <!-- HELP BUTTON -->
         <button
             id="helpBtn"
@@ -118,6 +128,11 @@
 
 <!-- NAVIGATION -->
 <div class="nav-bar">
+    <button type="button" id="fileNavBtn"
+        onclick="toggleFilePanel()">
+        File
+    </button>
+
     <button
         data-page="model"
         onclick="showPage(PAGES.MODEL)">
@@ -167,6 +182,41 @@
 </div>
 
 <div class="main-container">
+
+    <!-- FILE MENU OVERLAY -->
+    <div id="filePanelOverlay" class="file-panel-overlay">
+        <!-- FILE MENU -->
+        <div id="filePanel" class="file-panel">
+
+            <div class="file-panel-header">
+                <h3>File</h3>
+                <button type="button" onclick="toggleFilePanel()">×</button>
+            </div>
+
+            <div class="file-panel-actions">
+
+                <button onclick="newProject()">New Project</button>
+                <button onclick="document.getElementById('projectImportInput').click()">
+                    Open Project
+                </button>
+                <button onclick="saveCurrentProject()">Save</button>
+                <button onclick="exportProjectJSON()">Save As</button>
+                <button onclick="duplicateProject()">
+                    Duplicate Project
+                </button>
+
+                <input type="file" id="projectImportInput"
+                    accept=".str,application/json"
+                    hidden onchange="importProjectJSON(event)">
+
+                <div class="file-menu-divider"></div>
+
+                <h4>Recent Projects</h4>
+                <div id="recentProjectsList"></div>
+
+            </div>
+        </div>
+    </div>
 
     <aside class="page-tool-sidebar" aria-label="Page tools">
 
@@ -3386,6 +3436,11 @@
 <script src="{{ url_for('static', filename='js/design.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/selection.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/project_io.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/project_manager.js') }}"></script>
+
 
 </body>
 </html>

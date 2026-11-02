@@ -467,3 +467,8 @@
     min-width: 0;
     min-height: 0;
 }
+
+
+.main-container {
+    position:relative;
+}

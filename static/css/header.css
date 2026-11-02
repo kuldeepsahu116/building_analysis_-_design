@@ -147,7 +147,7 @@
     position:fixed;
     inset:0;
     display:none;
-    background:transparent;
+    background:rgba(0,0,0,0.35);
     z-index:9998;
 }
 
@@ -389,4 +389,228 @@
     color: #263238;
     font-size: 13px;
     cursor: pointer;
+}
+
+
+
+.project-btn {
+    padding: 7px 14px;
+    border: 1px solid #d0d5dd;
+    border-radius: 5px;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.project-btn:hover {
+    background: #f2f4f7;
+}
+
+
+/* FILE PANEL OVERLAY */
+.file-panel-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 9998;
+}
+
+/* FILE PANEL */
+.file-panel {
+    position: absolute;
+    top: 100px;
+    bottom: 10px;
+    left: 10px;
+    width: 25%;
+    max-width: 360px;
+    min-width: 200px;
+    background: white;
+    border: 1px solid #d5dbe5;
+    border-radius: 6px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.18);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.file-panel-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 15px;
+    background:#f5f7fb;
+    border-bottom:1px solid #ddd;
+}
+
+.file-panel-header h3 {
+    margin:0;
+    color:#1f3c88;
+}
+
+.file-panel-header button {
+    margin:0;
+    width:28px;
+    height:28px;
+    padding:0;
+    font-size: 18px;
+    background: #c0392b;
+}
+
+
+.file-panel-actions {
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    min-height:0;
+    overflow:hidden;
+}
+
+.file-panel-actions > button {
+    display:block;
+    width:100%;
+    text-align:left;
+    margin:4px 0;
+    padding:10px;
+    color: #ffffff;
+}
+
+.file-panel-actions > button:hover {
+    background:#163a8c;
+    color:#ffffff;
+}
+
+
+
+.file-menu-divider {
+    height:1px;
+    background:#ddd;
+    margin:12px 0;
+}
+
+#recentProjectsList {
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding-right:4px;
+}
+
+.recent-project {
+    width:100%;
+    text-align:left;
+    background:#f3f5f9;
+    color:#333;
+    padding:9px;
+    margin:0;
+}
+
+.recent-project:hover {
+    background:#e3eaf7;
+    color:#1f3c88;
+    transform:none;
+}
+
+.recent-project {
+    flex:1;
+    min-width:0;
+    text-align:left;
+    background:#f3f5f9;
+    color:#333;
+    padding:9px;
+    margin:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.recent-project-row {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.recent-project-menu {
+    position: fixed;
+    display: none;
+    flex-direction: column;
+    width: 140px;
+    padding: 4px;
+    background: #ffffff;
+    border: 1px solid #d5dbe5;
+    border-radius: 5px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    z-index: 10020;
+}
+
+.recent-project-menu button {
+    width: 100%;
+    margin: 0;
+    padding: 9px 11px;
+    text-align: left;
+    background: #ffffff;
+    color: #333333;
+    border: none;
+    border-radius: 3px;
+}
+
+.recent-project-menu button:hover {
+    background: #e3eaf7;
+    color: #1f3c88;
+    transform: none;
+}
+
+.recent-project-menu button.delete-option {
+    color: #c0392b;
+}
+
+.recent-project-menu button.delete-option:hover {
+    background: #fdecea;
+    color: #c0392b;
+}
+
+
+/* PROJECT NAME AND SAVE STATUS */
+
+.project-save-status {
+    min-width: 65px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.project-save-status.saved {
+    color: #b9f6ca;
+}
+
+.project-save-status.not-saved {
+    color: #ffe082;
+}
+
+.project-save-status.saving {
+    color: #ffffff;
+}
+
+.current-project-name {
+    width: 190px;
+    padding: 4px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    background: #ffffff;
+    color: #263238;
+    border: 1px solid #d0d5dd;
+    border-radius: 4px;
+
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

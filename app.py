@@ -3,9 +3,48 @@ import numpy as np
 from stuructural_analysis_solver import Member, run_analysis
 from design import run_design, collect_design_results
 
+import os
+import sqlite3
+import json
+from datetime import datetime
+
+
 analysis_members = None
 
 app = Flask(__name__)
+
+# =====================================================
+# SQLITE PROJECT DATABASE
+# =====================================================
+
+os.makedirs(app.instance_path, exist_ok=True)
+DB_PATH = os.path.join(app.instance_path, "projects.db")
+
+
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_project_db():
+    with get_db() as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS projects (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                project_data TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                last_opened TEXT NOT NULL
+            )
+        """)
+
+
+init_project_db()
+
+
+# =====================================================
 
 @app.route("/")
 def home():
@@ -386,7 +425,121 @@ def design():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+# =====================================================
+# PROJECT API
+# =====================================================
 
+@app.route("/api/projects", methods=["GET", "POST"])
+def projects_api():
+
+    with get_db() as conn:
+
+        if request.method == "POST":
+
+            data = request.get_json()
+            name = str(data.get("name", "")).strip()
+            project = data.get("project")
+
+            if not name or not isinstance(project, dict):
+                return jsonify(error="Project name and data are required."), 400
+
+            now = datetime.now().isoformat(timespec="seconds")
+
+            cursor = conn.execute("""
+                INSERT INTO projects
+                (name, project_data, created_at, updated_at, last_opened)
+                VALUES (?, ?, ?, ?, ?)
+            """, (name, json.dumps(project), now, now, now))
+
+            return jsonify(id=cursor.lastrowid, name=name)
+
+        rows = conn.execute("""
+            SELECT id, name, created_at, updated_at, last_opened
+            FROM projects
+            ORDER BY last_opened DESC
+            LIMIT 20
+        """).fetchall()
+
+        return jsonify([dict(row) for row in rows])
+
+
+@app.route("/api/projects/<int:project_id>", methods=["GET", "PUT", "DELETE"])
+def project_api(project_id):
+
+    with get_db() as conn:
+
+        if request.method == "DELETE":
+            cursor = conn.execute(
+                "DELETE FROM projects WHERE id = ?", (project_id,)
+            )
+
+            if cursor.rowcount == 0:
+                return jsonify(error="Project not found."), 404
+
+            return jsonify(success=True)
+
+
+        if request.method == "GET":
+
+            row = conn.execute(
+                "SELECT * FROM projects WHERE id = ?",
+                (project_id,)
+            ).fetchone()
+
+            if not row:
+                return jsonify(error="Project not found."), 404
+
+            now = datetime.now().isoformat(timespec="seconds")
+
+            conn.execute(
+                "UPDATE projects SET last_opened = ? WHERE id = ?",
+                (now, project_id)
+            )
+
+            return jsonify(
+                id=row["id"],
+                name=row["name"],
+                project=json.loads(row["project_data"])
+            )
+
+        data = request.get_json() or {}
+
+        name = str(data.get("name", "")).strip()
+        project = data.get("project")
+
+        if not name:
+            return jsonify(error="Project name is required."), 400
+
+        now = datetime.now().isoformat(timespec="seconds")
+
+        if isinstance(project, dict):
+            cursor = conn.execute("""
+                UPDATE projects
+                SET name = ?, project_data = ?, updated_at = ?, last_opened = ?
+                WHERE id = ?
+            """, (
+                name,
+                json.dumps(project),
+                now,
+                now,
+                project_id
+            ))
+        else:
+            cursor = conn.execute("""
+                UPDATE projects
+                SET name = ?, updated_at = ?
+                WHERE id = ?
+            """, (
+                name,
+                now,
+                project_id
+            ))
+
+        if cursor.rowcount == 0:
+            return jsonify(error="Project not found."), 404
+
+        return jsonify(success=True)
+    
     
 if __name__ == "__main__":
     app.run(debug=True)

@@ -66,8 +66,18 @@ function updateViewForPage(page){
 
         window.viewOptions.labels = true;
         window.viewOptions.supports = true;
-        window.viewOptions.loads =true;
+        window.viewOptions.loads = false;
         window.showResultDiagrams =true;
+    }
+
+    else if(
+        page === getPageNumber(PAGES.DESIGN)
+    ){
+
+        window.viewOptions.labels = true;
+        window.viewOptions.supports = true;
+        window.viewOptions.loads =false;
+        window.showResultDiagrams = false;
     }
 
 

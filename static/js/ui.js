@@ -147,67 +147,47 @@ function closeSupportPopup(){
 
 
 
-function updateSupportValueInputs(){
+function updateSupportValueInputs() {
+    ["Ux", "Uy", "Uz", "Rx", "Ry", "Rz"].forEach(dof => {
+        const checkbox = document.getElementById(`support${dof}`);
+        const value = document.getElementById(`support${dof}Value`);
 
-    const dofs = [
-        "Ux",
-        "Uy",
-        "Uz",
-        "Rx",
-        "Ry",
-        "Rz"
-    ];
-
-    dofs.forEach(dof => {
-
-        const checked =
-            document.getElementById(
-                `support${dof}`
-            ).checked;
-
-        document.getElementById(
-            `support${dof}Value`
-        ).disabled = !checked;
-
+        value.disabled = !checkbox.checked;
     });
 }
 
-function switchSupportType(type){
-
+function switchSupportType(type) {
     currentSupportType = type;
 
-    const normalTab =
-        document.getElementById("supportTab");
+    const tabs = {
+        fixed: "fixedSupportTab",
+        pinned: "pinnedSupportTab",
+        support: "supportTab",
+        support_deflection: "supportDeflectionTab"
+    };
 
-    const deflectionTab =
-        document.getElementById("supportDeflectionTab");
+    Object.entries(tabs).forEach(([key, id]) => {
+        document.getElementById(id).classList.toggle("active", key === type);
+    });
 
-    const values =
-        document.getElementById(
-            "supportDeflectionValues"
-        );
+    const dofs = ["Ux", "Uy", "Uz", "Rx", "Ry", "Rz"];
 
+    dofs.forEach(dof => {
+        const checkbox = document.getElementById(`support${dof}`);
 
-    if(type === "support"){
+        checkbox.disabled = type === "fixed" || type === "pinned";
 
-        normalTab.classList.add("active");
+        if (type === "fixed") {
+            checkbox.checked = true;
+        } else if (type === "pinned") {
+            checkbox.checked = ["Ux", "Uy", "Uz"].includes(dof);
+        }
+    });
 
-        deflectionTab.classList.remove("active");
+    document.getElementById("supportDeflectionValues").style.display =
+        type === "support_deflection" ? "block" : "none";
 
-        values.style.display = "none";
-
-    }
-
-    else{
-
-        normalTab.classList.remove("active");
-
-        deflectionTab.classList.add("active");
-
-        values.style.display = "block";
-
-    }
-
+    updateSupportValueInputs();
 }
 
 function resetSupportPopup(){
@@ -244,7 +224,9 @@ function saveSupport(){
 
     const support = {
 
-        type: currentSupportType,
+        type: currentSupportType === "support_deflection"
+            ? "support_deflection"
+            : "support",
 
         ux:
             document.getElementById(
@@ -3743,12 +3725,12 @@ function updateLoadPopup(){
 
         typeSelect.innerHTML = `
 
-            <option value="point">
-                Point Load
-            </option>
-
             <option value="udl">
                 UDL
+            </option>
+
+            <option value="point">
+                Point Load
             </option>
 
             <option value="partial_udl">
@@ -8232,20 +8214,32 @@ function updateMemberEditSectionDetails() {
         item => String(item.id) === String(sectionId)
     );
 
+    const dimensions = section?.dimensions || {};
+
     const material = section
         ? materialDatabase.find(
             item => item.name === section.materialName
         )
         : null;
 
-    document.getElementById("editMemberMaterial").value =
+    document.getElementById("editMemberMaterialName").value =
         material?.name || section?.materialName || "—";
 
+    document.getElementById("editMemberConcreteGrade").value =
+        material?.concreteGrade ? `M${material.concreteGrade}` : "—";
+
+    document.getElementById("editMemberE").value =
+        material?.E ?? "—";
+
+    document.getElementById("editMemberG").value =
+        material?.G ?? "—";
+
+
     document.getElementById("editMemberB").value =
-        section?.b ?? section?.width ?? "—";
+        dimensions.b ?? "—";
 
     document.getElementById("editMemberD").value =
-        section?.D ?? section?.d ?? section?.depth ?? "—";
+        dimensions.d ?? "—";
 
     document.getElementById("editMemberA").value =
         section?.A ?? "—";

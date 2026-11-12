@@ -3609,6 +3609,9 @@ function handleDrawing2DRectangleMouseDown(event) {
 
     if (!canvas || !structureCard) return;
 
+    // Start rectangle drag only when the actual event target is the 2D canvas.
+    if (event.target !== canvas && !canvas.contains(event.target)) return;
+
     // Rectangle creation is allowed only for beam/column tools.
     if (!["select", "beam", "column", "deleteBeam","deleteColumn"]
         .includes(drawing.activeTool)) {

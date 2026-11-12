@@ -2,7 +2,7 @@
 import math
 
 from uniaxial_column_design import get_Ast_uniaxial
-from biaxial_column_design import get_Ast_biaxial
+from biaxial_column_design import get_Ast_biaxial, generate_3d_interaction_surface
 
 
 ES = 200000.0  # MPa
@@ -246,6 +246,11 @@ def design_column(data):
                 "Mu_required": round(Mux_design, 2)
             },
 
+            "interaction_curve": {
+                "Pu": P_curve.tolist(),
+                "Mu": M_curve.tolist()
+            },
+
             "eccentricity": {
                 "emin_x": round(emin_x, 2),
                 "emin_y": round(emin_y, 2),
@@ -290,6 +295,11 @@ def design_column(data):
                 "Mu_required": round(Muy_design, 2)
             },
 
+            "interaction_curve": {
+                "Pu": P_curve.tolist(),
+                "Mu": M_curve.tolist()
+            },
+
             "eccentricity": {
                 "emin_x": round(emin_x, 2),
                 "emin_y": round(emin_y, 2),
@@ -313,6 +323,10 @@ def design_column(data):
             P_curve_x, M_curve_x,
             P_curve_y, M_curve_y
         ) = result
+
+        P_mesh, Mx_mesh, My_mesh = generate_3d_interaction_surface(
+            Ast, b, D, fck, fy, ES, d_dash, num_points=20
+        )
 
         return {
             "design_type": "biaxial",
@@ -343,6 +357,12 @@ def design_column(data):
                 "Puz": round(Puz, 2),
                 "interaction": round(interaction, 4),
                 "alpha_n": round(alpha_n, 4)
+            },
+
+            "interaction_surface": {
+                "Pu": P_mesh.tolist(),
+                "Mux": Mx_mesh.tolist(),
+                "Muy": My_mesh.tolist()
             }
         }
 

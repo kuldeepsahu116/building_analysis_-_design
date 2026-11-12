@@ -2063,89 +2063,46 @@ function buildMemberMaximumValues(member){
 
 }
 
-function buildMemberSFD(member){
-
-    const index =
-        window.memberLabels.indexOf(
-            String(member.name)
-        );
-
-    if(index==-1)
-        return "";
-
-    const canvas =
-        createReportCanvas();
-
-    const ctx =
-        canvas.getContext("2d");
-
-    drawReportMemberAxis(
-        ctx,
-        getReportToCanvas(member),
-        getNodes(),
-        member
+function buildMemberSFD(member) {
+    const d = window.analysisResults?.sfd?.find(
+        x => String(x.member) === String(member.name)
     );
 
-    drawMemberSFD(
-        ctx,
-        getReportToCanvas(member),
-        getNodes(),
-        member,
-        window.analysisResults.sfd[index]
-    );
+    if (!d) return "";
 
-    return `
+    const image = createMemberDiagramImage({
+        title: "Shear Force Diagram — Vy",
+        x: d.x,
+        values: d.V?.y,
+        unit: "kN",
+        color: "#2453b8"
+    });
 
-    <h2>Shear Force Diagram</h2>
-
-    <img
-        src="${canvas.toDataURL()}">
-
-    `;
-
+    return image ? `
+        <h2>Shear Force Diagram — Vy</h2>
+        <img src="${image}">
+    ` : "";
 }
 
-function buildMemberBMD(member){
-
-    const index =
-        window.memberLabels.indexOf(
-            String(member.name)
-        );
-
-    if(index==-1)
-        return "";
-
-    const canvas =
-        createReportCanvas();
-
-    const ctx =
-        canvas.getContext("2d");
-
-    drawReportMemberAxis(
-        ctx,
-        getReportToCanvas(member),
-        getNodes(),
-        member
+function buildMemberBMD(member) {
+    const d = window.analysisResults?.bmd?.find(
+        x => String(x.member) === String(member.name)
     );
 
-    drawMemberBMD(
-        ctx,
-        getReportToCanvas(member),
-        getNodes(),
-        member,
-        window.analysisResults.bmd[index]
+    if (!d) return "";
 
-    );
+    const image = createMemberDiagramImage({
+        title: "Bending Moment Diagram — Mz",
+        x: d.x,
+        values: d.M?.z,
+        unit: "kNm",
+        color: "#16834a"
+    });
 
-    return `
-
-    <h2>Bending Moment Diagram</h2>
-
-    <img
-        src="${canvas.toDataURL()}">
-
-    `;
-
+    return image ? `
+        <h2>Bending Moment Diagram — Mz</h2>
+        <img src="${image}">
+    ` : "";
 }
 
 function buildMemberDeflection(member){

@@ -368,15 +368,15 @@ if __name__ == "__main__":
             L=3000,
             moment_x=x.tolist(),
             moment_M={
-                "y": [10, 20, 30, 20, 10],
-                "z": [5, 10, 15, 10, 5]
+                "y": [10, 20, 35, 20, 10],
+                "z": [5, 1, 5, 1, 5]
             },
             shear_x=x.tolist(),
             shear_V={
                 "y": [40, 20, 0, -20, -40],
                 "z": [20, 10, 0, -10, -20]
             },
-            axial_N=[-500, -550, -600, -550, -500],
+            axial_N=[-500, -550, -600, -2750, -500],
             torsion_T=[0, 0, 0, 0, 0]
         )
     ]
@@ -386,8 +386,8 @@ if __name__ == "__main__":
         "0": {
             "member_type": "beam",
             "b": 300,
-            "D": 450,
-            "effective_cover": 40,
+            "D": 500,
+            "effective_cover": 30,
             "fck": 30,
             "fy": 500,
             "moment_direction": "z",
@@ -396,10 +396,10 @@ if __name__ == "__main__":
 
         "1": {
             "member_type": "column",
-            "b": 450,
-            "D": 450,
-            "effective_cover": 50,
-            "fck": 30,
+            "b": 300,
+            "D": 500,
+            "effective_cover": 30,
+            "fck": 25,
             "fy": 500,
             "Le_x": 3000,
             "Le_y": 3000,

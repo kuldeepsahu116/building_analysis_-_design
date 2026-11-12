@@ -222,6 +222,14 @@ function renderBeamDesignResult(
     sectionInfo
 ) {
 
+    window.currentColumnDesignDetails = null;
+
+    window.currentBeamDesignDetails = {
+        memberId,
+        result,
+        sectionInfo
+    };
+
     const stations = result.stations || {};
 
     const stationOrder = ["start", "centre", "end"];
@@ -303,8 +311,12 @@ function renderBeamDesignResult(
 
     card.innerHTML = `
 
-        <div class="result-card-heading">
+        <div class="result-card-heading design-card-title">
             <h3>Beam ${memberId}</h3>
+            <button type="button" class="see-details-btn"
+                onclick="openDesignDetailsPopup()">
+                See Details
+            </button>
         </div>
 
         <div class="beam-section-details">
@@ -374,6 +386,8 @@ function renderColumnDesignResult(
     sectionInfo
 ) {
 
+    window.currentBeamDesignDetails = null;
+
     const rows = [];
 
     const addRow = (label, value) => {
@@ -419,20 +433,6 @@ function renderColumnDesignResult(
 
     if (result.design_type === "biaxial") {
 
-        addNumber("Required Axial Load", loads.Pu, "kN");
-
-        addNumber(
-            "Required Moment Mux",
-            loads.Mux_design,
-            "kNm"
-        );
-
-        addNumber(
-            "Required Moment Muy",
-            loads.Muy_design,
-            "kNm"
-        );
-
         addNumber(
             "Ast Percentage",
             result.Ast_percent,
@@ -444,24 +444,6 @@ function renderColumnDesignResult(
             "Total Ast",
             result.Ast,
             "mm²"
-        );
-
-        addNumber(
-            "Axial Load Capacity",
-            capacity.Puz,
-            "kN"
-        );
-
-        addNumber(
-            "Moment Mux Capacity",
-            capacity.Mux_capacity,
-            "kNm"
-        );
-
-        addNumber(
-            "Moment Muy Capacity",
-            capacity.Muy_capacity,
-            "kNm"
         );
 
         addNumber(
@@ -495,18 +477,6 @@ function renderColumnDesignResult(
             : loads.Muy_design;
 
         addNumber(
-            "Required Axial Load",
-            loads.Pu,
-            "kN"
-        );
-
-        addNumber(
-            `Required Moment M${direction}`,
-            requiredMoment,
-            "kNm"
-        );
-
-        addNumber(
             "Ast Percentage",
             result.Ast_percent,
             "%",
@@ -520,33 +490,21 @@ function renderColumnDesignResult(
         );
 
         addNumber(
-            `Moment M${direction} Capacity`,
-            capacity.Mu_capacity,
+            "Required Axial Load",
+            loads.Pu,
+            "kN"
+        );
+
+        addNumber(
+            `Required Moment M${direction}`,
+            requiredMoment,
             "kNm"
         );
 
         addNumber(
-            "Minimum Eccentricity X",
-            eccentricity.emin_x,
-            "mm"
-        );
-
-        addNumber(
-            "Minimum Eccentricity Y",
-            eccentricity.emin_y,
-            "mm"
-        );
-
-        addNumber(
-            "Design Eccentricity X",
-            eccentricity.design_ex,
-            "mm"
-        );
-
-        addNumber(
-            "Design Eccentricity Y",
-            eccentricity.design_ey,
-            "mm"
+            `Moment M${direction} Capacity`,
+            capacity.Mu_capacity,
+            "kNm"
         );
 
         const utilization = requiredMoment && capacity.Mu_capacity
@@ -627,13 +585,27 @@ function renderColumnDesignResult(
         return;
     }
 
+    window.currentColumnDesignDetails = {
+        memberId,
+        result,
+        sectionInfo,
+        rows
+    };
+
 
     // =================================================
     // FINAL DISPLAY
     // =================================================
 
     card.innerHTML = `
-        <h3>Column ${memberId}</h3>
+
+        <div class="result-card-heading design-card-title">
+            <h3>Column ${memberId}</h3>
+            <button type="button" class="see-details-btn"
+                onclick="openDesignDetailsPopup()">
+                See Details
+            </button>
+        </div>
 
         <div class="column-design-results">
 
@@ -723,4 +695,369 @@ function formatDesignNumber(value, digits = 2) {
     return Number.isFinite(number)
         ? number.toFixed(digits)
         : "—";
+}
+
+
+
+function renderColumnDesignDetails({ memberId, result, sectionInfo, rows }) {
+    const content = document.getElementById("designDetailsContent");
+
+    const values = Object.fromEntries(rows);
+    const get = label => values[label] ?? "—";
+
+    const table = (title, entries) => `
+        <div class="column-details-section">
+            <h4>${title}</h4>
+            <table class="design-details-table">
+                <tbody>
+                    ${entries.map(([label, value]) => `
+                        <tr>
+                            <td>${label}</td>
+                            <td><strong>${value ?? "—"}</strong></td>
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    const common = [
+        ["Design Type", get("Design Type")],
+        ["Section", get("Section")],
+        ["Concrete", get("Concrete")],
+        ["Steel", get("Steel")]
+    ];
+
+    let layout = "";
+
+    if (result.design_type === "biaxial") {
+
+        const biaxialDiagram = createBiaxialInteractionDiagram({
+            MuxCapacity: result.capacity?.Mux_capacity,
+            MuyCapacity: result.capacity?.Muy_capacity,
+            MuxRequired: result.loads?.Mux_design,
+            MuyRequired: result.loads?.Muy_design,
+            alphaN: result.capacity?.alpha_n,
+            Pu: result.loads?.Pu
+        });
+
+        layout = `
+            <div class="column-biaxial-layout">
+
+                <div class="column-interaction-placeholder">
+                    <canvas id="biaxial3DCanvas"
+                        width="650" height="930">
+                    </canvas>
+                    <small>Drag to rotate the interaction surface</small>
+                </div>
+
+                <div class="column-biaxial-middle">
+                    <div class="column-interaction-placeholder">
+                        ${biaxialDiagram
+                            ? `<img src="${biaxialDiagram}" alt="Biaxial Interaction Diagram">`
+                            : "Biaxial interaction data unavailable"}
+                    </div>
+
+                    ${table("Capacity Details", [
+                        ["Pure Axial Load Capacity", formatDesignNumber(
+                            result.capacity?.Puz, 2
+                        ) + " kN"],
+                        ["Uniaxial Mux Capacity at Pu =" + formatDesignNumber(
+                            result.loads?.Pu, 2
+                        ) + " kN", formatDesignNumber(
+                            result.capacity?.Mux_capacity, 2
+                        ) + " kNm"],
+                        ["Uniaxial Muy Capacity at Pu =" + formatDesignNumber(
+                            result.loads?.Pu, 2
+                        ) + " kN", formatDesignNumber(
+                            result.capacity?.Muy_capacity, 2
+                        ) + " kNm"],
+                        ["Interaction Value", formatDesignNumber(
+                            result.capacity?.interaction, 4
+                        )]
+                    ])}
+                </div>
+
+                <div class="column-biaxial-right">
+                    ${table("Member Properties", common)}
+
+                    ${table("Reinforcement Details", [
+                        ["Ast Percentage", get("Ast Percentage")],
+                        ["Total Ast", get("Total Ast")]
+                    ])}
+
+                    ${table("Design Loads", [
+                        ["Required Axial Load", formatDesignNumber(
+                            result.loads?.Pu, 2
+                        ) + " kN"],
+                        ["Required Moment Mux", formatDesignNumber(
+                            result.loads?.Mux_design, 2
+                        ) + " kNm"],
+                        ["Required Moment Muy", formatDesignNumber(
+                            result.loads?.Muy_design, 2
+                        ) + " kNm"]
+                    ])}
+
+                    ${table("Design Status", [
+                        ["Status", get("Design Status")]
+                    ])}
+                </div>
+
+            </div>
+        `;
+    }
+
+    else if (result.design_type === "uniaxial") {
+        const direction = String(result.bending_direction || "X").toUpperCase();
+
+        const curve = result.interaction_curve || {};
+
+        const pmDiagram = createPMInteractionDiagram({
+            Pu: curve.Pu,
+            Mu: curve.Mu,
+            requiredPu: result.loads?.Pu,
+            requiredMu: result.capacity?.Mu_required,
+            capacityMu: result.capacity?.Mu_capacity
+        });
+
+        layout = `
+            <div class="column-uniaxial-layout">
+
+                <div class="column-interaction-placeholder">
+                    ${pmDiagram
+                        ? `<img src="${pmDiagram}" alt="PM Interaction Curve">`
+                        : "PM interaction curve data unavailable"}
+                </div>
+
+                <div class="column-uniaxial-details">
+                    ${table("Member Properties", common)}
+
+                    ${table("Reinforcement Details", [
+                        ["Ast Percentage", get("Ast Percentage")],
+                        ["Total Ast", get("Total Ast")]
+                    ])}
+
+                    ${table("Loads and Capacities", [
+                        ["Required Axial Load", get("Required Axial Load")],
+                        [`Required Moment M${direction}`, get(`Required Moment M${direction}`)],
+                        [`Moment M${direction} Capacity at Pu =`+ get("Required Axial Load"), get(`Moment M${direction} Capacity`)]
+                    ])}
+
+                    ${table("Design Status", [
+                        ["Status", get("Design Status")]
+                    ])}
+                </div>
+
+            </div>
+        `;
+    }
+
+    else {
+        // Axial: show exactly the details already present on the card
+        layout = table("Design Details", rows);
+    }
+
+    content.innerHTML = `
+        <div class="design-details-member-title">
+            <h3>Column ${memberId}</h3>
+        </div>
+        ${layout}
+    `;
+
+    if (result.design_type === "biaxial") {
+        drawBiaxial3DInteraction(
+            "biaxial3DCanvas",
+            result.interaction_surface,
+            {
+                Mux: result.loads?.Mux_design,
+                Muy: result.loads?.Muy_design,
+                Pu: result.loads?.Pu
+            }
+        );
+    }
+}
+
+function openDesignDetailsPopup() {
+
+    if (window.currentColumnDesignDetails) {
+        renderColumnDesignDetails(window.currentColumnDesignDetails);
+        document.getElementById("designDetailsOverlay").style.display = "flex";
+        return;
+    }
+
+
+    const content = document.getElementById("designDetailsContent");
+    const details = window.currentBeamDesignDetails;
+
+    if (!details) return;
+
+    const { memberId, result, sectionInfo } = details;
+
+    // Keep the existing popup behavior for columns
+    if (!window.designResults) return;
+
+    const selected = (window.structuralSelection?.items || [])
+        .filter(item => item.type === "member");
+
+    const members = getMembers();
+    const member = members.find(m => String(m.name) === String(memberId));
+
+    if (!member) return;
+
+    const sfd = window.analysisResults?.sfd?.find(
+        d => String(d.member) === String(memberId)
+    );
+
+    const bmd = window.analysisResults?.bmd?.find(
+        d => String(d.member) === String(memberId)
+    );
+
+    const sfdDiagram = createMemberDiagramImage({
+        title: "SFD — Vy",
+        x: sfd?.x,
+        values: sfd?.V?.y,
+        unit: "kN",
+        color: "#2453b8"
+    });
+
+    const bmdDiagram = createMemberDiagramImage({
+        title: "BMD — Mz",
+        x: bmd?.x,
+        values: bmd?.M?.z,
+        unit: "kNm",
+        color: "#16834a"
+    });
+
+    const format = value =>
+        Number.isFinite(Number(value)) ? Number(value).toFixed(3) : "—";
+
+    const stations = ["start", "centre", "end"];
+    const stationLabels = ["Start", "Centre", "End"];
+
+    const resultRows = [
+        ["Distance (m)", "x"],
+        ["Ast Top (mm²)", "As_top"],
+        ["Ast Bottom (mm²)", "As_bottom"],
+        ["Shear Reinforcement (mm²/m)", "Asv"],
+        ["Moment Mu (kNm)", "Mu"],
+        ["Shear Vu (kN)", "Vu"]
+    ];
+
+    const designTable = `
+        <table class="design-details-table">
+            <thead>
+                <tr>
+                    <th>Design Results</th>
+                    ${stationLabels.map(label => `<th>${label}</th>`).join("")}
+                </tr>
+            </thead>
+            <tbody>
+                ${resultRows.map(([label, key]) => `
+                    <tr>
+                        <td>${label}</td>
+                        ${stations.map(station =>
+                            `<td>${format(result.stations?.[station]?.[key])}</td>`
+                        ).join("")}
+                    </tr>
+                `).join("")}
+            </tbody>
+        </table>
+    `;
+
+    const maximumTable = `
+        <div class="design-details-max-table">
+            <h4>Maximum Values</h4>
+
+            <table class="design-details-table">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Maximum</th>
+                        <th>x @ Maximum (m)</th>
+                        <th>Minimum</th>
+                        <th>x @ Minimum (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vy (kN)</td>
+                        <td>${format(sfd?.max_V?.y)}</td>
+                        <td>${format(sfd?.x_max_V?.y)}</td>
+                        <td>${format(sfd?.min_V?.y)}</td>
+                        <td>${format(sfd?.x_min_V?.y)}</td>
+                    </tr>
+                    <tr>
+                        <td>Mz (kNm)</td>
+                        <td>${format(bmd?.max_M?.z)}</td>
+                        <td>${format(bmd?.x_max_M?.z)}</td>
+                        <td>${format(bmd?.min_M?.z)}</td>
+                        <td>${format(bmd?.x_min_M?.z)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    content.innerHTML = `
+        <div class="design-details-member-title">
+            <h3>Beam ${memberId}</h3>
+        </div>
+
+        <div class="beam-details-layout">
+
+            <div class="beam-details-left">
+
+                <div class="beam-diagram-placeholder">
+                    ${bmdDiagram
+                        ? `<img src="${bmdDiagram}" alt="BMD Mz diagram">`
+                        : "BMD data unavailable"}
+                </div>
+
+                <div class="beam-diagram-placeholder">
+                    ${sfdDiagram
+                        ? `<img src="${sfdDiagram}" alt="SFD Vy diagram">`
+                        : "SFD data unavailable"}
+                </div>
+
+                ${maximumTable}
+
+            </div>
+
+            <div class="beam-details-right">
+
+                <div class="beam-details-section">
+                    <h4>Section Properties</h4>
+
+                    <table class="design-details-table">
+                        <tbody>
+                            ${[
+                                ["Section", formatSectionSize(sectionInfo)],
+                                ["Concrete", sectionInfo.concrete],
+                                ["Steel", sectionInfo.steel],
+                                ["Effective Cover", `${sectionInfo.effectiveCover ?? "—"} mm`]
+                            ].map(([label, value]) => `
+                                <tr>
+                                    <td>${label}</td>
+                                    <td><strong>${value || "—"}</strong></td>
+                                </tr>
+                            `).join("")}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="beam-details-section">
+                    <h4>Design Results</h4>
+                    ${designTable}
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById("designDetailsOverlay").style.display = "flex";
+}
+
+function closeDesignDetailsPopup() {
+    document.getElementById("designDetailsOverlay").style.display = "none";
 }

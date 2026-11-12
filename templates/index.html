@@ -1198,34 +1198,68 @@
 
                     <div class="member-properties-edit-layout">
 
-                        <!-- LEFT: NODE INFORMATION -->
-                        <section class="member-edit-section">
-                            <h4>Node Information</h4>
+                        <!-- LEFT: NODE AND MATERIAL INFORMATION -->
+                        <div class="member-edit-left-column">
 
-                            <div class="member-edit-inner-grid">
+                            <!-- NODE INFORMATION -->
+                            <section class="member-edit-section">
+                                <h4>Node Information</h4>
 
-                                <div class="member-properties-edit-field">
-                                    <label>Start Node</label>
-                                    <input id="editMemberStartNode" readonly>
+                                <div class="member-edit-inner-grid">
+
+                                    <div class="member-properties-edit-field">
+                                        <label>Start Node</label>
+                                        <input id="editMemberStartNode" readonly>
+                                    </div>
+
+                                    <div class="member-properties-edit-field">
+                                        <label>End Node</label>
+                                        <input id="editMemberEndNode" readonly>
+                                    </div>
+
+                                    <div class="member-properties-edit-field">
+                                        <label>Start Node Coordinates (X, Y, Z)</label>
+                                        <input id="editMemberStartCoordinates" readonly>
+                                    </div>
+
+                                    <div class="member-properties-edit-field">
+                                        <label>End Node Coordinates (X, Y, Z)</label>
+                                        <input id="editMemberEndCoordinates" readonly>
+                                    </div>
+
                                 </div>
+                            </section>
 
-                                <div class="member-properties-edit-field">
-                                    <label>End Node</label>
-                                    <input id="editMemberEndNode" readonly>
+                            <!-- MATERIAL INFORMATION -->
+                            <section class="member-edit-section">
+                                <h4>Material Information</h4>
+
+                                <div class="member-edit-inner-grid">
+
+                                    <div class="member-properties-edit-field">
+                                        <label>Material Name</label>
+                                        <input id="editMemberMaterialName" readonly>
+                                    </div>
+
+                                    <div class="member-properties-edit-field">
+                                        <label>Concrete Grade</label>
+                                        <input id="editMemberConcreteGrade" readonly>
+                                    </div>
+
+                                    <div class="member-properties-edit-field">
+                                        <label>Young's Modulus E (MPa)</label>
+                                        <input id="editMemberE" readonly>
+                                    </div>
+
+                                    <div class="member-properties-edit-field">
+                                        <label>Shear Modulus G (MPa)</label>
+                                        <input id="editMemberG" readonly>
+                                    </div>
+
                                 </div>
+                            </section>
 
-                                <div class="member-properties-edit-field">
-                                    <label>Start Node Coordinates (X, Y, Z)</label>
-                                    <input id="editMemberStartCoordinates" readonly>
-                                </div>
-
-                                <div class="member-properties-edit-field">
-                                    <label>End Node Coordinates (X, Y, Z)</label>
-                                    <input id="editMemberEndCoordinates" readonly>
-                                </div>
-
-                            </div>
-                        </section>
+                        </div>
 
                         <!-- RIGHT: SECTION AND MEMBER PROPERTIES -->
                         <section class="member-edit-section">
@@ -1243,8 +1277,11 @@
                                 </div>
 
                                 <div class="member-properties-edit-field">
-                                    <label>Material</label>
-                                    <input id="editMemberMaterial" readonly>
+                                    <label>Beta Angle (degrees)</label>
+                                    <input
+                                        id="editMemberBeta"
+                                        type="number"
+                                        step="any">
                                 </div>
 
                                 <div class="member-properties-edit-field">
@@ -1275,14 +1312,6 @@
                                 <div class="member-properties-edit-field">
                                     <label>Torsional Constant J</label>
                                     <input id="editMemberJ" readonly>
-                                </div>
-
-                                <div class="member-properties-edit-field">
-                                    <label>Beta Angle (degrees)</label>
-                                    <input
-                                        id="editMemberBeta"
-                                        type="number"
-                                        step="any">
                                 </div>
 
                             </div>
@@ -1490,22 +1519,28 @@
 
                     <div class="support-popup-tabs">
 
+                        <button id="fixedSupportTab" class="support-tab"
+                            onclick="switchSupportType('fixed')">
+                            Fixed
+                        </button>
+
+                        <button id="pinnedSupportTab" class="support-tab"
+                            onclick="switchSupportType('pinned')">
+                            Pinned
+                        </button>
+
                         <button
                             id="supportTab"
                             class="support-tab active"
                             onclick="switchSupportType('support')">
-
                             Support
-
                         </button>
 
                         <button
                             id="supportDeflectionTab"
                             class="support-tab"
                             onclick="switchSupportType('support_deflection')">
-
                             Support with Deflection
-
                         </button>
 
                     </div>
@@ -1865,12 +1900,12 @@
                             id="loadCategory"
                             onchange="updateLoadPopup()">
 
-                            <option value="nodal">
-                                Nodal Load
-                            </option>
-
                             <option value="member">
                                 Member Load
+                            </option>
+
+                            <option value="nodal">
+                                Nodal Load
                             </option>
 
                         </select>
@@ -1895,12 +1930,12 @@
 
                             <select id="loadCoordinateSystem">
 
-                                <option value="local">
-                                    Local
-                                </option>
-
                                 <option value="global">
                                     Global
+                                </option>
+
+                                <option value="local">
+                                    Local
                                 </option>
 
                             </select>
@@ -2289,6 +2324,23 @@
                     </div>
 
                 </div>
+            </div>
+
+            <!-- DESIGN DETAIL POPUP -->
+            <div id="designDetailsOverlay" 
+                class="design-details-overlay"
+                
+                onclick="if(event.target === this) closeDesignDetailsPopup()">
+
+                <div class="design-details-popup">
+                    <div class="design-details-header">
+                        <h3>Member Design Details</h3>
+                        <button type="button" onclick="closeDesignDetailsPopup()">×</button>
+                    </div>
+
+                    <div id="designDetailsContent"></div>
+                </div>
+
             </div>
 
 
@@ -3420,6 +3472,8 @@
 <script src="{{ url_for('static', filename='js/drawing3D_loads.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/drawing3D_diagrams.js') }}"></script>
+
+<script src="{{ url_for('static', filename='js/member_2D_diagram.js') }}"></script>
 
 <script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
 

@@ -267,10 +267,7 @@ def find_Mu_at_Pu(Pu_required, P_curve, M_curve):
 
     # No intersection
     if len(Mu_values) == 0:
-        raise ValueError(
-            f"No interaction-curve intersection found "
-            f"at Pu = {Pu_required:.2f} kN."
-        )
+        return 0.1
 
     # If more than one intersection exists, take the maximum available moment capacity.
     return max(Mu_values)
@@ -391,37 +388,28 @@ def get_Ast_biaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mux_required, Muy_re
 
     return Ast_percent, Ast, Mu_x1, Mu_y1, Puz, interaction, alpha_n,  P_curve_x, M_curve_x, P_curve_y, M_curve_y
 
-def generate_3d_interaction_surface(Ast, b, D, fck, fy, Es, d_dash, num_points=30):
-    # 1. Get 1D P-M curve along X-X to extract representative Pu values
-    P_curve_x, M_curve_x, _ = generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash)
-    
-    # 2. Sample Pu levels across the capacity range
-    Pu_levels = np.linspace(min(P_curve_x) + 0.1, max(P_curve_x) - 0.1, num_points)
-    angles = np.linspace(0, np.pi / 2, num_points) # 1st quadrant (Mx >= 0, My >= 0)
-    
+def generate_3d_interaction_surface(Ast, b, D, fck, fy, Es, d_dash, num_points=20):
+    P_x, M_x, _ = generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash)
+    P_y, M_y, _ = generate_interaction_curve(Ast, D, b, fck, fy, Es, d_dash)
+
+    Pu_levels = np.linspace(min(P_x) + 0.1, max(P_x) - 0.1, num_points)
+    angles = np.linspace(0, np.pi / 2, num_points)
+
     P_mesh, Angle_mesh = np.meshgrid(Pu_levels, angles)
     Mx_mesh = np.zeros_like(P_mesh)
     My_mesh = np.zeros_like(P_mesh)
-    
-    # 3. For each Pu, calculate Mux1, Muy1 and generate the Mx-My contour
-    for i, P_val in enumerate(Pu_levels):
-        # Generate directional interaction curves for the current Ast
-        P_x, M_x, _ = generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash)
-        P_y, M_y, _ = generate_interaction_curve(Ast, D, b, fck, fy, Es, d_dash)
-        
-        Mux1 = find_Mu_at_Pu(P_val, P_x, M_x)
-        Muy1 = find_Mu_at_Pu(P_val, P_y, M_y)
-        Puz = get_Puz(b, D, fck, fy, Ast)
-        
-        alpha_n = get_alpha_n(P_val, Puz)
-        
-        # Calculate Mx and My using superellipse equations
-        for j, theta in enumerate(angles):
-            Mx_mesh[j, i] = Mux1 * (np.cos(theta)) ** (2.0 / alpha_n)
-            My_mesh[j, i] = Muy1 * (np.sin(theta)) ** (2.0 / alpha_n)
-            
-    return P_mesh, Mx_mesh, My_mesh
 
+    Puz = get_Puz(b, D, fck, fy, Ast)
+
+    for i, Pu in enumerate(Pu_levels):
+        Mux = find_Mu_at_Pu(Pu, P_x, M_x)
+        Muy = find_Mu_at_Pu(Pu, P_y, M_y)
+        alpha_n = get_alpha_n(Pu, Puz)
+
+        Mx_mesh[:, i] = Mux * np.cos(angles) ** (2 / alpha_n)
+        My_mesh[:, i] = Muy * np.sin(angles) ** (2 / alpha_n)
+
+    return P_mesh, Mx_mesh, My_mesh
 
 
 if __name__ == "__main__":
@@ -439,9 +427,9 @@ if __name__ == "__main__":
     d_dash = 30.0   # mm
 
     # DESIGN LOADS
-    Pu_required = 1000.0      # kN
-    Mux_required = 120.0       # kNm
-    Muy_required = 80.0       # kNm
+    Pu_required = 2644.0      # kN
+    Mux_required = 76.0       # kNm
+    Muy_required = 30.0       # kNm
 
     # REINFORCEMENT LIMITS
     Ast_min_percent = 0.8

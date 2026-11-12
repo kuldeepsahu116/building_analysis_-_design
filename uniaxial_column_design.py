@@ -233,6 +233,8 @@ def find_Mu_at_Pu(Pu_required, P_curve, M_curve):
 
 def get_Ast_uniaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_min_percent = 0.8, Ast_max_percent=4.0, Mu_tolarance= 1.0):
 
+    Mu_required = abs(Mu_required)
+
     low = Ast_min_percent
     high = Ast_max_percent
 
@@ -270,7 +272,7 @@ def get_Ast_uniaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_mi
  
 
 
-    while abs(Mu_capacity - Mu_required) > Mu_tolarance:
+    while abs(Mu_required - Mu_capacity + (Mu_tolarance/2)) > (Mu_tolarance/2):
 
         mid = (low + high) / 2.0
 
@@ -280,6 +282,9 @@ def get_Ast_uniaxial(b, D, fck, fy, Es, d_dash, Pu_required, Mu_required, Ast_mi
         P_curve, M_curve, Xu_curve = generate_interaction_curve(Ast, b, D, fck, fy, Es, d_dash)
 
         Mu_capacity = find_Mu_at_Pu(Pu_required, P_curve, M_curve)
+
+        if Mu_capacity is None:
+            Mu_capacity = 0.1
 
         # Capacity is too low, Need more reinforcement
         if Mu_capacity < Mu_required:
@@ -309,8 +314,8 @@ if __name__ == "__main__":
     d_dash = 50.0   # mm
 
     # DESIGN LOADS
-    Pu_required = 1000.0      # kN
-    Mu_required = 150.0       # kNm
+    Pu_required = 2644.0      # kN
+    Mu_required = 76.4       # kNm
 
     # REINFORCEMENT LIMITS
     Ast_min_percent = 0.8
